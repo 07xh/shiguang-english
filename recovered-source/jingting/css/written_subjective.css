@@ -1,0 +1,835 @@
+/* === css/written_subjective.css === */
+/* =============================================================
+   优化四：雅思 / 托福专属题型组件样式
+   ============================================================= */
+/* 雅思 TFNG (True / False / Not Given) */
+.tfng-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+}
+.tfng-btn {
+    height: 48px;
+    border-radius: 14px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s var(--ios-spring);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.tfng-btn:hover {
+    border-color: #007aff;
+    background: rgba(0, 122, 255, 0.04);
+    transform: translateY(-1px);
+}
+.tfng-btn.selected {
+    border-color: #007aff;
+    background: #007aff;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+.tfng-btn.correct {
+    border-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+}
+.tfng-btn.wrong {
+    border-color: #ef4444 !important;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* 托福黑方块插句 (Sentence Insertion) */
+.sentence-insert-square {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #1e293b;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    margin: 0 4px;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+}
+.sentence-insert-square:hover {
+    background: #007aff;
+    transform: scale(1.15);
+}
+.sentence-insert-square.active {
+    background: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.35);
+}
+.sentence-inserted-content {
+    background: #f0fdf4;
+    border: 1.5px solid #22c55e;
+    color: #15803d;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    margin: 0 4px;
+    animation: insertFadeIn 0.3s ease;
+}
+.sentence-inserted-content.wrong {
+    background: #fef2f2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+}
+.sentence-inserted-content.exam {
+    background: #e0f2fe !important;
+    border-color: #0284c7 !important;
+    color: #0284c7 !important;
+}
+@keyframes insertFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* 改错主动做题任务条 (1~10 任务微标签栏) */
+.proofread-task-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+}
+.proofread-strip-chip {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.proofread-strip-chip:hover {
+    border-color: #0284c7;
+    color: #0284c7;
+    transform: translateY(-1px);
+}
+.proofread-strip-chip.active {
+    border-color: #f59e0b;
+    background: #fffbeb;
+    color: #d97706;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+.proofread-strip-chip.done {
+    border-color: #10b981;
+    background: #ecfdf5;
+    color: #059669;
+}
+
+/* 改错缺词插入插槽 (Caret Add Slot) */
+.proofread-add-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 22px;
+    margin: 0 3px;
+    padding: 0 4px;
+    cursor: pointer;
+    color: #0284c7;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px dashed #38bdf8;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+.proofread-add-slot:hover {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+.proofread-add-slot.slot-selected {
+    background: #0284c7;
+    color: #ffffff;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+}
+
+/* 托福黑方块插句选项网格 */
+.sentence-insertion-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+.sentence-insertion-opt-btn {
+    height: 48px;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s var(--ios-spring);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.sentence-insertion-opt-btn:hover {
+    border-color: #007aff;
+    background: rgba(0, 122, 255, 0.04);
+}
+.sentence-insertion-opt-btn.selected {
+    border-color: #007aff;
+    background: #007aff;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
+}
+.sentence-insertion-opt-btn.correct {
+    border-color: #10b981 !important;
+    background: #10b981 !important;
+    color: #ffffff !important;
+}
+.sentence-insertion-opt-btn.wrong {
+    border-color: #ef4444 !important;
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* =============================================================
+   短文改错沉浸式紧凑排版 (Proofreading Compact Layout)
+   ============================================================= */
+#written-stage-card.proofread-mode .quiz-card-inner,
+.quiz-stage-card.proofread-mode .quiz-card-inner,
+.quiz-card.proofread-mode .quiz-card-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+#written-stage-card.proofread-mode .quiz-card-top-bar,
+.quiz-stage-card.proofread-mode .quiz-card-top-bar,
+.quiz-card.proofread-mode .quiz-card-top-bar {
+    order: 1 !important;
+    margin-bottom: 0 !important;
+}
+#written-stage-card.proofread-mode #written-q-h2,
+#written-stage-card.proofread-mode #written-q-zh-p,
+.quiz-stage-card.proofread-mode #written-q-h2,
+.quiz-stage-card.proofread-mode #written-q-zh-p,
+.quiz-card.proofread-mode #written-q-h2,
+.quiz-card.proofread-mode #written-q-zh-p {
+    display: none !important;
+}
+#written-stage-card.proofread-mode #written-options-wrapper,
+.quiz-stage-card.proofread-mode #written-options-wrapper,
+.quiz-card.proofread-mode #written-options-wrapper {
+    order: 2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+#written-stage-card.proofread-mode .proofread-compact-bar,
+.quiz-stage-card.proofread-mode .proofread-compact-bar,
+.quiz-card.proofread-mode .proofread-compact-bar {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+#written-stage-card.proofread-mode #written-explanation-card,
+.quiz-stage-card.proofread-mode #written-explanation-card,
+.quiz-card.proofread-mode #written-explanation-card {
+    display: none !important;
+    order: 99 !important;
+}
+#written-stage-card.proofread-mode #written-passage-card,
+.quiz-stage-card.proofread-mode #written-passage-card,
+.quiz-card.proofread-mode #written-passage-card {
+    order: 3 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 14px 16px !important;
+}
+
+/* =============================================================
+   语法填空沉浸式作答与排版样式 (Grammar Fill-in Redesign)
+   ============================================================= */
+#written-stage-card.grammar-fillin-mode .quiz-card-inner,
+.quiz-stage-card.grammar-fillin-mode .quiz-card-inner,
+.quiz-card.grammar-fillin-mode .quiz-card-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+}
+#written-stage-card.grammar-fillin-mode .quiz-card-top-bar,
+.quiz-stage-card.grammar-fillin-mode .quiz-card-top-bar,
+.quiz-card.grammar-fillin-mode .quiz-card-top-bar {
+    order: 1 !important;
+}
+#written-stage-card.grammar-fillin-mode #written-q-h2,
+#written-stage-card.grammar-fillin-mode #written-q-zh-p,
+.quiz-stage-card.grammar-fillin-mode #written-q-h2,
+.quiz-stage-card.grammar-fillin-mode #written-q-zh-p,
+.quiz-card.grammar-fillin-mode #written-q-h2,
+.quiz-card.grammar-fillin-mode #written-q-zh-p {
+    display: none !important;
+}
+#written-stage-card.grammar-fillin-mode #written-options-wrapper,
+.quiz-stage-card.grammar-fillin-mode #written-options-wrapper,
+.quiz-card.grammar-fillin-mode #written-options-wrapper {
+    order: 2 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+#written-stage-card.grammar-fillin-mode #written-passage-card,
+.quiz-stage-card.grammar-fillin-mode #written-passage-card,
+.quiz-card.grammar-fillin-mode #written-passage-card {
+    order: 3 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+#written-stage-card.grammar-fillin-mode #written-explanation-card,
+.quiz-stage-card.grammar-fillin-mode #written-explanation-card,
+.quiz-card.grammar-fillin-mode #written-explanation-card {
+    order: 4 !important;
+    margin-top: 10px !important;
+}
+#written-stage-card.grammar-fillin-mode #written-translation-card,
+.quiz-stage-card.grammar-fillin-mode #written-translation-card,
+.quiz-card.grammar-fillin-mode #written-translation-card {
+    order: 5 !important;
+    margin-top: 10px !important;
+}
+
+/* 语法填空整体容器 */
+.grammar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* 语法填空 iOS 灵动单行作答栏 (题干+输入框一体化) */
+.grammar-ios-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    border: 1.5px solid #e5e5ea;
+    border-radius: 16px;
+    padding: 5px 6px 5px 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.grammar-ios-bar:focus-within {
+    border-color: #00c7be;
+    box-shadow: 0 0 0 3.5px rgba(0, 199, 190, 0.2), 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+.grammar-stem-text {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1c1c1e;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+    user-select: none;
+}
+.grammar-fill-input {
+    flex: 1;
+    height: 38px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1c1c1e;
+    background: transparent;
+    padding: 0 6px;
+    min-width: 60px;
+}
+.grammar-fill-input::placeholder {
+    color: #c7c7cc;
+    font-size: 14.5px;
+    font-weight: 400;
+}
+.grammar-btn-next {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: #007aff;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+}
+.grammar-btn-next:active {
+    transform: scale(0.96);
+    background: #0062cc;
+}
+.grammar-feedback-box {
+    padding: 2px 4px;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+.grammar-feedback-msg.correct {
+    color: #059669;
+}
+.grammar-feedback-msg.wrong {
+    color: #dc2626;
+}
+
+/* =============================================================
+   考场级英语作文答题纸（Ruled Answer Sheet）与写作题干排版系统
+   ============================================================= */
+.writing-section-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1c1c1e;
+    margin: 10px 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.writing-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 15px;
+    background: var(--accent-gold, #c89b3c);
+    border-radius: 2px;
+}
+.writing-note-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #b45309;
+    margin: 14px 0 6px 0;
+}
+.writing-list-item {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #1C1C1E;
+    margin-left: 0 !important;
+    text-indent: 0 !important;
+    margin-bottom: 6px;
+}
+.writing-en-para {
+    font-size: 15px;
+    line-height: 1.78;
+    color: #1C1C1E;
+    margin-bottom: 8px !important;
+    text-indent: 0 !important;
+    font-family: "Inter", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+}
+.writing-zh-para {
+    font-size: 14.5px;
+    line-height: 1.78;
+    color: #3A3A3C;
+    margin-bottom: 8px !important;
+    text-indent: 0 !important;
+}
+
+/* 答题纸主卡片 (Ruled Answer Sheet - iOS 纯白纸面与精致横线) */
+.writing-answer-sheet {
+    background: #FFFFFF;
+    border: 1px solid rgba(60, 60, 67, 0.1);
+    border-radius: 14px;
+    padding: 16px 20px 20px 20px;
+    margin-top: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    position: relative;
+    font-family: "Inter", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+    box-sizing: border-box;
+}
+.sheet-header-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "Inter", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #636366;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.1);
+    white-space: nowrap;
+}
+.sheet-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1C1C1E;
+    text-align: center;
+    line-height: 36px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+.sheet-salutation {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1C1C1E;
+    line-height: 36px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    margin: 0;
+    padding: 0 4px;
+}
+.sheet-starter-line {
+    font-size: 15px;
+    line-height: 36px;
+    color: #1C1C1E;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    margin: 0;
+    padding: 0 4px;
+    text-indent: 2.5em;
+    font-style: normal;
+    font-weight: 500;
+}
+.sheet-closer-line {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1C1C1E;
+    line-height: 36px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    text-align: left;
+    text-indent: 2.5em;
+    padding: 0 4px;
+    font-style: normal;
+}
+.sheet-ruled-lines {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.sheet-ruled-line {
+    height: 36px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    width: 100%;
+    position: relative;
+}
+.sheet-indent-hint {
+    display: inline-block;
+    width: 2.5em;
+    height: 100%;
+}
+.sheet-signoff-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+.sheet-signoff-line {
+    width: 100%;
+    height: 36px;
+    box-sizing: border-box;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1C1C1E;
+    line-height: 36px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+    text-align: right;
+    padding-right: 16px;
+    font-style: normal;
+}
+.sheet-continuation-block {
+    margin-bottom: 16px;
+}
+.sheet-continuation-block:last-child {
+    margin-bottom: 0;
+}
+.sheet-para-tag {
+    display: inline-block;
+    font-family: "Inter", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0284c7;
+    background: #e0f2fe;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+/* =============================================================
+   iOS 精修主观题（翻译 & 写作）白底卡片、语义胶囊修饰与横线分割系统
+   ============================================================= */
+.ios-subj-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.ios-subj-white-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.ios-subj-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: #FFFFFF;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+}
+
+.ios-subj-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ios-subj-accent-bar {
+    width: 4px;
+    height: 15px;
+    border-radius: 99px;
+    background: #007AFF;
+    flex-shrink: 0;
+}
+.ios-subj-accent-bar.emerald { background: #10B981; }
+.ios-subj-accent-bar.amber { background: #F59E0B; }
+.ios-subj-accent-bar.indigo { background: #6366F1; }
+
+.ios-subj-header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1C1C1E;
+    letter-spacing: 0.01em;
+}
+
+.ios-subj-card-body {
+    padding: 16px 18px;
+    font-size: 15.2px;
+    line-height: 1.82;
+    color: #1C1C1E;
+    font-weight: 500;
+}
+
+.ios-subj-card-subbody {
+    padding: 13px 18px;
+    font-size: 13.8px;
+    line-height: 1.74;
+    color: #475569;
+    background: #F8FAFC;
+    border-top: 1px dashed rgba(15, 23, 42, 0.1);
+}
+
+.ios-subj-inline-tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0284C7;
+    background: #E0F2FE;
+    padding: 1px 7px;
+    border-radius: 5px;
+    margin-right: 6px;
+    vertical-align: baseline;
+}
+
+.ios-subj-essay-trans-divider {
+    padding: 14px 18px 16px 18px;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    background: #FCFDFE;
+}
+
+.ios-subj-sub-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.ios-subj-sub-badge {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #059669;
+    background: #ECFDF5;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.ios-subj-list-container,
+.ios-subj-vocab-container {
+    padding: 10px 0 12px 0;
+}
+
+.ios-subj-list-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 18px;
+    font-size: 14.2px;
+    line-height: 1.76;
+    color: #334155;
+    border-bottom: none;
+    text-indent: 0 !important;
+}
+
+.ios-subj-list-subrow {
+    padding: 3px 18px 3px 44px;
+}
+
+.ios-subj-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 6px;
+    background: rgba(245, 158, 11, 0.14);
+    color: #D97706;
+    font-size: 12px;
+    font-weight: 800;
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.ios-subj-vocab-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    padding: 7px 18px;
+    font-size: 14px;
+    line-height: 1.55;
+    border-bottom: none;
+}
+.ios-subj-vocab-en {
+    font-weight: 600;
+    color: #1E293B;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    flex: 1 1 auto;
+    min-width: 0;
+    word-break: break-word;
+}
+.ios-subj-vocab-en::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #6366F1;
+    flex-shrink: 0;
+    transform: translateY(-2px);
+}
+.ios-subj-vocab-zh {
+    color: #64748B;
+    text-align: right;
+    font-size: 13.5px;
+    flex: 0 1 46%;
+    word-break: break-word;
+}
+
+@media (max-width: 480px) {
+    .ios-subj-card-header {
+        padding: 11px 14px;
+    }
+    .ios-subj-card-body {
+        padding: 14px 14px;
+        font-size: 14.8px;
+    }
+    .ios-subj-card-subbody,
+    .ios-subj-essay-trans-divider {
+        padding: 12px 14px;
+    }
+    .ios-subj-list-row {
+        padding: 5px 14px;
+        font-size: 13.8px;
+    }
+    .ios-subj-list-subrow {
+        padding: 3px 14px 3px 32px;
+    }
+    .ios-subj-vocab-row {
+        padding: 6px 14px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .ios-subj-vocab-en {
+        font-size: 13.6px;
+    }
+    .ios-subj-vocab-zh {
+        font-size: 13px;
+        flex: 1 1 auto;
+    }
+    .writing-answer-sheet {
+        padding: 14px 14px 16px 14px;
+    }
+}
+
+.ios-subj-toggle-btn {
+    width: auto;
+    min-width: 216px;
+    height: 38px;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 13.5px;
+    background: #F0F7FF;
+    color: #007AFF;
+    border: 1px solid rgba(0, 122, 255, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.06);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+}
+.ios-subj-toggle-btn:hover {
+    background: #E0F0FF;
+    border-color: rgba(0, 122, 255, 0.32);
+}
+.ios-subj-toggle-btn:active {
+    transform: scale(0.98);
+}
+
+.ios-trans-ruled-zone {
+    padding: 2px 18px 14px 18px;
+    border-top: 1px dashed rgba(15, 23, 42, 0.1);
+    background: #FFFFFF;
+}
+.ios-trans-ruled-line {
+    height: 34px;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.15);
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #C7C7CC;
+    user-select: none;
+}

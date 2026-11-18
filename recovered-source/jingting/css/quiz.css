@@ -1,0 +1,885 @@
+/* === css/quiz.css === */
+/* ==========================================================================
+   Listening Quiz Arena System (Stage Card, Options, Explanation, Navigation)
+   ========================================================================== */
+
+#view-quiz {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding-bottom: calc(115px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px)));
+}
+
+.quiz-stage-card {
+    width: 100%;
+    min-height: auto;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+    box-sizing: border-box;
+    will-change: opacity, transform;
+}
+
+/* ✨ Apple iOS Card Glide Animations (切题前后平滑滑动，支持仅右栏/抽屉内题干选项滑动保持左文静止) */
+.quiz-stage-card.card-slide-forward,
+#written-stage-card.card-slide-forward,
+.written-stage-card.card-slide-forward,
+.written-split-quiz.card-slide-forward,
+#written-q-h2.card-slide-forward,
+#written-options-wrapper.card-slide-forward {
+    animation: iosCardSlideForward 0.18s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+.quiz-stage-card.card-slide-backward,
+#written-stage-card.card-slide-backward,
+.written-stage-card.card-slide-backward,
+.written-split-quiz.card-slide-backward,
+#written-q-h2.card-slide-backward,
+#written-options-wrapper.card-slide-backward {
+    animation: iosCardSlideBackward 0.18s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+@keyframes iosCardSlideForward {
+    0% {
+        opacity: 0.76;
+        transform: translate3d(12px, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes iosCardSlideBackward {
+    0% {
+        opacity: 0.76;
+        transform: translate3d(-12px, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.quiz-card-inner {
+    width: 100%;
+    padding: 8px 2px 24px 2px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    gap: 14px;
+}
+
+/* Portrait Split Container: display:contents ensures natural Question -> Options -> Explanation order */
+.quiz-split-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+}
+.quiz-split-left,
+.quiz-split-right {
+    display: contents;
+}
+
+#quiz-stage-card .quiz-card-top-bar {
+    order: 1;
+    margin-bottom: 14px;
+}
+#quiz-stage-card .sequence-badge {
+    display: none !important;
+}
+#quiz-stage-card .question-h2 {
+    order: 2;
+}
+#quiz-stage-card .question-zh-p {
+    order: 3;
+}
+#quiz-stage-card .options-wrapper {
+    order: 4;
+}
+#quiz-stage-card .explanation-card {
+    order: 5;
+}
+
+@media (min-width: 768px) {
+    .quiz-card-inner {
+        padding: 12px 6px 32px 6px;
+        gap: 16px;
+    }
+}
+
+.quiz-card-top-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.sequence-badge {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: var(--opt-border);
+    border-radius: 999px;
+    padding: 3px 4px 3px 12px;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    margin: 0;
+}
+.seq-lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink-sub);
+    letter-spacing: 0.04em;
+}
+.seq-val {
+    background: var(--accent-gold);
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 4px 11px;
+    border-radius: 999px;
+    letter-spacing: -0.01em;
+}
+
+.section-badge {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-sub);
+    border: var(--opt-border);
+    padding: 5px 14px;
+    border-radius: 999px;
+    letter-spacing: 0.01em;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    margin: 0;
+}
+
+/* Golden Ratio Question Stem & Bilingual Subtitle Pair */
+.question-h2 {
+    font-size: clamp(17.5px, 1.55vw, 20.5px);
+    font-weight: 700;
+    line-height: 1.55;
+    color: var(--ink-primary);
+    margin: 0;
+    padding: 0;
+    letter-spacing: -0.012em;
+    word-spacing: normal;
+    width: 100%;
+}
+
+.question-zh-p {
+    font-size: clamp(14.5px, 1.25vw, 16.5px);
+    font-weight: 500;
+    color: var(--accent-gold);
+    line-height: 1.62;
+    margin: 8px 0 0 0;
+    padding: 0;
+    letter-spacing: 0.005em;
+    display: none;
+}
+.question-zh-p.show {
+    display: block;
+}
+
+.options-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    margin: 18px 0 0 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.opt-btn {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 18px;
+    border-radius: 16px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 15.5px;
+    font-weight: 500;
+    line-height: 1.62;
+    letter-spacing: -0.005em;
+    border: var(--opt-border);
+    box-shadow: var(--opt-resting-shadow);
+    cursor: pointer;
+    transition: transform 0.14s var(--ios-press), background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    background-color: #ffffff;
+    color: var(--ink-primary);
+    text-align: left;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+@media (max-width: 600px) {
+    .opt-btn {
+        padding: 13px 15px;
+        border-radius: 14px;
+    }
+}
+@media (hover: hover) and (pointer: fine) {
+    .opt-btn:hover:not(.disabled) {
+        transform: translateY(-1.5px);
+        box-shadow: 0 5px 16px rgba(0, 122, 255, 0.075);
+        border-color: rgba(0, 122, 255, 0.45);
+        background-color: var(--accent-gold-light);
+    }
+}
+.opt-btn:active:not(.disabled) {
+    transform: scale(0.986) !important;
+    background-color: rgba(15, 23, 42, 0.02);
+}
+
+.opt-key {
+    font-weight: 700;
+    color: var(--accent-gold);
+    margin-right: 10px;
+    font-size: 15.5px;
+    line-height: 1.62;
+    flex-shrink: 0;
+}
+
+.opt-text-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.opt-en-text {
+    font-size: 15.5px;
+    font-weight: 500;
+    line-height: 1.62;
+    color: var(--ink-primary);
+    display: inline;
+    width: auto;
+    background-image: linear-gradient(90deg, #94a3b8, #94a3b8);
+    background-repeat: no-repeat;
+    background-position: 100% 55%;
+    background-size: 0% 1.6px;
+    transition: background-size 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease;
+}
+
+.opt-zh-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #52525b !important;
+    line-height: 1.65;
+    letter-spacing: 0.01em;
+    display: none;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none !important;
+    width: 100%;
+}
+.opt-zh-text.show {
+    display: block;
+}
+.opt-zh-text.show::before {
+    content: '';
+    display: block;
+    width: 100%;
+    border-top: 1px dashed rgba(0, 0, 0, 0.08);
+    margin: 10px 0 9px 0;
+}
+
+/* Option Feedback States - Refined Clean iOS Human Interface Guidelines */
+.opt-btn:active {
+    transform: scale(0.986) !important;
+}
+
+.opt-btn.correct-state {
+    background-color: #f2faf5 !important;
+    border-color: rgba(22, 163, 74, 0.32) !important;
+    color: #166534 !important;
+    animation: duo-pop-bounce 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: none !important;
+}
+.opt-btn.correct-state .opt-key { color: #15803d; font-weight: 700; }
+.opt-btn.correct-state .opt-text,
+.opt-btn.correct-state .opt-en-text { color: #166534 !important; font-weight: 600; }
+.opt-btn.correct-state .opt-zh-text { color: #475569 !important; }
+
+.opt-btn.wrong-state {
+    background-color: #fdf3f3 !important;
+    border-color: rgba(220, 38, 38, 0.28) !important;
+    color: #991b1b !important;
+    animation: duo-jelly-shake 0.20s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: none !important;
+}
+.opt-btn.wrong-state .opt-key { color: #b91c1c; font-weight: 700; }
+.opt-btn.wrong-state .opt-text,
+.opt-btn.wrong-state .opt-en-text { color: #991b1b !important; font-weight: 600; }
+.opt-btn.wrong-state .opt-zh-text { color: #475569 !important; }
+
+.opt-btn.disabled {
+    cursor: pointer !important;
+}
+
+/* Exam Simulation Selected Option Pill */
+.opt-btn.exam-selected-state {
+    background: rgba(0, 122, 255, 0.10) !important;
+    border-color: #007aff !important;
+    color: #007aff !important;
+    font-weight: 600;
+}
+.opt-btn.exam-selected-state .opt-key {
+    color: #007aff;
+    font-weight: 700;
+}
+.opt-btn.exam-selected-state .opt-text,
+.opt-btn.exam-selected-state .opt-en-text {
+    color: #007aff !important;
+    font-weight: 600;
+}
+.opt-btn.exam-selected-state .opt-zh-text {
+    color: #636366 !important;
+}
+
+/* ==========================================================================
+   Silky-Smooth Option Elimination & One-Tap Restoration System
+   ========================================================================== */
+.opt-btn,
+.word-bank-opt-btn {
+    position: relative;
+}
+
+.opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state),
+.word-bank-opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) {
+    background-color: rgba(248, 250, 252, 0.72) !important;
+    border-color: rgba(148, 163, 184, 0.36) !important;
+    border-style: dashed !important;
+    box-shadow: none !important;
+    transform: scale(0.992);
+}
+
+.opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-key,
+.word-bank-opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .word-bank-opt-key {
+    color: #94a3b8 !important;
+    opacity: 0.65;
+    text-decoration: line-through;
+}
+
+.opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-en-text,
+.word-bank-opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .word-bank-opt-text {
+    color: #94a3b8 !important;
+    background-position: 0% 54%;
+    background-size: 100% 1.6px;
+}
+
+.opt-btn.opt-eliminated:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-zh-text {
+    color: #94a3b8 !important;
+    opacity: 0.65;
+}
+
+.word-bank-opt-btn .word-bank-opt-text {
+    background-image: linear-gradient(90deg, #94a3b8, #94a3b8);
+    background-repeat: no-repeat;
+    background-position: 100% 54%;
+    background-size: 0% 1.6px;
+    transition: background-size 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease;
+}
+
+/* 15选10 / 七选五 已在其他题号选过的选项自动弱化标记 */
+.opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state),
+.word-bank-opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) {
+    background-color: rgba(248, 250, 252, 0.72) !important;
+    border-color: rgba(148, 163, 184, 0.32) !important;
+    border-style: dashed !important;
+    box-shadow: none !important;
+}
+
+.opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-key,
+.word-bank-opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .word-bank-opt-key {
+    color: #94a3b8 !important;
+    opacity: 0.65;
+}
+
+.opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-en-text,
+.word-bank-opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .word-bank-opt-text {
+    color: #94a3b8 !important;
+    background-position: 0% 54%;
+    background-size: 100% 1.5px;
+}
+
+.opt-btn.opt-used-elsewhere:not(.correct-state):not(.wrong-state):not(.exam-selected-state) .opt-zh-text {
+    color: #94a3b8 !important;
+    opacity: 0.65;
+}
+
+.opt-used-badge {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    background: rgba(148, 163, 184, 0.16);
+    padding: 1.5px 6px;
+    border-radius: 999px;
+    line-height: 1.3;
+    user-select: none;
+}
+
+/* 选词填空卡片右上角悬浮角标：零水平挤压、不抢占单词宽度 */
+.word-bank-opt-btn .opt-used-badge {
+    position: absolute;
+    top: -7px;
+    right: 7px;
+    margin-left: 0;
+    z-index: 2;
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    background: #f1f5f9;
+    border: 1px solid rgba(148, 163, 184, 0.42);
+    padding: 0.5px 5.5px;
+    border-radius: 999px;
+    line-height: 1.35;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Question Explanation Area - Editorial Streamlined (Plan A 杂志极简呼吸流)
+   ========================================================================== */
+.explanation-card {
+    margin: 20px 0 0 0;
+    padding: 22px 0 0 0;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: none !important;
+    width: 100%;
+    box-sizing: border-box;
+    display: none;
+    animation: fadeInExp 0.25s ease-out;
+}
+.explanation-card.show {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.explanation-card > *:empty {
+    display: none !important;
+}
+@keyframes fadeInExp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.exp-title-lbl {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #111113;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.01em;
+}
+.exp-body-p {
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #2c2c2e;
+    margin: 0;
+}
+
+/* Evidence Container - Apple Classic Minimal Quote Line */
+.exp-evidence-box {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-left: 2.5px solid #007aff !important;
+    border-radius: 0 !important;
+    padding: 4px 0 4px 16px !important;
+    margin: 4px 0 0 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: none !important;
+    transition: opacity 0.2s ease;
+}
+.exp-evidence-box:hover {
+    opacity: 0.9;
+}
+.exp-evidence-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    color: #007aff;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.exp-evidence-en {
+    font-size: 14.5px;
+    color: #111113;
+    font-weight: 600;
+    line-height: 1.62;
+    margin: 0;
+}
+.exp-evidence-zh {
+    font-size: 13.5px;
+    color: #52525b;
+    line-height: 1.65;
+    margin: 2px 0 0 0;
+}
+
+/* Synonym Replacement - Clean Left-Aligned Quote Block (No Capsules) */
+.exp-synonym-box {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-left: 2.5px solid #16a34a !important;
+    border-radius: 0 !important;
+    padding: 4px 0 4px 16px !important;
+    margin: 4px 0 0 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: none !important;
+}
+.exp-synonym-lbl {
+    font-size: 12px;
+    font-weight: 700;
+    color: #15803d;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.synonym-pair-item, .synonym-pair-row {
+    font-size: 13.8px;
+    color: #1c1c1e;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    line-height: 1.55;
+    padding: 2px 0;
+}
+.synonym-pair-item + .synonym-pair-item,
+.synonym-pair-row + .synonym-pair-row {
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(15, 23, 42, 0.08);
+}
+.syn-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1.55;
+}
+.syn-tag {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    line-height: 1.4;
+}
+.syn-tag-q {
+    color: #475569;
+    background: #f1f5f9;
+}
+.syn-tag-orig {
+    color: #166534;
+    background: rgba(22, 163, 74, 0.10);
+}
+.syn-text-q {
+    font-size: 13.8px;
+    font-weight: 600;
+    color: #334155;
+    word-break: break-word;
+}
+.syn-text-orig {
+    font-size: 13.8px;
+    font-weight: 600;
+    color: #166534;
+    word-break: break-word;
+}
+.exp-analysis-seg {
+    margin-bottom: 6px;
+    line-height: 1.76;
+}
+.exp-analysis-seg:last-child {
+    margin-bottom: 0;
+}
+.exp-opt-tag {
+    font-weight: 700;
+    color: #111827;
+    margin-right: 2px;
+}
+
+/* Mobile Floating Pill to Return from Passage to Question */
+.back-to-question-pill {
+    position: fixed;
+    bottom: calc(74px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px)));
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: rgba(28, 28, 30, 0.90);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+    z-index: 950;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    white-space: nowrap;
+}
+.back-to-question-pill.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   iOS 26 Liquid Glass Floating Capsule Dock (1:1 单词Toy 液态玻璃规范)
+   ========================================================================== */
+
+.bottom-nav-bar {
+    --lg-ease: cubic-bezier(0.32, 0.72, 0, 1);
+    --lg-spring: cubic-bezier(0.3, 1.25, 0.45, 1);
+    --hx: 50%;
+    --veil: 0.30;
+    --sh: 0.24;
+    position: fixed;
+    bottom: calc(16px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px)));
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: calc(100% - 24px);
+    height: 48px;
+    padding: 4px;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 999px;
+    box-shadow: none !important;
+    z-index: 80;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    transition: transform 0.45s var(--lg-spring), opacity 0.3s var(--lg-ease);
+}
+
+.bottom-nav-bar .lg-glass {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+    -webkit-backdrop-filter: blur(12px) saturate(150%) brightness(1.04);
+    backdrop-filter: blur(12px) saturate(150%) brightness(1.04);
+    background: rgba(255, 255, 255, var(--veil));
+    box-shadow:
+        inset 0 0.75px 0 rgba(255, 255, 255, 0.95),
+        inset 0 -0.5px 0 rgba(255, 255, 255, 0.28),
+        0 0 0 0.5px rgba(15, 23, 42, 0.07),
+        0 1px 1.5px rgba(15, 23, 42, 0.05),
+        0 12px 30px -12px rgba(15, 23, 42, var(--sh));
+    transition: background 0.45s var(--lg-ease), box-shadow 0.45s var(--lg-ease);
+}
+
+.bottom-nav-bar .lg-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+        70% 120% at var(--hx) -55%,
+        rgba(255, 255, 255, 0.55),
+        rgba(255, 255, 255, 0) 60%
+    );
+    transition: opacity 0.45s;
+}
+
+.bottom-nav-bar .lg-glass::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 0;
+    height: 1px;
+    border-radius: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95) var(--hx), transparent);
+    opacity: 0.9;
+}
+
+/* 自适应背景感知：下方滚动经过文字/密集卡片时适度增强遮罩与阴影 */
+.bottom-nav-bar.lg-busy {
+    --veil: 0.46;
+    --sh: 0.34;
+}
+
+.bottom-nav-bar.lg-white:not(.lg-busy) {
+    --sh: 0.18;
+}
+
+.nav-btn-group {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: auto;
+}
+
+/* 一体化液态玻璃舱内按钮：两侧无框融入玻璃底座，中央胶囊为折射内透镜 */
+.btn-nav-action {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: none;
+    font-size: 13px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(15, 23, 42, 0.82);
+    box-shadow: none;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.75))
+            drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
+    transition: transform 0.16s var(--ios-press), color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 中央悬浮液态玻璃内胶囊 (选句清单 / 答题卡) & 桌面端按钮悬停态 */
+.btn-nav-action.lg-pill-btn {
+    color: #0b1220;
+    -webkit-backdrop-filter: brightness(1.12) saturate(115%);
+    backdrop-filter: brightness(1.12) saturate(115%);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.34));
+    box-shadow:
+        inset 0 0.75px 0 rgba(255, 255, 255, 0.98),
+        inset 0 -0.5px 0 rgba(255, 255, 255, 0.55),
+        inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
+        0 0 0 0.5px rgba(15, 23, 42, 0.06),
+        0 3px 10px -4px rgba(15, 23, 42, 0.16);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-nav-action:hover:not(:disabled) {
+        color: #0b1220;
+        -webkit-backdrop-filter: brightness(1.12) saturate(115%);
+        backdrop-filter: brightness(1.12) saturate(115%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.34));
+        box-shadow:
+            inset 0 0.75px 0 rgba(255, 255, 255, 0.98),
+            inset 0 -0.5px 0 rgba(255, 255, 255, 0.55),
+            inset 0 0 0 0.5px rgba(255, 255, 255, 0.5),
+            0 0 0 0.5px rgba(15, 23, 42, 0.06),
+            0 3px 10px -4px rgba(15, 23, 42, 0.16);
+    }
+    .btn-nav-action.lg-pill-btn:hover:not(:disabled) {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.44));
+        transform: translateY(-0.5px);
+    }
+}
+
+.btn-nav-action:active:not(:disabled) {
+    transform: scale(0.95);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.20));
+    box-shadow:
+        inset 0 1px 0 #ffffff,
+        inset 0 0 0 0.75px rgba(255, 255, 255, 0.75),
+        0 0 0 0.5px rgba(15, 23, 42, 0.06),
+        0 8px 20px -8px rgba(15, 23, 42, 0.24);
+}
+
+/* Progress counter pill inside drawer button */
+.btn-nav-action span {
+    background: rgba(15, 23, 42, 0.06);
+    border: 0.5px solid rgba(255, 255, 255, 0.65);
+    color: #0b1220;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+/* Disabled State */
+.btn-nav-action:disabled {
+    opacity: 0.32;
+    cursor: not-allowed;
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.btn-redo-single {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--ink-sub);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.btn-redo-single:hover {
+    background: #1c1c1e;
+    color: #ffffff;
+    border-color: #1c1c1e;
+}
+
+/* ==========================================================================
+   🔔 Option Micro-Animations
+   ========================================================================== */
+
+@keyframes duo-pop-bounce {
+    0% { transform: scale(0.96); }
+    45% { transform: scale(1.035); }
+    100% { transform: scale(1); }
+}
+
+@keyframes duo-jelly-shake {
+    0% { transform: translateX(0); }
+    30% { transform: translateX(-2.5px); }
+    70% { transform: translateX(1.5px); }
+    100% { transform: translateX(0); }
+}

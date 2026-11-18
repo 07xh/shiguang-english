@@ -1,0 +1,1418 @@
+/* === css/dictation.css === */
+/* ==========================================================================
+   Dictation Mastery Engine - Pure Typography & Light Blue Highlight Design
+   ========================================================================== */
+
+/* 1. Home Card Color Variant - Soft Elegant Lavender Violet */
+.warm-card.card-sky-blue,
+.warm-card.card-lavender {
+    background: linear-gradient(135deg, #d5c7f8 0%, #bfa9f2 100%);
+    color: #1a1a1e;
+    box-shadow: 0 14px 32px rgba(191, 169, 242, 0.35);
+}
+
+/* 2. Container Layout */
+#view-dictation-arena {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    flex: 1 1 auto;
+    display: none;
+    flex-direction: column;
+    padding: 6px 12px calc(92px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 12px;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+#view-dictation-arena.active {
+    display: flex !important;
+}
+
+#view-dictation-lobby {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 8px 0 calc(100px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    #view-dictation-arena {
+        padding: 4px 8px calc(88px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 8px;
+        min-height: 0;
+    }
+    #view-dictation-lobby {
+        padding: 4px 4px calc(90px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 4px;
+    }
+}
+
+/* 3. Pure Zen Canvas Stage (Spacious, Vertically Centered Stage) */
+.dict-zen-canvas {
+    width: 100%;
+    flex: 1 1 auto;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    box-sizing: border-box;
+    padding: 6px 8px 10px 8px;
+    gap: 12px;
+    min-height: 0;
+}
+
+@media (max-width: 600px) {
+    .dict-zen-canvas {
+        padding: 2px 4px 8px 4px;
+        gap: 10px;
+        min-height: 0;
+    }
+}
+
+/* 4. Top Action Header */
+.dict-canvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.dict-canvas-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dict-canvas-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-canvas-drawer {
+    border: var(--card-border);
+    background: #ffffff;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #111113;
+    cursor: pointer;
+    transition: transform 0.14s var(--ios-press), box-shadow 0.2s ease, border-color 0.2s ease;
+    user-select: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-canvas-drawer:hover {
+        background: #ffffff;
+        transform: translateY(-1.5px);
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    }
+}
+.btn-canvas-drawer:active {
+    transform: scale(0.96);
+}
+
+/* 5. Main Hero Typography Stage */
+.dict-hero-stage {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 14px 18px 24px 18px;
+    box-sizing: border-box;
+    will-change: opacity, transform;
+}
+
+/* ✨ Apple-like Smooth Sentence Slide & Fade Transitions (Zero-Flash High Presence) */
+.sentence-anim-forward {
+    animation: sentenceSlideForward 0.20s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.sentence-anim-backward {
+    animation: sentenceSlideBackward 0.20s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes sentenceSlideForward {
+    0% {
+        opacity: 0.74;
+        transform: translate3d(12px, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes sentenceSlideBackward {
+    0% {
+        opacity: 0.74;
+        transform: translate3d(-12px, 0, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@media (max-width: 600px) {
+    .dict-hero-stage {
+        padding: 12px 6px 18px 6px;
+        margin: auto 0;
+    }
+}
+
+.dict-hero-sub {
+    font-size: 14px;
+    font-weight: 600;
+    color: #8e8e93;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+}
+
+.dict-hero-sentence {
+    font-size: 30px;
+    line-height: 1.7;
+    font-weight: 500;
+    color: #111113;
+    letter-spacing: -0.01em;
+    margin: 8px 0 20px 0;
+    word-break: normal;
+    overflow-wrap: break-word;
+    overflow: visible;
+}
+
+@media (max-width: 600px) {
+    .dict-hero-sentence {
+        font-size: 26px;
+        line-height: 1.68;
+        margin: 6px 0 16px 0;
+    }
+}
+
+/* 🌟 Authentic Squircle Rounded Cloze Capsule (matching Image 1) */
+.cloze-input-wrap,
+.cloze-word-done {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    height: 38px;
+    min-height: 38px;
+    max-height: 38px;
+    line-height: 38px;
+    margin: 0 4px;
+    padding: 0 12px;
+    border-radius: 13px !important;
+    box-sizing: border-box;
+    font-size: inherit;
+    font-weight: 500;
+    white-space: nowrap !important;
+    transition: width 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.cloze-word-done {
+    background: rgba(52, 199, 89, 0.16) !important;
+    border: 2px solid transparent !important;
+    color: #15803d !important;
+    font-weight: 500 !important;
+    width: auto !important;
+    min-width: fit-content;
+    white-space: nowrap !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.cloze-input-wrap {
+    background: #F5F9FF !important;
+    border: 2px solid transparent !important;
+    box-shadow: none !important;
+    white-space: nowrap !important;
+    padding: 0 2px !important;
+    cursor: text;
+}
+
+.cloze-input-wrap.has-focus {
+    background: #FFFFFF !important;
+    border: 2px solid #94A3B8 !important;
+    box-shadow: 0 2px 8px rgba(148, 163, 184, 0.18) !important;
+}
+
+/* 🌟 Glued Cloze Atom: binds blank capsule and trailing punctuation so punctuation NEVER orphans */
+.cloze-atom {
+    display: inline-flex;
+    align-items: baseline;
+    vertical-align: baseline;
+    white-space: nowrap !important;
+    line-height: inherit;
+}
+
+.cloze-input-wrap.cloze-has-punct,
+.cloze-word-done.cloze-has-punct {
+    margin-right: 0 !important;
+}
+
+.cloze-word-done.cloze-has-punct {
+    padding-right: 6px !important;
+}
+
+.cloze-punct {
+    display: inline-block;
+    font-size: inherit;
+    color: #111113;
+    font-weight: inherit;
+    line-height: inherit;
+    margin-left: 0 !important;
+    margin-right: 2px;
+    white-space: nowrap !important;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    vertical-align: baseline;
+}
+
+.cloze-input::selection {
+    background-color: #CBD5E1 !important;
+    color: #0F172A !important;
+}
+
+.cloze-input::-moz-selection {
+    background-color: #CBD5E1 !important;
+    color: #0F172A !important;
+}
+
+.cloze-input-wrap.correct-flash {
+    background: #ecfdf5 !important;
+    border: none !important;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+}
+
+.cloze-input-wrap.correct-flash .cloze-input,
+.cloze-input-wrap.correct-flash .skeleton-prefix,
+.cloze-input-wrap.correct-flash .skeleton-suffix {
+    color: #15803d !important;
+}
+
+.cloze-input {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px !important;
+    max-height: 34px !important;
+    line-height: 34px !important;
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+    border: none !important;
+    background: transparent;
+    color: #111113;
+    font-family: inherit;
+    font-size: inherit !important;
+    font-weight: 500;
+    text-align: center;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    overflow: visible;
+    cursor: text;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+}
+
+.cloze-input,
+.cloze-input:focus,
+.cloze-input:invalid,
+.cloze-input:-moz-ui-invalid {
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+.skeleton-prefix,
+.skeleton-suffix {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    line-height: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    color: #111113;
+    opacity: 0.9;
+    user-select: none;
+    pointer-events: none;
+    padding: 0 1px;
+    margin: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .cloze-input-wrap,
+    .cloze-word-done {
+        height: 36px;
+        min-height: 36px;
+        max-height: 36px;
+        line-height: 36px;
+        padding: 0 10px;
+        margin: 0 3px;
+        min-width: 52px;
+        border-radius: 12px !important;
+        white-space: nowrap !important;
+    }
+
+    .cloze-input-wrap {
+        border: 2px solid transparent !important;
+        padding: 0 2px !important;
+    }
+
+    .cloze-input-wrap.has-focus {
+        background: #FFFFFF !important;
+        border: 2px solid #94A3B8 !important;
+        box-shadow: 0 2px 8px rgba(148, 163, 184, 0.18) !important;
+    }
+
+    .cloze-input {
+        font-size: inherit !important;
+        font-weight: 500 !important;
+        height: 32px !important;
+        max-height: 32px !important;
+        line-height: 32px !important;
+        letter-spacing: normal !important;
+    }
+}
+
+.cloze-input::placeholder {
+    color: rgba(0, 122, 255, 0.4);
+    font-weight: 500;
+    letter-spacing: normal;
+    opacity: 1;
+    font-size: inherit;
+}
+
+.cloze-input.ghost-hint-mode::placeholder,
+.cloze-input.ghost-answer-mode::placeholder {
+    color: rgba(100, 116, 139, 0.45);
+    font-weight: 500;
+    font-size: inherit;
+}
+
+.hint-ghost-start,
+.hint-ghost-end {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(100, 116, 139, 0.45);
+    font-weight: 500;
+    font-size: inherit;
+    line-height: inherit;
+    pointer-events: none;
+    user-select: none;
+    z-index: 2;
+    transition: opacity 0.12s ease;
+}
+
+.hint-ghost-start {
+    left: 4px;
+}
+
+.hint-ghost-end {
+    right: 4px;
+}
+
+@media (max-width: 600px) {
+    .hint-ghost-start {
+        left: 3px;
+    }
+    .hint-ghost-end {
+        right: 3px;
+    }
+}
+
+.cloze-input-wrap.has-value .hint-ghost-start,
+.cloze-input-wrap.has-value .hint-ghost-end {
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.cloze-input.correct-fused {
+    border: none !important;
+    background: transparent !important;
+    color: #111113 !important;
+    font-weight: 500 !important;
+    cursor: default;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.cloze-word-done {
+    background: rgba(52, 199, 89, 0.16) !important;
+    color: #15803d !important;
+    text-align: center;
+}
+
+.cloze-word-done span,
+.cloze-word-done .dict-word {
+    color: #15803d !important;
+    font-weight: 500 !important;
+    font-size: inherit !important;
+    line-height: normal !important;
+    height: 100%;
+    width: auto !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap !important;
+}
+
+/* 6. Soft Subtitle Translation */
+.dict-hero-translation {
+    display: none;
+    font-size: 16px;
+    line-height: 1.65;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+.dict-hero-translation.show {
+    display: block;
+    animation: fadeInSlide 0.2s ease;
+}
+
+/* 7. Success Celebration Banner */
+.dict-success-banner {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    background: #e8f7ec;
+    border: 1px solid rgba(39, 138, 63, 0.2);
+    border-radius: 16px;
+    padding: 12px 20px;
+    margin-top: 6px;
+    animation: bannerPop 0.25s var(--ios-spring);
+}
+
+.dict-success-banner.show {
+    display: flex;
+}
+
+.dict-success-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #278a3f;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dict-success-timer {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #278a3f;
+    opacity: 0.85;
+}
+
+/* 8. Organic Bottom Control Row (Strict Center Alignment) */
+.dict-floating-island {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 32px;
+}
+
+@media (max-width: 600px) {
+    .dict-floating-island {
+        margin-top: 24px;
+    }
+}
+
+/* 🌟 Seamless Non-Redundant Island State When Virtual Keyboard is Open */
+.dict-custom-kb-open .dict-floating-island,
+.has-custom-kb .dict-floating-island {
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+    justify-content: center !important;
+}
+
+.dict-custom-kb-open .dict-floating-island .island-left-group,
+.dict-custom-kb-open .dict-floating-island .island-right-group,
+.has-custom-kb .dict-floating-island .island-left-group,
+.has-custom-kb .dict-floating-island .island-right-group {
+    display: none !important;
+}
+
+.dict-custom-kb-open .dict-floating-island .btn-island-play,
+.has-custom-kb .dict-floating-island .btn-island-play {
+    transform: scale(0.92);
+}
+
+/* 🌟 Fluid Horizontal Swipe Slide Transition */
+.dict-hero-sentence.swipe-slide-left {
+    animation: dictSwipeLeft 0.18s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+.dict-hero-sentence.swipe-slide-right {
+    animation: dictSwipeRight 0.18s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+@keyframes dictSwipeLeft {
+    0% { opacity: 0.72; transform: translate3d(18px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes dictSwipeRight {
+    0% { opacity: 0.72; transform: translate3d(-18px, 0, 0); }
+    100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* 🌟 Auto-Advance Next Sentence Pulse */
+.btn-nav-action.auto-advancing,
+.dict-key-next.auto-advancing {
+    position: relative;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+    animation: pulseNextAuto 1.2s ease-in-out infinite alternate !important;
+}
+
+@keyframes pulseNextAuto {
+    0% { transform: scale(1); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
+    100% { transform: scale(1.03); box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.35); }
+}
+
+.island-left-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    flex: 1;
+}
+
+.island-right-group {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex: 1;
+}
+
+/* Standalone White Tactile Pill Buttons (Matching Return Button UX) */
+.btn-island-pill {
+    height: 38px;
+    padding: 0 15px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #111113;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.btn-island-pill:hover {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.btn-island-pill:active {
+    transform: scale(0.95);
+    background: #f5f5f7;
+}
+
+.btn-island-pill.active-toggle {
+    background: #ffffff !important;
+    color: #111113 !important;
+    font-weight: 700;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+}
+
+.mode-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 0 10px;
+    height: 32px;
+}
+
+.mode-pill.mode-basic {
+    color: #2e7d32;
+    background: #f0fdf4;
+    border-color: rgba(46, 125, 50, 0.2);
+}
+
+.mode-pill.mode-advanced {
+    color: #c2410c;
+    background: #fff7ed;
+    border-color: rgba(194, 65, 12, 0.25);
+}
+
+/* Standalone Black Center Play Pill */
+.btn-island-play {
+    height: 38px;
+    padding: 0 20px 0 16px;
+    border-radius: 999px;
+    background: #111113;
+    color: #ffffff;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.btn-island-play:hover {
+    background: #000000;
+    transform: translateY(-1.5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.btn-island-play:active {
+    transform: scale(0.95);
+}
+
+.island-wave-bars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 12px;
+    margin-left: 2px;
+}
+
+.island-wave-bars span {
+    width: 2px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 1px;
+    transition: height 0.15s ease;
+}
+
+.island-wave-bars.playing span {
+    background: #ffffff;
+    animation: islandWave 0.45s ease-in-out infinite alternate;
+}
+
+.island-wave-bars.playing span:nth-child(1) { animation-delay: 0.05s; }
+.island-wave-bars.playing span:nth-child(2) { animation-delay: 0.15s; }
+.island-wave-bars.playing span:nth-child(3) { animation-delay: 0.25s; }
+
+@keyframes islandWave {
+    0% { height: 3px; }
+    100% { height: 12px; }
+}
+
+/* ⏳ Island Play Button Buffering / Network Loading State */
+.btn-island-play.buffering {
+    background: #1c1c1e !important;
+    opacity: 0.94;
+    cursor: wait;
+}
+
+.btn-island-play.buffering #zen-play-icon {
+    display: inline-block;
+    animation: zenSpinPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes zenSpinPulse {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+    50% { transform: scale(1.15) rotate(180deg); opacity: 1; }
+    100% { transform: scale(1) rotate(360deg); opacity: 0.7; }
+}
+
+.island-wave-bars.buffering span {
+    animation: islandWaveBuffering 0.9s ease-in-out infinite alternate;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.island-wave-bars.buffering span:nth-child(1) { animation-delay: 0s; }
+.island-wave-bars.buffering span:nth-child(2) { animation-delay: 0.18s; }
+.island-wave-bars.buffering span:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes islandWaveBuffering {
+    0% { height: 3px; opacity: 0.3; }
+    100% { height: 7px; opacity: 0.85; }
+}
+
+
+.btn-island-circle-nav {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111113;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.btn-island-circle-nav:hover:not(:disabled) {
+    background: #ffffff;
+    transform: scale(1.06);
+}
+
+.btn-island-circle-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Vibrant Blue Next Button */
+.btn-island-next {
+    height: 36px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: #007aff;
+    color: #ffffff;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.28);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.btn-island-next:hover {
+    background: #0066d6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 122, 255, 0.35);
+}
+
+.btn-island-next:active {
+    transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Daily Listening Lobby & Audio Settings Action Sheet
+   ========================================================================== */
+
+#view-daily-lobby {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 8px 0 calc(100px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 0;
+    box-sizing: border-box;
+}
+
+.daily-lobby-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.daily-lobby-accent-toggle {
+    display: flex;
+    background: #EAE7DE;
+    padding: 3px;
+    border-radius: 14px;
+    gap: 3px;
+}
+
+.daily-accent-pill-btn {
+    padding: 6px 14px;
+    border-radius: 11px;
+    border: none;
+    background: transparent;
+    color: #64748B;
+    font-size: 13px;
+    font-weight: 750;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.daily-accent-pill-btn.active {
+    background: #FFFFFF;
+    color: #0F172A;
+    font-weight: 850;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Top Header Audio Settings Pill (White Background, Identical Capsule Height) */
+.daily-audio-config-btn {
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #111113 !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.daily-audio-config-btn.is-hidden {
+    display: none !important;
+}
+
+.daily-audio-config-btn:hover {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.daily-audio-config-btn:active {
+    transform: scale(0.95);
+    background: #f5f5f7 !important;
+}
+
+/* 🎙️ Dictation Audio Settings Modal / Action Sheet */
+.dict-settings-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeInModal 0.22s ease-out;
+}
+
+.dict-settings-sheet {
+    width: 100%;
+    max-width: 480px;
+    max-height: calc(100vh - max(var(--toy-safe-top, 0px), env(safe-area-inset-top, 0px), 24px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    background: #FFFFFF;
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px calc(28px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 20px;
+    box-sizing: border-box;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dict-settings-sheet > * {
+    flex-shrink: 0;
+}
+
+@keyframes slideUpSheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dict-settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dict-settings-title {
+    font-size: 16.5px;
+    font-weight: 850;
+    color: #0F172A;
+}
+
+.dict-settings-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #F1F5F9;
+    border: none;
+    color: #64748B;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dict-settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dict-settings-section-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.dict-settings-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.dict-settings-options.col {
+    grid-template-columns: 1fr;
+}
+
+.dict-opt-pill {
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1.5px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 750;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dict-opt-pill.row-pill {
+    justify-content: space-between;
+    text-align: left;
+    padding: 12px 16px;
+}
+
+.dict-opt-pill .opt-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dict-opt-pill .opt-icon {
+    font-size: 20px;
+}
+
+.dict-opt-pill .opt-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dict-opt-pill .opt-main {
+    font-size: 14px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.dict-opt-pill .opt-sub {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748B;
+}
+
+.dict-opt-pill .opt-check {
+    opacity: 0;
+    font-size: 15px;
+    font-weight: 900;
+    color: #007AFF;
+    transition: opacity 0.18s ease;
+}
+
+.dict-opt-pill.active {
+    background: #EFF6FF;
+    border-color: #007AFF;
+    color: #007AFF;
+}
+
+.dict-opt-pill.active .opt-check {
+    opacity: 1;
+}
+
+.dict-opt-pill.active .opt-main {
+    color: #007AFF;
+}
+
+/* 1.5s Pause Breathing Toast in Stage */
+.dict-pause-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: rgba(15, 23, 42, 0.85);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 750;
+    border-radius: 999px;
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: fadeInModal 0.2s ease;
+    z-index: 100;
+}
+
+/* ==========================================================================
+   In-App 26-Key QWERTY Virtual Keyboard (Tactile, Zero-Jitter, Mobile Pure Eng)
+   ========================================================================== */
+
+#view-dictation-arena.has-custom-kb {
+    padding-bottom: calc(275px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) !important;
+}
+
+@media (max-width: 600px) {
+    #view-dictation-arena.has-custom-kb {
+        padding-bottom: calc(265px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) !important;
+    }
+}
+
+body.dict-custom-kb-open .bottom-nav-bar,
+#view-dictation-arena.has-custom-kb ~ .bottom-nav-bar {
+    display: none !important;
+}
+
+.bottom-nav-bar {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+}
+
+.dict-virtual-keyboard {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    background: rgba(242, 242, 247, 0.95);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.09), 0 -1px 4px rgba(0, 0, 0, 0.04);
+    z-index: 600;
+    padding: 7px 6px calc(7px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 6px;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dict-virtual-keyboard.is-collapsed {
+    transform: translateY(105%);
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* Toolbar: Clean Quick Actions Bar (💡提示 | 📖答案 | 📋选句 | 收起˅) */
+.dict-kb-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 6px 7px 6px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    gap: 7px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dict-kb-tool-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 33px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 999px;
+    padding: 0 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    gap: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: all 0.12s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.dict-kb-tool-btn:active {
+    background: #e2e8f0;
+    transform: scale(0.96);
+}
+
+.dict-kb-tool-btn.is-active,
+.dict-kb-hint-btn.is-active {
+    background: #fef3c7 !important;
+    border-color: #fde68a !important;
+    color: #b45309 !important;
+    font-weight: 700 !important;
+}
+
+.dict-kb-answer-btn.is-active {
+    background: #eff6ff !important;
+    border-color: #bfdbfe !important;
+    color: #1d4ed8 !important;
+    font-weight: 700 !important;
+}
+
+.dict-kb-drawer-btn {
+    background: rgba(0, 122, 255, 0.06);
+    border-color: rgba(0, 122, 255, 0.16);
+    color: #007aff;
+    font-weight: 650;
+}
+
+.dict-kb-collapse-btn {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.06);
+    color: #64748b;
+}
+
+.dict-kb-tool-icon {
+    font-size: 13px;
+    line-height: 1;
+}
+
+.dict-kb-tool-text {
+    font-size: 12px;
+}
+
+/* Key Grid */
+.dict-kb-keys-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+}
+
+.dict-kb-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 5px;
+}
+
+.dict-kb-row-2 {
+    padding: 0 4%;
+    box-sizing: border-box;
+}
+
+/* Individual Keys */
+.dict-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    background: #ffffff;
+    border: none;
+    border-radius: 7px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18), 0 2px 3px rgba(0, 0, 0, 0.06);
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+    font-size: 19px;
+    font-weight: 550;
+    color: #111113;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: transform 0.08s ease, background-color 0.08s ease;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+@media (max-width: 360px) {
+    .dict-key {
+        height: 38px;
+        font-size: 17px;
+    }
+}
+
+.dict-key-letter {
+    flex: 1;
+    min-width: 0;
+}
+
+.dict-key:active,
+.dict-key.is-pressed {
+    background-color: #cbd5e1 !important;
+    transform: scale(0.93);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Function Keys: Replay & Backspace */
+.dict-key-fn {
+    background: #d1d5db;
+    color: #1f2937;
+    font-size: 12.5px;
+    font-weight: 650;
+    flex: 1.35;
+    gap: 3px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), 0 2px 2px rgba(0, 0, 0, 0.04);
+}
+
+.dict-key-replay {
+    flex: 1.35;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 650;
+    gap: 3px;
+}
+
+.dict-key-replay .dict-key-icon {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.dict-key-backspace {
+    flex: 1.35;
+}
+
+.dict-key-backspace svg {
+    width: 21px;
+    height: 21px;
+    stroke: #1f2937;
+}
+
+/* Action Keys (Row 4: ← 上一空 | ← 上句 | 下句 ➔ | 下一空 →) */
+.dict-key-action {
+    height: 42px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+/* 上一空 / 下一空: 处于左右两侧最顺手位置，放大宽度，彻底避免误触 */
+.dict-key-prev-blank,
+.dict-key-next-blank {
+    flex: 1.38;
+    background: #ffffff;
+    color: #0f172a;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.dict-key-prev-blank:active,
+.dict-key-next-blank:active {
+    background: #f1f5f9 !important;
+}
+
+/* 上一句: 居中偏左，紧凑小巧 */
+.dict-key-prev {
+    flex: 0.95;
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.dict-key-prev[disabled] {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* 下一句: 居中偏右，比例适度缩小，避免喧宾夺主 */
+.dict-key-next {
+    flex: 1.05;
+    background: #007aff;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.28);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.dict-key-next:active {
+    background: #0062cc !important;
+}
+
+.dict-key-next.pulse-success {
+    background: #34c759 !important;
+    box-shadow: 0 2px 12px rgba(52, 199, 89, 0.45);
+    animation: keyNextPulse 1.2s infinite alternate ease-in-out;
+}
+
+/* Keyboard Switcher Toolbar Button (Virtual KB -> System KB) */
+.dict-kb-tool-btn.dict-kb-switch-native-btn {
+    color: #007aff !important;
+    font-weight: 650 !important;
+}
+
+/* Canvas Header Keyboard Toggle Pill (Permanently hidden in card header - moved to top-right settings popover menu) */
+.dict-kb-toggle-pill,
+#btn-dict-canvas-kb-toggle {
+    display: none !important;
+}
+
+@keyframes keyNextPulse {
+    0% { transform: scale(1); box-shadow: 0 2px 8px rgba(52, 199, 89, 0.35); }
+    100% { transform: scale(1.03); box-shadow: 0 4px 16px rgba(52, 199, 89, 0.6); }
+}
+
+.cloze-input-wrap:not(.has-value):not(.has-focus) {
+    box-shadow: none !important;
+}
+
+/* Bottom Nav Keyboard Toggle Button (Permanently hidden as moved to 3-dots top settings) */
+#btn-dict-nav-keyboard {
+    display: none !important;
+}
+#dictation-nav-group .btn-nav-action {
+    padding: 0 16px;
+}
+@media (max-width: 380px) {
+    #dictation-nav-group .btn-nav-action {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+}

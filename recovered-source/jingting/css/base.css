@@ -1,0 +1,152 @@
+/* === css/base.css === */
+/* ==========================================================================
+   Base Design System & CSS Variables (Bilibili Toy CET-4 Master)
+   ========================================================================== */
+
+/* Local High-Performance Inter & Noto Sans SC Fonts (100% Offline & Open-Source SIL OFL 1.1) */
+
+
+
+
+
+
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+}
+
+html, body {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+}
+
+button, a, select, input, textarea, svg, img, div, span, label {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+button, a, .icon-squircle-btn, .btn, .q-chip, .btn-island-pill, .btn-island-play, .btn-canvas-drawer, .dict-clickable-word, .dict-word, .warm-btn, .hero-glass-menu-btn, .hero-top-avatar-wrap, .opt-btn, .lobby-level-pill, .chip-year, .capsule-module-card, .training-mode-tab-btn, .exam-card {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    touch-action: manipulation;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    outline: none !important;
+}
+
+:root {
+    color-scheme: light !important;
+    --paper-bg: #ffffff;
+    --paper-card: #ffffff;
+    --ink-primary: #1c1c1e;
+    --ink-sub: #636366;
+
+    /* Permanent Accent Color: Authentic Apple iOS System Blue */
+    --accent-gold: #007aff;
+    --accent-gold-light: #f0f7ff;
+
+    --correct-green: #15803d;
+    --correct-bg: #f2faf5;
+    --wrong-red: #b91c1c;
+    --wrong-bg: #fdf3f3;
+    --flame-orange: #ff9500;
+    --flame-bg: #fff9ef;
+
+    --page-padding: 16px;
+    --control-size: 44px;
+    --panel-max-width: 1280px;
+
+    --card-border: 1px solid rgba(15, 23, 42, 0.065);
+    --opt-border: 1px solid rgba(15, 23, 42, 0.08);
+    --opt-resting-shadow: 0 1px 2px rgba(15, 23, 42, 0.022);
+    --card-shadow: 0 6px 24px rgba(15, 23, 42, 0.035), 0 1px 2px rgba(15, 23, 42, 0.02);
+    --card-radius: 18px;
+    --font-family: "Inter", "Noto Sans SC", "Source Han Sans SC", "LXGW WenKai GB Screen", sans-serif;
+    --ios-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    --ios-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+    --ios-press: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Dynamic Toy Container Safe Area Adaptations */
+    --toy-safe-top: env(safe-area-inset-top, 0px);
+    --toy-safe-bottom: env(safe-area-inset-bottom, 0px);
+    --toy-safe-left: env(safe-area-inset-left, 0px);
+    --toy-safe-right: env(safe-area-inset-right, 0px);
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+    :root {
+        --card-border: 0.5px solid rgba(15, 23, 42, 0.10);
+        --opt-border: 0.5px solid rgba(15, 23, 42, 0.12);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+html, body {
+    color-scheme: light !important;
+    width: 100%;
+    min-height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: var(--ink-primary);
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overflow-x: clip;
+    user-select: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+html:has(body.view-home-active),
+html.view-home-active,
+body.view-home-active {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+}
+
+/* Background Kraft Layer Disabled (Pure Global White Architecture) */
+.vector-bg-kraft {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+body.view-functional-active .vector-bg-kraft,
+body:has(.app-view.active:not(#view-home)) .vector-bg-kraft {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+/* Fullscreen Overlay Canvas for Confetti Fireworks */
+#confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Keyframe Animations */
+@keyframes animSoftTilt {
+    0% { transform: rotate(0deg) translateY(0); }
+    15% { transform: rotate(5deg) translateY(-3px); }
+    30% { transform: rotate(-4deg) translateY(-1px); }
+    42%, 100% { transform: rotate(0deg) translateY(0); }
+}
+
+@keyframes waveBounce {
+    0% { height: 4px; }
+    100% { height: 18px; }
+}

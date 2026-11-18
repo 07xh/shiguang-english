@@ -1,0 +1,492 @@
+/* === css/written.css === */
+/* ==========================================================================
+   Written Exam Arena System (Cloze, Matching, Reading, Translation, Writing)
+   ========================================================================== */
+
+#view-written-arena {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding-bottom: calc(115px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px)));
+}
+
+#written-stage-card .quiz-card-top-bar {
+    order: 0 !important;
+}
+#written-stage-card .sequence-badge {
+    display: none !important;
+}
+#written-stage-card .written-split-container {
+    order: 1 !important;
+}
+.written-split-container.no-passage-mode .written-split-passage {
+    display: none !important;
+}
+
+/* Written Navigation Module Tab Bar */
+.written-nav-tabs-wrapper {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto 16px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.written-tab-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    max-width: 100%;
+}
+
+.written-tab-btn {
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: var(--card-border);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    color: var(--ink-sub);
+    transition: transform 0.14s var(--ios-press), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+    .written-tab-btn:hover:not(.active) {
+        color: var(--ink-primary);
+        border-color: rgba(15, 23, 42, 0.22);
+    }
+}
+.written-tab-btn:active {
+    transform: scale(0.96);
+}
+.written-tab-btn.active {
+    background: var(--ink-primary);
+    color: #ffffff;
+    border-color: var(--ink-primary);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Written Passage Card (iOS Minimalist Flat Surface) */
+.written-passage-card {
+    background: #F9FAFB !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 16px;
+    padding: 20px 22px;
+    font-size: 15.2px;
+    line-height: 1.82;
+    color: #1C1C1E;
+    margin-top: 10px;
+    margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+    .written-passage-card {
+        padding: 16px 15px;
+        margin-bottom: 14px;
+    }
+}
+
+.written-passage-card p {
+    margin-bottom: 16px;
+    text-indent: 2em;
+    text-align: left;
+    word-spacing: normal;
+    letter-spacing: normal;
+}
+.written-passage-card p:last-child {
+    margin-bottom: 0;
+}
+
+/* 原文定位证据句高亮系统 (Apple Books Soft Highlighter + TOP 2 RoughNotation SVG Hand-Drawn Pen) */
+mark.passage-evidence-highlight {
+    background: rgba(2, 132, 199, 0.10);
+    color: inherit;
+    border-bottom: none;
+    border-radius: 4px;
+    padding: 2px 2px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+@keyframes uxRoughDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+mark.passage-evidence-highlight.evidence-pulse {
+    animation: evidenceHighlightPulse 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+@keyframes evidenceHighlightPulse {
+    0%, 100% {
+        background: rgba(2, 132, 199, 0.11);
+        box-shadow: none;
+    }
+    35% {
+        background: rgba(2, 132, 199, 0.26);
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.14);
+    }
+}
+.passage-evidence-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #FFFFFF;
+    background: #0284C7;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-right: 5px;
+    vertical-align: middle;
+    line-height: 1.4;
+    text-indent: 0 !important;
+    user-select: none;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.25);
+}
+
+/* ==========================================================================
+   用户自主画线定位系统 (无背景污染 · 极简钢笔下划线 · 横划即画 / 轻点即擦)
+   ========================================================================== */
+.written-passage-card {
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+.written-passage-card .dict-word,
+.written-passage-card .dict-sep {
+    padding-bottom: 2px;
+    background-image: linear-gradient(90deg, rgba(37, 99, 235, 0.76), rgba(37, 99, 235, 0.76));
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size: 0% 1.8px;
+    transition: background-size 0.22s cubic-bezier(0.22, 1, 0.36, 1), color 0.16s ease;
+}
+
+.written-passage-card .dict-word.is-user-underlined,
+.written-passage-card .dict-sep.is-user-underlined {
+    background-position: 0% 100%;
+    background-size: 100% 1.8px;
+    cursor: pointer;
+}
+
+.popover-underline-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    border: 1px solid rgba(147, 197, 253, 0.42);
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+.popover-underline-btn.is-active {
+    background: rgba(59, 130, 246, 0.34);
+    border-color: rgba(147, 197, 253, 0.72);
+    color: #ffffff;
+}
+.popover-underline-btn:active {
+    transform: scale(0.95);
+}
+
+/* Cloze Blanks Pill Tags (iOS Minimalist Flat Style) */
+.written-cloze-blank {
+    display: inline-block;
+    vertical-align: baseline;
+    text-indent: 0 !important;
+    text-align: center;
+    padding: 1px 9px;
+    margin: 0 2px;
+    border: none !important;
+    background: rgba(0, 122, 255, 0.09);
+    color: #007AFF;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: none !important;
+    line-height: 1.4;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+.written-cloze-blank.active {
+    background: #007AFF !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none !important;
+    box-shadow: none !important;
+    text-indent: 0 !important;
+    outline: none;
+}
+.written-cloze-blank.filled-correct,
+.written-cloze-blank.active.filled-correct {
+    background: rgba(52, 199, 89, 0.15) !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #15803D !important;
+}
+.written-cloze-blank.filled-wrong,
+.written-cloze-blank.active.filled-wrong {
+    background: rgba(255, 59, 48, 0.13) !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #DC2626 !important;
+}
+.written-cloze-blank.filled-exam,
+.written-cloze-blank.active.filled-exam {
+    background: rgba(0, 122, 255, 0.12) !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #007AFF !important;
+}
+.written-cloze-blank.active.filled-correct,
+.written-cloze-blank.active.filled-wrong,
+.written-cloze-blank.active.filled-exam {
+    box-shadow: 0 0 0 2px currentColor !important;
+    font-weight: 700 !important;
+}
+
+@keyframes clozeBlankSpringPop {
+    0% {
+        transform: scale(0.92);
+    }
+    55% {
+        transform: scale(1.06);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.written-cloze-blank.just-filled,
+.seven-blank-reflected.just-filled {
+    animation: clozeBlankSpringPop 0.26s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Word Bank Grid for Section A (2-column on mobile, 3x5 golden matrix on tablet/PC) */
+.word-bank-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 8px;
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+@media (min-width: 640px) {
+    .word-bank-options-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 11px 10px;
+    }
+}
+
+.word-bank-opt-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 9.5px 12px;
+    border-radius: 12px;
+    border: var(--opt-border);
+    box-shadow: var(--opt-resting-shadow);
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: transform 0.14s var(--ios-press), background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    gap: 5px;
+    box-sizing: border-box;
+    user-select: none;
+    min-height: 41px;
+    min-width: 0;
+    white-space: nowrap;
+}
+@media (hover: hover) and (pointer: fine) {
+    .word-bank-opt-btn:hover:not(.disabled) {
+        transform: translateY(-1.5px);
+        border-color: rgba(0, 122, 255, 0.45);
+        background-color: var(--accent-gold-light);
+        box-shadow: 0 4px 14px rgba(0, 122, 255, 0.08);
+    }
+}
+.word-bank-opt-btn:active {
+    transform: scale(0.98) !important;
+}
+.word-bank-opt-btn.disabled {
+    cursor: pointer !important;
+}
+.word-bank-opt-btn.correct-state {
+    background-color: var(--correct-bg) !important;
+    border-color: rgba(21, 128, 61, 0.36) !important;
+    color: var(--correct-green) !important;
+    box-shadow: none !important;
+    font-weight: 600;
+}
+.word-bank-opt-btn.wrong-state {
+    background-color: var(--wrong-bg) !important;
+    border-color: rgba(185, 28, 28, 0.32) !important;
+    color: var(--wrong-red) !important;
+    box-shadow: none !important;
+}
+.word-bank-opt-key {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--accent-gold);
+    flex-shrink: 0;
+    line-height: 1.35;
+}
+.word-bank-opt-btn.correct-state .word-bank-opt-key { color: var(--correct-green); }
+.word-bank-opt-btn.wrong-state .word-bank-opt-key { color: var(--wrong-red); }
+
+.word-bank-opt-text {
+    display: inline-block;
+    font-size: clamp(13px, 1.05vw, 14px);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--ink-primary);
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow-wrap: normal;
+}
+.word-bank-opt-btn.correct-state .word-bank-opt-text { color: var(--correct-green); }
+.word-bank-opt-btn.wrong-state .word-bank-opt-text { color: var(--wrong-red); }
+
+/* Banked Cloze Exam Selected State */
+.word-bank-opt-btn.exam-selected-state {
+    background: rgba(0, 122, 255, 0.10) !important;
+    border-color: rgba(0, 122, 255, 0.55) !important;
+    color: #007aff !important;
+    box-shadow: none !important;
+    font-weight: 700;
+}
+.word-bank-opt-btn.exam-selected-state .word-bank-opt-key {
+    color: #007aff !important;
+}
+.word-bank-opt-btn.exam-selected-state .word-bank-opt-text {
+    color: #007aff !important;
+}
+
+/* Matching Section (Q36-45) Paragraph Option Buttons */
+.matching-paragraph-opt-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: var(--opt-border);
+    box-shadow: var(--opt-resting-shadow);
+    background: #ffffff;
+    cursor: pointer;
+    transition: transform 0.15s var(--ios-press), background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+@media (hover: hover) and (pointer: fine) {
+    .matching-paragraph-opt-btn:hover:not(.disabled) {
+        transform: translateY(-1.5px);
+        border-color: rgba(0, 122, 255, 0.45);
+        background: var(--accent-gold-light);
+        box-shadow: 0 5px 16px rgba(0, 122, 255, 0.07);
+    }
+}
+.matching-paragraph-opt-btn:active:not(.disabled) {
+    transform: scale(0.988);
+}
+.matching-paragraph-opt-btn.disabled {
+    cursor: default !important;
+    transform: none !important;
+}
+.matching-paragraph-opt-btn.correct-state {
+    background-color: var(--correct-bg) !important;
+    border-color: var(--correct-green) !important;
+}
+.matching-paragraph-opt-btn.correct-state .matching-para-letter-tag {
+    background: var(--correct-green) !important;
+    color: #ffffff !important;
+}
+.matching-paragraph-opt-btn.wrong-state {
+    background-color: var(--wrong-bg) !important;
+    border-color: var(--wrong-red) !important;
+}
+.matching-paragraph-opt-btn.wrong-state .matching-para-letter-tag {
+    background: var(--wrong-red) !important;
+    color: #ffffff !important;
+}
+
+/* Matching Paragraph Exam Selected State */
+.matching-paragraph-opt-btn.exam-selected-state {
+    background: rgba(0, 122, 255, 0.08) !important;
+    border-color: #007aff !important;
+}
+.matching-paragraph-opt-btn.exam-selected-state .matching-para-letter-tag {
+    background: #007aff !important;
+    color: #ffffff !important;
+}
+.matching-para-header {
+    display: flex;
+    align-items: center;
+}
+.matching-para-letter-tag {
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: 8px;
+    background: var(--ink-primary);
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    transition: all 0.2s ease;
+}
+.matching-para-content {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #2c2c2e;
+}
+
+/* Vocabulary Table for Translation & Writing */
+.vocab-table-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 14px 0;
+}
+.vocab-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-size: 13.5px;
+    gap: 14px;
+}
+.vocab-row:last-child {
+    border-bottom: none;
+}
+.vocab-word {
+    font-weight: 700;
+    color: #1c1c1e;
+}
+.vocab-meaning {
+    color: #4a4a4e;
+    font-weight: 500;
+    text-align: right;
+}
+@media (max-width: 600px) {
+    .vocab-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 9px 12px;
+    }
+    .vocab-meaning {
+        text-align: left !important;
+        font-size: 13px;
+        color: #5a5a5e;
+    }
+}

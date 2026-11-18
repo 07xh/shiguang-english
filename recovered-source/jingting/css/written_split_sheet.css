@@ -1,0 +1,265 @@
+/* === css/written_split_sheet.css === */
+/* ==========================================================================
+   TOP 1: Cupertino-Pane / Vaul Mobile Reading 3-Detent Split Bottom Sheet
+   ========================================================================== */
+.reading-sheet-mode-btn {
+    margin-left: auto;
+    display: none;
+    align-items: center;
+    gap: 5px;
+    padding: 4.5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #3a3a3c;
+    background: #f4f4f6;
+    border: 1px solid rgba(15, 23, 42, 0.07);
+    cursor: pointer;
+    transition: transform 0.14s var(--ios-press), background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+}
+.reading-sheet-mode-btn .sheet-mode-svg {
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+.reading-sheet-mode-btn.is-active {
+    background: #1c1c1e;
+    color: #ffffff;
+    border-color: #1c1c1e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), inset 0 0.5px 0 rgba(255, 255, 255, 0.16);
+}
+.reading-sheet-mode-btn:active {
+    transform: scale(0.95);
+}
+
+.written-sheet-grabber {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: linear-gradient(180deg, #ffffff 78%, rgba(255, 255, 255, 0.95) 100%);
+    padding: 6px 2px 8px 2px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.055);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.sheet-grabber-TouchZone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 0 6px 0;
+    cursor: ns-resize;
+}
+
+.sheet-grabber-pill {
+    width: 38px;
+    height: 4.5px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.18);
+    transition: background-color 0.16s ease, width 0.18s var(--ios-spring);
+}
+.written-split-quiz.is-sheet-dragging {
+    transition: none !important;
+    contain: layout paint style;
+    will-change: height;
+    overflow-y: hidden !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.10) !important;
+}
+.written-split-quiz.is-sheet-dragging #written-options-wrapper,
+.written-split-quiz.is-sheet-dragging #written-explanation-card {
+    pointer-events: none;
+}
+.written-split-quiz.is-sheet-dragging .sheet-grabber-pill {
+    width: 46px;
+    background: #1c1c1e;
+}
+
+.sheet-detent-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.sheet-detent-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    letter-spacing: -0.01em;
+}
+.sheet-detent-label .sheet-q-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5px 7px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    color: #1c1c1e;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+.sheet-detent-label .sheet-q-hint {
+    color: #8e8e93;
+    font-weight: 500;
+    font-size: 11.5px;
+}
+
+.sheet-detent-pills {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: #f2f2f7;
+    padding: 2px;
+    border-radius: 999px;
+}
+
+.sheet-detent-chip {
+    position: relative;
+    z-index: 1;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #6e6e73;
+    font-size: 11.5px;
+    font-weight: 650;
+    padding: 2.5px 9.5px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 0.18s ease, transform 0.12s var(--ios-press), background-color 0.16s ease;
+}
+.sheet-detent-chip:active {
+    transform: scale(0.95);
+}
+.sheet-detent-chip.active {
+    background: #ffffff;
+    color: #1c1c1e;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+.sheet-detent-pills.has-ux-glider .sheet-detent-chip.active {
+    background: transparent;
+    box-shadow: none;
+}
+
+@media (max-width: 899px) {
+    /* CRITICAL: Prevent ancestor transform / will-change from trapping position:fixed on .written-split-quiz */
+    body:not(.is-landscape) #view-written-arena:has(.mobile-sheet-split-active),
+    body:not(.is-landscape) #written-stage-card:has(.mobile-sheet-split-active) {
+        transform: none !important;
+        will-change: auto !important;
+        animation: none !important;
+        box-shadow: none !important;
+    }
+
+    body:not(.is-landscape) #view-written-arena.view-split-enter .written-split-container.mobile-sheet-split-active .written-split-passage {
+        animation: uxSplitPassageEnter 0.22s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+    }
+
+    body:not(.is-landscape) #view-written-arena.view-split-enter .written-split-container.mobile-sheet-split-active .written-split-quiz {
+        animation: uxSplitSheetEnter 0.23s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+    }
+
+    @keyframes uxSplitPassageEnter {
+        from {
+            opacity: 0.88;
+            transform: translate3d(18px, 0, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    @keyframes uxSplitSheetEnter {
+        from {
+            opacity: 0.94;
+            transform: translate3d(0, 22px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-passage {
+        order: 1 !important;
+        margin-top: 2px;
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz {
+        order: 2 !important;
+        display: block !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        max-width: 820px !important;
+        margin: 0 auto !important;
+        z-index: 88 !important;
+        background: #ffffff !important;
+        border-top: 1px solid rgba(15, 23, 42, 0.085) !important;
+        border-radius: 24px 24px 0 0 !important;
+        box-shadow:
+            inset 0 0.5px 0 rgba(255, 255, 255, 0.96),
+            0 -14px 22px -4px rgba(255, 255, 255, 0.90),
+            0 -10px 30px rgba(15, 23, 42, 0.095),
+            0 -1px 4px rgba(15, 23, 42, 0.04) !important;
+        padding: 0 18px 0 18px !important;
+        scroll-padding-bottom: calc(110px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) !important;
+        box-sizing: border-box !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz > #written-options-wrapper {
+        padding-bottom: 14px;
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz > #written-explanation-card.show {
+        padding-bottom: 20px !important;
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz::after {
+        content: "";
+        display: block;
+        flex-shrink: 0 !important;
+        position: sticky;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: calc(96px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) !important;
+        margin: 0 -18px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.82) 66%, rgba(255, 255, 255, 0.97) 100%);
+        pointer-events: none;
+        z-index: 12;
+    }
+
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz.is-sheet-dragging::after {
+        display: none;
+    }
+}
+
+@media (max-width: 680px) {
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz {
+        max-width: 680px !important;
+        padding: 0 15px 0 15px !important;
+    }
+    body:not(.is-landscape) .written-split-container.mobile-sheet-split-active .written-split-quiz::after {
+        margin: 0 -15px;
+    }
+}

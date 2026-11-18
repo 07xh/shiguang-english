@@ -1,0 +1,534 @@
+/* === css/home_schemes.css === */
+/* ==========================================================================
+   5 Top Stats Unified Card Layout Schemes
+   ========================================================================== */
+
+.top-stats-deck {
+    display: none;
+    width: 100%;
+}
+
+.top-stats-deck.active {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ==========================================================================
+   5 Core Module Card Layout Schemes & Bottom-Left Switcher
+   ========================================================================== */
+
+/* Bottom-Left Floating Scheme Switcher */
+.card-layout-switcher {
+    position: fixed;
+    left: 14px;
+    bottom: 20px;
+    z-index: 99999;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 999px;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+    user-select: none;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.layout-pill-btn {
+    border: none;
+    background: transparent;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #48484a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.layout-pill-btn:hover {
+    color: #111113;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.layout-pill-btn.active {
+    background: #111113;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* ==========================================================================
+   🎙️ 5 iOS-GRADE DESIGN SCHEMES FOR DAILY ENGLISH LISTENING (V1 - V5)
+   ========================================================================== */
+.home-daily-modules-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+
+/* --------------------------------------------------------------------------
+   V1: Apple Music 专辑精选大卡 (Editorial Album Hero)
+   -------------------------------------------------------------------------- */
+.daily-design-v1 {
+    background: #FFFFFF;
+    border: 1.5px solid #EFECE6;
+    border-radius: 22px;
+    padding: 16px 18px 14px 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.035);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.22s var(--ios-spring);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.daily-design-v1:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.07);
+}
+
+.daily-design-v1:active { transform: scale(0.98); }
+
+.v1-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.v1-cover-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 3.5px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #475569;
+}
+
+.v1-status-pill {
+    font-size: 11px;
+    font-weight: 750;
+    color: #0284C7;
+    background: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    padding: 2.5px 8px;
+    border-radius: 8px;
+}
+
+.v1-body-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;
+}
+
+.v1-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.v1-sub-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748B;
+    letter-spacing: 0.2px;
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+}
+
+.v1-main-title {
+    font-size: 16.5px;
+    font-weight: 900;
+    color: #0F172A;
+    letter-spacing: -0.01em;
+}
+
+.v1-play-btn {
+    padding: 8px 16px;
+    border-radius: 14px;
+    border: none;
+    background: #0F172A;
+    color: #FFFFFF;
+    font-size: 12.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.16);
+    transition: all 0.2s ease;
+}
+
+
+/* --------------------------------------------------------------------------
+   V2: iOS 17 灵动声学深色大卡 (Dark Obsidian Acoustic Island)
+   -------------------------------------------------------------------------- */
+.daily-design-v2 {
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.v2-dark-card {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    border-radius: 22px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.22s var(--ios-spring);
+}
+
+.daily-design-v2:hover .v2-dark-card {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
+}
+
+.daily-design-v2:active .v2-dark-card { transform: scale(0.98); }
+
+.v2-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.v2-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #E2E8F0;
+}
+
+.v2-wave-dots {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.v2-wave-dots span {
+    width: 3px;
+    background: #38BDF8;
+    border-radius: 2px;
+}
+
+.v2-wave-dots span:nth-child(1) { height: 6px; }
+
+.v2-wave-dots span:nth-child(2) { height: 12px; }
+
+.v2-wave-dots span:nth-child(3) { height: 8px; }
+
+.v2-mid-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.v2-sub {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #94A3B8;
+    letter-spacing: 0.05em;
+}
+
+.v2-title {
+    font-size: 16.5px;
+    font-weight: 900;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+}
+
+.v2-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2px;
+}
+
+.v2-meta {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.v2-action-btn {
+    padding: 6px 14px;
+    border-radius: 12px;
+    border: none;
+    background: #FFFFFF;
+    color: #0F172A;
+    font-size: 12px;
+    font-weight: 850;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+}
+
+
+/* --------------------------------------------------------------------------
+   V3: Apple Podcasts 播客封面大卡 (Podcasts Studio Inset - 官方精选)
+   -------------------------------------------------------------------------- */
+.daily-design-v3 {
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.v3-podcast-card {
+    background: #FFFFFF;
+    border: 1.5px solid #EFECE6;
+    border-radius: 22px;
+    padding: 16px 18px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    transition: all 0.22s var(--ios-spring);
+}
+
+.daily-design-v3:hover .v3-podcast-card {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+    border-color: #CBD5E1;
+}
+
+.daily-design-v3:active .v3-podcast-card { transform: scale(0.985); }
+
+.v3-cover-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #0284C7 0%, #0369A1 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.28);
+}
+
+.v3-cover-icon { font-size: 20px; line-height: 1; }
+
+.v3-cover-tag { font-size: 9px; font-weight: 900; letter-spacing: 0.04em; margin-top: 1px; color: rgba(255, 255, 255, 0.95); }
+
+.v3-info-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    flex: 1;
+}
+
+.v3-kicker {
+    font-size: 11px;
+    font-weight: 750;
+    color: #0284C7;
+    letter-spacing: 0.04em;
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+}
+
+.v3-main-title {
+    font-size: 16px;
+    font-weight: 900;
+    color: #0F172A;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+}
+
+.v3-play-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0F172A;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    padding-left: 2px;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
+    transition: all 0.2s ease;
+}
+
+.daily-design-v3:hover .v3-play-circle {
+    background: #0284C7;
+    transform: scale(1.06);
+}
+
+
+/* --------------------------------------------------------------------------
+   V4: iOS 健身习惯特训大卡 (Habit & Momentum Card)
+   -------------------------------------------------------------------------- */
+.daily-design-v4 {
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.v4-habit-card {
+    background: #FFFFFF;
+    border: 1.5px solid #EFECE6;
+    border-radius: 22px;
+    padding: 15px 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.22s var(--ios-spring);
+}
+
+.daily-design-v4:hover .v4-habit-card {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+}
+
+.daily-design-v4:active .v4-habit-card { transform: scale(0.98); }
+
+.v4-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.v4-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 3.5px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #475569;
+}
+
+.v4-issue-chip {
+    font-size: 11.5px;
+    font-weight: 850;
+    color: #0F172A;
+}
+
+.v4-chips-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.v4-chip {
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: #F1F5F9;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 750;
+}
+
+.v4-full-btn {
+    width: 100%;
+    height: 38px;
+    border-radius: 12px;
+    border: none;
+    background: #0F172A;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 850;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.16);
+}
+
+
+/* --------------------------------------------------------------------------
+   V5: Apple Books 极简留白通栏大卡 (Editorial Minimalist Row)
+   -------------------------------------------------------------------------- */
+.daily-design-v5 {
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.v5-minimal-card {
+    background: #FFFFFF;
+    border: 1.5px solid #EFECE6;
+    border-radius: 20px;
+    padding: 15px 18px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.22s var(--ios-spring);
+}
+
+.daily-design-v5:hover .v5-minimal-card {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.daily-design-v5:active .v5-minimal-card { transform: scale(0.98); }
+
+.v5-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.v5-kicker {
+    font-size: 10.5px;
+    font-weight: 750;
+    color: #64748B;
+    letter-spacing: 0.04em;
+}
+
+.v5-title {
+    font-size: 15.5px;
+    font-weight: 900;
+    color: #0F172A;
+}
+
+.v5-meta {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #94A3B8;
+}
+
+.v5-btn {
+    padding: 8px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #0F172A;
+    background: transparent;
+    color: #0F172A;
+    font-size: 12.5px;
+    font-weight: 850;
+    cursor: pointer;
+    flex-shrink: 0;
+}

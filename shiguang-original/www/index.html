@@ -216,7 +216,7 @@ var arm=function(){try{
 }catch(e){flush("err",false);}};
 if(document.readyState==="complete"){arm();}
 else{W.addEventListener("load",arm,false);}
-}catch(e){}})();</script><script>if(window.self===window.top){window.location.replace("https://www.bilibili.com/toy/qDif2poHemIk0VJH/24227927458816-v53236/index.html");}</script>
+}catch(e){}})();</script><!-- [SG] 已移除跳出B站的顶层脚本 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="light">
@@ -1781,6 +1781,24 @@ else{W.addEventListener("load",arm,false);}
     <script src="vendor/s1_hdslb_com/bfs/seed/toy/app/sdk/toy-sdk.js"></script>
     <script src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/exams_manifest.js"></script>
     <!-- Bundled Core Application Logic -->
+    <script>
+    (function(){
+      if (window.__SG_EARLY_GUARD__) return; window.__SG_EARLY_GUARD__=true;
+      var BAD=/bilibili\.com|b23\.tv|bilibilitoy\.com/;
+      window.__SG_SHOW_NOTICE__=function(msg){
+        try{
+          var el=document.getElementById('sg-notice');
+          if(!el){el=document.createElement('div');el.id='sg-notice';
+            el.style.cssText='position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:99999;background:rgba(27,36,48,.94);color:#fff;padding:12px 18px;border-radius:14px;font-size:13px;max-width:86%;text-align:center';
+            document.body.appendChild(el);}
+          el.textContent='该入口需跳转 B 站，独立版已拦截';
+          clearTimeout(window.__SG_NT);window.__SG_NT=setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},2600);
+        }catch(e){}
+      };
+      var _o=window.open;
+      window.open=function(u){ if(typeof u==='string'&&BAD.test(u)){window.__SG_SHOW_NOTICE__(u);return null;} return _o.apply(this,arguments); };
+    })();
+    </script>
     <script src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/js/bundle.js"></script>
 </body>
 </html>

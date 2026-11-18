@@ -1,0 +1,882 @@
+/* === css/home_hero_dashboard.css === */
+/* ==========================================================================
+   Home Hero Cover Image Section (Left Mockup Architecture)
+   ========================================================================== */
+.home-hero-cover {
+    width: 100%;
+    height: 340px;
+    margin: 0;
+    background-size: cover;
+    background-position: center 35%;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.hero-cover-overlay {
+    display: none !important;
+}
+.hero-cover-content {
+    position: relative;
+    z-index: 2;
+    padding: max(38px, var(--toy-safe-top, 0px), calc(env(safe-area-inset-top, 24px) + 12px)) 20px 82px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
+}
+.hero-cover-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+}
+.hero-cover-top-spacer {
+    flex: 1;
+}
+.hero-right-action-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    z-index: 5;
+}
+.hero-top-avatar-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border: none !important;
+    background: rgba(18, 22, 28, 0.46);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: all 0.22s var(--ios-spring);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero-top-avatar-wrap:hover {
+    background: rgba(18, 22, 28, 0.65);
+    transform: scale(1.05);
+}
+.hero-top-avatar-wrap:active {
+    transform: scale(0.92);
+}
+.hero-top-user-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+.hero-top-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.hero-glass-menu-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(18, 22, 28, 0.38);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    transition: all 0.2s var(--ios-spring);
+    padding: 0;
+    flex-shrink: 0;
+}
+.hero-glass-menu-btn svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.95;
+}
+.hero-glass-menu-btn:hover {
+    background: rgba(18, 22, 28, 0.58);
+    border-color: rgba(255, 255, 255, 0.35) !important;
+    transform: scale(1.06);
+}
+.hero-glass-menu-btn:active {
+    transform: scale(0.92);
+}
+
+/* Left Greeting: Positioned clearly in bottom-left of hero cover */
+.hero-welcome-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+    margin-bottom: 0;
+    max-width: calc(100% - 60px);
+    z-index: 3;
+}
+.hero-welcome-sub {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95) !important;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.hero-welcome-title,
+.hero-welcome-title span,
+#home-user-name.hero-welcome-title {
+    font-size: clamp(24px, 6.8vw, 30px) !important;
+    font-weight: 800 !important;
+    color: #FFFFFF !important;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.2;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6) !important;
+    word-break: break-word;
+}
+.hero-thin-glass-chip {
+    background: rgba(10, 14, 24, 0.28);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 100px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: all 0.25s var(--ios-spring);
+}
+.hero-thin-glass-chip:hover {
+    background: rgba(10, 14, 24, 0.45);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateX(-2px);
+}
+.hero-chip-lbl {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.76);
+    letter-spacing: 0.01em;
+}
+.hero-chip-val {
+    font-size: 17px;
+    font-weight: 750;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+.hero-chip-val small {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.82);
+    margin-left: 2px;
+}
+
+/* ==========================================================================
+   Modern iOS Sheet & Capsule Module Cards UI (Image 1 & Image 2 Architecture)
+   ========================================================================== */
+
+/* Top Integrated Status & Leaderboard Card */
+.top-status-unified-card {
+    background: #ffffff;
+    border-radius: 26px;
+    padding: 16px 18px 14px 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.035), 0 1px 3px rgba(0, 0, 0, 0.015);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.top-metric-quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+}
+.top-metric-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.top-metric-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+}
+.top-metric-icon.yellow { background: #fff4d6; }
+.top-metric-icon.blue { background: #e8f3ff; }
+.top-metric-icon.green { background: #e8f9ed; }
+.top-metric-icon.orange { background: #fff0e6; }
+.top-metric-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+}
+.top-metric-val {
+    font-size: 17px;
+    font-weight: 900;
+    color: #111113;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+.top-metric-val small {
+    font-size: 11.5px;
+    font-weight: 700;
+}
+.top-metric-lbl {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #8e8e93;
+    white-space: nowrap;
+}
+
+/* Integrated Leaderboard Bar in Top Section */
+.top-leaderboard-bar {
+    background: linear-gradient(135deg, #f2fbf0 0%, #e6f6e3 100%);
+    border: 1px solid rgba(46, 125, 50, 0.12);
+    border-radius: 18px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.22s var(--ios-spring);
+}
+.top-leaderboard-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.12);
+}
+.top-leaderboard-bar:active {
+    transform: scale(0.98);
+}
+.top-rank-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.top-rank-trophy-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(46, 125, 50, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.top-rank-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.top-rank-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #1b5e20;
+    letter-spacing: -0.01em;
+}
+.top-rank-sub {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #2e7d32;
+    opacity: 0.8;
+}
+.top-rank-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.top-rank-badge {
+    background: #ffffff;
+    color: #1b5e20;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 900;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.top-rank-arrow {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #1b5e20;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* ==========================================================================
+   Elevated Bottom White Sheet Overlapping Hero Cover (Left Mockup Architecture)
+   ========================================================================== */
+.home-bottom-sheet {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border-radius: 36px 36px 0 0;
+    padding: 12px 16px calc(24px + max(var(--toy-safe-bottom, 0px), env(safe-area-inset-bottom, 0px))) 16px;
+    margin: -62px 0 0 0;
+    box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.10);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 5;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+}
+.sheet-pull-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.14);
+    margin: 0 auto;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Top Asymmetric Split Dashboard Grid (1:1 Exact Mockup Geometry)
+   ========================================================================== */
+.sheet-split-dashboard-grid {
+    display: block;
+    width: 100%;
+    height: 144px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 26px;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Left Card: 今日排名正方形圆弧卡 (1:1 Reference from 单词Toy) */
+.rank-square-card {
+    width: 100%;
+    height: 144px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, #FAFAFA, #F5F5F7, #EDEDF0);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 10px 10px;
+    transition: transform 0.28s cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 0.25s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .rank-square-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+    }
+}
+
+.rank-square-card:active {
+    transform: scale(0.965);
+    transition: transform 0.08s ease-out;
+}
+
+/* 1. Top Avatar Stack Capsule Pill */
+.rank-card-pill {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 3px 9px 3px 4.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    margin-bottom: 6px;
+}
+
+.rank-avatar-stack {
+    display: flex;
+    align-items: center;
+}
+
+.rank-stack-avatar {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #ffffff;
+    margin-left: -4.5px;
+    background: #e2e8f0;
+}
+
+.rank-stack-avatar:first-child {
+    margin-left: 0;
+}
+
+.rank-pill-count {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1;
+    letter-spacing: -0.01em;
+}
+
+/* 2. Big Rank Number & Label */
+.rank-card-middle {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.rank-card-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-family: "Inter", "Noto Sans SC", sans-serif;
+}
+
+.rank-card-value #home-user-rank,
+.rank-card-value .home-user-rank-bind {
+    font-weight: 900;
+    color: #0f172a;
+}
+
+.rank-card-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 3px;
+    letter-spacing: 0.02em;
+}
+
+/* Top Symmetrical Dashboard Infinite Carousel (Displays 2 Cards Side-by-Side) */
+.split-carousel-container {
+    width: 100%;
+    height: 144px;
+    border-radius: 26px;
+    position: relative;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.split-carousel-track {
+    display: flex;
+    gap: 0;
+    height: 100%;
+    transition: transform 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.dashboard-carousel-page {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.split-carousel-item,
+.dashboard-carousel-page .split-carousel-item {
+    flex: 1 1 0;
+    min-width: 0;
+    width: calc((100% - 10px) / 2);
+    height: 144px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.split-carousel-item .rank-square-card,
+.split-carousel-item .split-streak-hero-card,
+.split-carousel-item .split-metric-stack {
+    width: 100%;
+    height: 100%;
+}
+
+/* Slide 0: Hero Streak Card (1:1 Match Left Rank Card Minimalist Tone) */
+.split-streak-hero-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 26px;
+    background: linear-gradient(135deg, #FAFAFA, #F5F5F7, #EDEDF0);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.28s cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 0.28s ease;
+}
+
+.split-streak-hero-card:active {
+    transform: scale(0.97);
+}
+
+/* Watermark Layer (Subtle Doodles on corners, cool-grey tone) */
+.streak-watermark-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+}
+
+.streak-watermark-layer .wm-icon {
+    position: absolute;
+    color: #64748B;
+}
+
+.streak-watermark-layer .wm-book {
+    width: 62px;
+    height: 62px;
+    bottom: -10px;
+    left: -8px;
+    transform: rotate(-15deg);
+}
+
+.streak-watermark-layer .wm-guitar {
+    width: 54px;
+    height: 54px;
+    bottom: -6px;
+    right: 2px;
+    transform: rotate(-12deg);
+}
+
+.streak-watermark-layer .wm-coffee {
+    width: 32px;
+    height: 32px;
+    top: 8px;
+    right: 12px;
+    transform: rotate(20deg);
+}
+
+/* Flame (Crisp vector, diffuse aura removed per user request) */
+.streak-flame-box {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1);
+    z-index: 2;
+}
+
+.streak-flame-box:active {
+    transform: scale(1.22);
+}
+
+.streak-flame-aura {
+    display: none !important;
+}
+
+.streak-flame-svg,
+.flame-svg {
+    position: relative;
+    z-index: 3;
+    filter: none !important;
+    transition: transform 0.2s cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+
+.flame-svg-l0 { width: 18px; height: 22px; }
+.flame-svg-l1 { width: 19px; height: 23px; }
+.flame-svg-l2 { width: 21px; height: 25px; }
+.flame-svg-l3 { width: 23px; height: 27px; }
+.flame-svg-l4 { width: 25px; height: 29px; }
+.flame-svg-l5 { width: 27px; height: 31px; }
+.flame-svg-l6 { width: 29px; height: 32px; }
+.flame-svg-l7 { width: 31px; height: 33px; }
+.flame-svg-l8 { width: 32px; height: 34px; }
+.flame-svg-l9 { width: 33px; height: 35px; }
+.flame-svg-l10 { width: 34px; height: 36px; }
+
+/* Big Streak Number */
+.streak-hero-num {
+    font-size: 34px;
+    font-weight: 900;
+    color: #0F172A;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    margin-top: 4px;
+    position: relative;
+    z-index: 2;
+    font-family: inherit;
+}
+
+/* Label Text (Matches rank card label #64748b) */
+.streak-hero-lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748B;
+    letter-spacing: 0.02em;
+    margin-top: 3px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Right Stacked Metric Cards (1:1 Mockup Geometry, strictly 144px) */
+.split-metric-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 144px;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+}
+.split-mini-metric-card {
+    height: 68px;
+    flex: 0 0 68px;
+    border-radius: 22px;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.035);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+    padding: 9px 13px 8px 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.30s cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 0.28s ease;
+    box-sizing: border-box;
+    touch-action: manipulation;
+}
+@media (hover: hover) and (pointer: fine) {
+    .split-mini-metric-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    }
+}
+.split-mini-metric-card:active {
+    transform: scale(0.97);
+    transition: transform 0.08s ease-out;
+}
+.split-card-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.split-metric-lbl {
+    font-size: 11.5px;
+    font-weight: 750;
+    color: #1E293B;
+    letter-spacing: 0.01em;
+}
+.split-card-val-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.split-metric-val {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    display: flex;
+    align-items: baseline;
+    white-space: nowrap;
+}
+.split-metric-val small {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    margin-left: 1px;
+    margin-right: 4px;
+}
+.split-metric-val small.streak-unit-sub {
+    font-size: 11.5px;
+    font-weight: 750;
+    color: #475569;
+    margin-left: 2.5px;
+    margin-right: 0;
+}
+.split-metric-art-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Bento Mini Card Row Layout (Left: Label + Value, Right: Vertically Centered Crisp SVG) */
+.split-mini-metric-card.split-mini-bento-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px 8px 14px;
+    gap: 8px;
+}
+.split-mini-streak-card {
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.split-mini-left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 100%;
+    min-width: 0;
+    flex: 1;
+}
+.split-mini-streak-card .streak-flame-box {
+    width: 36px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: -1px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+.split-mini-streak-card:hover .streak-flame-box {
+    transform: scale(1.08);
+}
+.split-mini-streak-card .flame-svg-l0 { width: 25px; height: 29px; }
+.split-mini-streak-card .flame-svg-l1 { width: 26px; height: 31px; }
+.split-mini-streak-card .flame-svg-l2 { width: 27px; height: 32px; }
+.split-mini-streak-card .flame-svg-l3 { width: 28px; height: 33px; }
+.split-mini-streak-card .flame-svg-l4 { width: 29px; height: 34px; }
+.split-mini-streak-card .flame-svg-l5 { width: 30px; height: 35px; }
+.split-mini-streak-card .flame-svg-l6 { width: 31px; height: 36px; }
+.split-mini-streak-card .flame-svg-l7 { width: 32px; height: 37px; }
+.split-mini-streak-card .flame-svg-l8 { width: 33px; height: 37px; }
+.split-mini-streak-card .flame-svg-l9 { width: 34px; height: 38px; }
+.split-mini-streak-card .flame-svg-l10 { width: 35px; height: 39px; }
+
+.split-metric-lbl-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+.study-svg-box {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: -1px;
+}
+.study-svg-icon {
+    width: 30px;
+    height: 30px;
+    display: block;
+    transition: transform 0.25s cubic-bezier(0.34, 1.45, 0.64, 1);
+}
+.split-mini-study-card:hover .study-svg-icon {
+    transform: scale(1.08);
+}
+.split-gauge-meter {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    width: 6px;
+    height: 28px;
+    background: #EDECE6;
+    border-radius: 999px;
+    padding: 2px 1.5px;
+    justify-content: flex-end;
+    box-sizing: border-box;
+}
+.gauge-bar {
+    width: 3.5px;
+    height: 7px;
+    border-radius: 2px;
+}
+.gauge-bar.active {
+    background: #8CB369;
+}
+.gauge-bar.inactive {
+    background: #D5D3CA;
+}
+
+/* ==========================================================================
+   Dashboard Carousel Indicator (位于 数据看板 下方)
+   ========================================================================== */
+.dashboard-carousel-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    user-select: none;
+    -webkit-user-select: none;
+    width: 100%;
+}
+
+.dashboard-indicator-dot {
+    height: 3.5px;
+    border-radius: 3px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: width 0.34s cubic-bezier(0.34, 1.45, 0.64, 1), background-color 0.24s ease, opacity 0.24s ease;
+}
+
+.dashboard-indicator-dot.active {
+    width: 22px;
+    background: #1E293B;
+}
+
+.dashboard-indicator-dot:not(.active) {
+    width: 7px;
+    background: #CBD5E1;
+}
+
+.dashboard-indicator-dot:hover:not(.active) {
+    background: #94A3B8;
+}
+
+.dashboard-indicator-dot:active {
+    transform: scale(0.90);
+    transition: transform 0.08s ease-out;
+}
