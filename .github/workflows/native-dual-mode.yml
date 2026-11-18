@@ -1,0 +1,94 @@
+name: Native Dual Mode APK (verified university content)
+
+on:
+  push:
+    paths:
+      - 'native-android/**'
+      - '.github/workflows/native-dual-mode.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-both-native-modes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify packer syntax
+        run: |
+          python3 -m py_compile native-android/tools/package_university_assets.py
+          python3 -m py_compile native-android/tools/package_university_vocab.py
+      - name: Download authorized university original wordbooks
+        working-directory: native-android
+        run: |
+          python3 tools/package_university_vocab.py --strict \
+            --dest app/src/main/assets/vocabulary
+      - name: Download four verified original exam papers and audio
+        working-directory: native-android
+        run: |
+          python3 tools/package_university_assets.py \
+            --dest app/src/main/assets/university --probe --strict
+      - name: Verify both data packs
+        working-directory: native-android
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          a = Path("app/src/main/assets")
+          vocab = json.loads((a/"vocabulary"/"vocab-verification.json").read_text())
+          raw = json.loads((a/"vocabulary"/"university-words.json").read_text())
+          exams = json.loads((a/"university"/"content-index.json").read_text())
+          assert vocab["status"] == "verified"
+          assert len(vocab["books"]) == 9 and vocab["wordCount"] >= 1000
+          assert len(raw["words"]) == vocab["wordCount"]
+          for book in raw["books"]:
+              assert len(book["words"]) >= 500 and all(
+                  isinstance(i,int) and 0 <= i < vocab["wordCount"]
+                  for i in book["words"])
+          assert exams["expected"] == exams["complete"] == 4
+          assert not exams["failures"], exams["failures"]
+          print("DUAL_MODE_CONTENT_VERIFIED vocab="+str(vocab["wordCount"])+
+                " exams=4")
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Test and compile native dual-mode APK
+        working-directory: native-android
+        run: |
+          for attempt in 1 2 3; do
+            if gradle --no-daemon --max-workers=2 --no-parallel \
+              :app:testDebugUnitTest :app:assembleDebug; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep $((attempt * 40))
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shiguang-native-dual-mode-original-university
+          path: native-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dual-mode-content-verification
+          path: |
+            native-android/app/src/main/assets/vocabulary/vocab-verification.json
+            native-android/app/src/main/assets/university/content-index.json
+          if-no-files-found: ignore

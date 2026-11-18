@@ -1,6 +1,7 @@
 package com.shiguang.english.nativeapp
 
 import androidx.compose.ui.test.assertExists
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -34,5 +35,14 @@ class NativeReferenceUiTest {
         rule.onNodeWithText("四级英语").performScrollTo().performClick()
         rule.onNodeWithText("选择试卷").assertExists()
         rule.onNodeWithText("📕 六级").assertExists()
+    }
+
+    @Test fun switchToVocabAndBackRetainsNativeModeNavigation() {
+        rule.onNodeWithTag("app-mode-vocab").performClick()
+        rule.onNodeWithText("今日").assertExists()
+        rule.onNodeWithText("词库").performClick()
+        rule.onNodeWithText("选择词书").assertExists()
+        rule.onNodeWithTag("app-mode-exam").performClick()
+        rule.onNodeWithText("首页").assertExists()
     }
 }

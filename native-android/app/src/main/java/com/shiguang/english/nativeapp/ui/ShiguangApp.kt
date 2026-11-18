@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.shiguang.english.nativeapp.data.LocalStudyRepository
 import com.shiguang.english.nativeapp.data.StudyProgress
 import com.shiguang.english.nativeapp.data.UniversityRepository
+import com.shiguang.english.nativeapp.data.VocabRepository
+import com.shiguang.english.nativeapp.data.WordUserSettings
 import kotlinx.coroutines.launch
 
 /**
@@ -30,6 +32,12 @@ fun ShiguangApp() {
     val context = LocalContext.current
     val localRepository = remember(context) { LocalStudyRepository(context.applicationContext) }
     val university = remember(context) { UniversityRepository(context.applicationContext) }
+    val vocab = remember(context) { VocabRepository(context.applicationContext) }
+    val modeSettings by vocab.settings.collectAsState(initial = WordUserSettings())
+    var currentMode by rememberSaveable { mutableStateOf("exam") }
+    LaunchedEffect(modeSettings.appMode) {
+        currentMode = modeSettings.appMode
+    }
     val progress by localRepository.progress.collectAsState(initial = StudyProgress())
     val savedWallpaperUri by localRepository.wallpaperUri.collectAsState(initial = "")
     val scope = rememberCoroutineScope()
@@ -64,9 +72,17 @@ fun ShiguangApp() {
             else -> "home"
         }
     }
-    BackHandler(enabled = !showDock) { navigateBack() }
+    fun changeMode(mode: String) {
+        currentMode = mode
+        scope.launch { vocab.selectMode(mode) }
+    }
+    BackHandler(enabled = currentMode == "exam" && !showDock) { navigateBack() }
 
-    Box(Modifier.fillMaxSize().background(Color.White)) {
+    if (currentMode == "vocab") {
+        screenStates.SaveableStateProvider("mode:vocab") {
+            VocabRoot(repository = vocab, onModeSwitch = { changeMode(it) })
+        }
+    } else Box(Modifier.fillMaxSize().background(Color.White)) {
         Column(Modifier.fillMaxSize()) {
             if (!showDock) {
                 Row(
@@ -93,9 +109,10 @@ fun ShiguangApp() {
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
-                    IconButton(onClick = { page = "profile" }, enabled = page != "profile") {
-                        Icon(Icons.Outlined.MoreHoriz, contentDescription = "更多设置")
-                    }
+                    StudyModeSwitch(
+                        mode = "exam",
+                        onSwitch = { changeMode(it) }
+                    )
                 }
                 HorizontalDivider(thickness = 0.5.dp, color = PaperStroke)
             }
@@ -166,6 +183,11 @@ fun ShiguangApp() {
             }
         }
         if (showDock) {
+            StudyModeSwitch(
+                mode = "exam",
+                onSwitch = { changeMode(it) },
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 15.dp)
+            )
             ReplicaHomeDock(
                 active = page,
                 onSelect = { page = it },

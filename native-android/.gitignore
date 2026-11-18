@@ -10,3 +10,6 @@ local.properties
 app/src/main/assets/university/exams/
 app/src/main/assets/university/audio/
 app/src/main/assets/university/content-index.json
+
+# Authorized university vocabulary generated only by CI
+app/src/main/assets/vocabulary/
