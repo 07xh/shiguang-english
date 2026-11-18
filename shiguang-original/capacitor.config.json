@@ -1,0 +1,6 @@
+{
+  "appId": "com.shiguang.original",
+  "appName": "拾光英语·原版",
+  "webDir": "www",
+  "android": { "allowMixedContent": true }
+}
