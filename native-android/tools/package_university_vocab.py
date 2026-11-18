@@ -137,13 +137,13 @@ def main():
             with urlopen(Request(url, headers={
                 "User-Agent": "ShiguangEnglish-AuthorizedNativePacker/1.0"
             }), timeout=18) as response:
-                payload = response.read(3 * 1024 * 1024)
-            is_webp = payload[:4] == b"RIFF" and payload[8:12] == b"WEBP"
-            if not is_webp or len(payload) < 100:
+                cover_data = response.read(3 * 1024 * 1024)
+            is_webp = cover_data[:4] == b"RIFF" and cover_data[8:12] == b"WEBP"
+            if not is_webp or len(cover_data) < 100:
                 raise ValueError("Not a valid WebP image")
-            (cover_dir / (book_id + ".webp")).write_bytes(payload)
+            (cover_dir / (book_id + ".webp")).write_bytes(cover_data)
             cover_count += 1
-            print("COVER_VERIFIED", book_id, len(payload), flush=True)
+            print("COVER_VERIFIED", book_id, len(cover_data), flush=True)
         except (HTTPError, URLError, ValueError, OSError, TimeoutError) as exc:
             print("COVER_MISSING", book_id, str(exc)[:90], file=sys.stderr)
     report = {
