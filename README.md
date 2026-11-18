@@ -2,6 +2,12 @@
 
 手机 / 平板 / 网页三端可用的英语学习 App。参考 B 站「英语精听与历年真题」「背什么背」两个 Toy 应用的页面风格复刻，**全站功能免费，无付费墙**。
 
+## 直接下载安装（无需编译）
+
+- **Android APK（v1.0）**：[点此下载 app-debug.apk](https://github.com/07xh/shiguang-english/raw/main/app-debug.apk)
+  - 手机 / 平板下载后直接安装（需允许「安装未知来源应用」）
+  - 最小支持 Android 5.1（API 22），目标 Android 14（API 34）
+
 ## 功能
 
 | 模块 | 内容 |
