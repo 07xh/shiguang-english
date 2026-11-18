@@ -1,6 +1,7 @@
 package com.shiguang.english.nativeapp.ui
 
 import android.media.MediaPlayer
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -574,6 +576,7 @@ private fun UniversityMultiBlankScreen(
             modifier = Modifier.padding(24.dp), color = Amber)
         return
     }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     var index by rememberSaveable(exam.id) { mutableIntStateOf(0) }
     var advanced by rememberSaveable(exam.id) { mutableStateOf(false) }
     var active by rememberSaveable(exam.id, index) { mutableIntStateOf(0) }
@@ -581,7 +584,7 @@ private fun UniversityMultiBlankScreen(
     var answerVisible by rememberSaveable(exam.id, index) { mutableStateOf(false) }
     var hintVisible by rememberSaveable(exam.id, index) { mutableStateOf(false) }
     var jumpVisible by rememberSaveable(exam.id) { mutableStateOf(false) }
-    var customKeyboard by rememberSaveable(exam.id) { mutableStateOf(true) }
+    var customKeyboard by rememberSaveable(exam.id) { mutableStateOf(!isLandscape) }
     val sent = sentences[index]
     val blanks = remember(sent.text, advanced) {
         DictationBlankSelector.select(sent.text, advanced)
@@ -738,12 +741,12 @@ private fun UniversityMultiBlankScreen(
                             allWords.forEach { match ->
                                 val gap = sent.text.substring(cursor, match.range.first)
                                 if (gap.isNotEmpty()) {
-                                    Text(gap, fontSize = 23.sp, lineHeight = 45.sp)
+                                    Text(gap, fontSize = if (isLandscape) 18.5.sp else 23.sp, lineHeight = if (isLandscape) 30.sp else 45.sp)
                                 }
                                 val blankIndex = blanks.indexOfFirst { it.start == match.range.first }
                                 if (blankIndex < 0 || answerVisible) {
-                                    Text(match.value, fontSize = 23.sp,
-                                        color = Ink, lineHeight = 45.sp,
+                                    Text(match.value, fontSize = if (isLandscape) 18.5.sp else 23.sp,
+                                        color = Ink, lineHeight = if (isLandscape) 30.sp else 45.sp,
                                         fontWeight = FontWeight.Medium)
                                 } else {
                                     val value = input(blankIndex)
@@ -756,7 +759,7 @@ private fun UniversityMultiBlankScreen(
                                         singleLine = true,
                                         readOnly = customKeyboard,
                                         textStyle = TextStyle(
-                                            fontSize = 20.sp, fontWeight = FontWeight.SemiBold,
+                                            fontSize = if (isLandscape) 16.sp else 20.sp, fontWeight = FontWeight.SemiBold,
                                             color = if (correct) CorrectGreen else Ink
                                         ),
                                         modifier = Modifier
@@ -795,8 +798,8 @@ private fun UniversityMultiBlankScreen(
                                 cursor = match.range.last + 1
                             }
                             if (cursor < sent.text.length) {
-                                Text(sent.text.substring(cursor), fontSize = 23.sp,
-                                    lineHeight = 45.sp)
+                                Text(sent.text.substring(cursor), fontSize = if (isLandscape) 18.5.sp else 23.sp,
+                                    lineHeight = if (isLandscape) 30.sp else 45.sp)
                             }
                         }
                     }

@@ -144,6 +144,8 @@ fun ReplicaHomeScreen(
         context.startActivity(Intent.createChooser(intent, "分享学习记录"))
     }
 
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    val isLandscape = maxWidth > maxHeight && maxWidth >= 650.dp
     LazyColumn(
         modifier = Modifier.fillMaxSize().widthIn(max = 980.dp),
         contentPadding = PaddingValues(bottom = 102.dp),
@@ -151,7 +153,7 @@ fun ReplicaHomeScreen(
     ) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().height(326.dp)
+                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 118.dp else 326.dp)
             ) {
                 if (chosenBitmap != null) {
                     Image(bitmap = chosenBitmap!!, contentDescription = "自定义首页壁纸",
@@ -172,7 +174,9 @@ fun ReplicaHomeScreen(
                     )
                 )
                 Column(
-                    Modifier.fillMaxSize().padding(start = 22.dp, end = 20.dp, top = 18.dp, bottom = 61.dp),
+                    Modifier.fillMaxSize().padding(start = 22.dp, end = 20.dp,
+                        top = if (isLandscape) 7.dp else 18.dp,
+                        bottom = if (isLandscape) 18.dp else 61.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
@@ -183,9 +187,9 @@ fun ReplicaHomeScreen(
                         HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("Welcome back 👋", fontSize = 14.sp,
+                        Text("Welcome back 👋", fontSize = if (isLandscape) 11.sp else 14.sp,
                             fontWeight = FontWeight.SemiBold, color = Color.White)
-                        Text("同学", fontSize = 30.sp,
+                        Text("同学", fontSize = if (isLandscape) 19.sp else 30.sp,
                             fontWeight = FontWeight.ExtraBold, color = Color.White)
                     }
                 }
@@ -193,12 +197,13 @@ fun ReplicaHomeScreen(
         }
         item {
             Surface(
-                modifier = Modifier.fillMaxWidth().offset(y = (-28).dp),
+                modifier = Modifier.fillMaxWidth().offset(y = if (isLandscape) (-16).dp else (-28).dp),
                 color = Color.White,
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+                shape = RoundedCornerShape(topStart = if (isLandscape) 20.dp else 28.dp,
+                    topEnd = if (isLandscape) 20.dp else 28.dp)
             ) {
                 Column(
-                    Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 34.dp),
+                    Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = if (isLandscape) 10.dp else 12.dp, bottom = 34.dp),
                     verticalArrangement = Arrangement.spacedBy(19.dp)
                 ) {
                     Box(
@@ -352,6 +357,7 @@ fun ReplicaHomeScreen(
                 }
             }
         }
+    }
     }
 }
 

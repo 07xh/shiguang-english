@@ -49,6 +49,9 @@ jobs:
                   assert audio.stat().st_size > 1024
                   print("AUDIO_VERIFIED",entry["id"],audio.stat().st_size)
           PY
+      - name: Inspect live source module structure (field names only)
+        working-directory: native-android
+        run: python3 tools/audit_university_shapes.py
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

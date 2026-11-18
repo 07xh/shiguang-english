@@ -48,10 +48,13 @@ jobs:
           disable-animations: true
           script: |
             cd native-android
+            set +e
             gradle --no-daemon --max-workers=2 :app:connectedDebugAndroidTest
-            adb shell am start -n com.shiguang.english.nativeapp/.MainActivity
-            sleep 5
-            adb exec-out screencap -p > "$GITHUB_WORKSPACE/native-${{ matrix.name }}-home.png"
+            TEST_RESULT=$?
+            adb shell am start -n com.shiguang.english.nativeapp/.MainActivity || true
+            sleep 4
+            adb exec-out screencap -p > "$GITHUB_WORKSPACE/native-${{ matrix.name }}-home.png" || true
+            exit $TEST_RESULT
       - uses: actions/upload-artifact@v4
         if: always()
         with:
