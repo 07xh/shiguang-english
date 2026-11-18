@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#ff8a5b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>拾光英语</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="screen">
+    <main id="app"></main>
+    <nav class="tabbar" id="tabbar">
+      <button data-page="home" class="on"><span class="ic">⌂</span>首页</button>
+      <button data-page="review"><span class="ic">◷</span>统计</button>
+      <button data-page="listening"><span class="ic">♫</span>听力</button>
+      <button data-page="words"><span class="ic">A</span>单词</button>
+      <button data-page="profile"><span class="ic">☺</span>我的</button>
+    </nav>
+    <div id="toast" class="toast" hidden></div>
+  </div>
+  <script src="js/data-exams.js"></script>
+  <script src="js/data-books.js"></script>
+  <script src="js/data-words.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>
