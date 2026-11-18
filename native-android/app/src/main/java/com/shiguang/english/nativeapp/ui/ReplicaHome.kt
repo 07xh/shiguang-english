@@ -99,7 +99,9 @@ fun ReplicaHomeScreen(
     onCatalog: (String, String) -> Unit,
     onExam: (UniversityExam, String) -> Unit,
     onProfile: () -> Unit,
-    onWords: () -> Unit
+    onWords: () -> Unit,
+    savedWallpaperUri: String,
+    onWallpaperChange: (String) -> Unit
 ) {
     val context = LocalContext.current
     var mode by rememberSaveable { mutableStateOf("written") }
@@ -113,7 +115,7 @@ fun ReplicaHomeScreen(
         "dictation" -> listOf("cet4", "cet6", "ielts")
         else -> listOf("cet4", "cet6", "kaoyan")
     }
-    var heroUri by rememberSaveable { mutableStateOf("") }
+    val heroUri = savedWallpaperUri
     val chooser = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             try {
@@ -121,7 +123,7 @@ fun ReplicaHomeScreen(
                     uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
             } catch (_: Exception) {}
-            heroUri = uri.toString()
+            onWallpaperChange(uri.toString())
         }
     }
     val chosenBitmap by produceState<ImageBitmap?>(null, heroUri) {

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,6 +18,7 @@ private val KNOWN = stringSetPreferencesKey("known")
 private val REVIEW = stringSetPreferencesKey("needs_review")
 private val ANSWERED = intPreferencesKey("answered")
 private val CORRECT = intPreferencesKey("correct")
+private val WALLPAPER = stringPreferencesKey("wallpaper_uri")
 
 data class StudyProgress(
     val known: Set<String> = emptySet(),
@@ -29,6 +31,14 @@ data class StudyProgress(
 
 class LocalStudyRepository(context: Context) {
     private val store = context.applicationContext.studyDataStore
+
+    val wallpaperUri: Flow<String> = store.data
+        .catch { error -> if (error is IOException) emit(emptyPreferences()) else throw error }
+        .map { preferences -> preferences[WALLPAPER].orEmpty() }
+
+    suspend fun setWallpaperUri(uri: String) {
+        store.edit { it[WALLPAPER] = uri }
+    }
 
     val progress: Flow<StudyProgress> = store.data
         .catch { error ->
@@ -67,6 +77,11 @@ class LocalStudyRepository(context: Context) {
     }
 
     suspend fun clear() {
-        store.edit { it.clear() }
+        store.edit {
+            it.remove(KNOWN)
+            it.remove(REVIEW)
+            it.remove(ANSWERED)
+            it.remove(CORRECT)
+        }
     }
 }

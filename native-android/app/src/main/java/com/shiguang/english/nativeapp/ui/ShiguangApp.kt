@@ -31,6 +31,7 @@ fun ShiguangApp() {
     val localRepository = remember(context) { LocalStudyRepository(context.applicationContext) }
     val university = remember(context) { UniversityRepository(context.applicationContext) }
     val progress by localRepository.progress.collectAsState(initial = StudyProgress())
+    val savedWallpaperUri by localRepository.wallpaperUri.collectAsState(initial = "")
     val scope = rememberCoroutineScope()
     var page by rememberSaveable { mutableStateOf("home") }
     var bookId by rememberSaveable { mutableStateOf("cet4") }
@@ -114,7 +115,11 @@ fun ShiguangApp() {
                             onCatalog = { mode, level -> openCatalog(mode, level) },
                             onExam = { exam, module -> openPaper(exam, module) },
                             onProfile = { page = "profile" },
-                            onWords = { page = "words" }
+                            onWords = { page = "words" },
+                            savedWallpaperUri = savedWallpaperUri,
+                            onWallpaperChange = { uri ->
+                                scope.launch { localRepository.setWallpaperUri(uri) }
+                            }
                         )
                         "stats" -> ReplicaStatsScreen(progress)
                         "listening", "university" -> UniversityCatalogScreen(
@@ -151,7 +156,11 @@ fun ShiguangApp() {
                             onCatalog = { mode, level -> openCatalog(mode, level) },
                             onExam = { exam, module -> openPaper(exam, module) },
                             onProfile = { page = "profile" },
-                            onWords = { page = "words" })
+                            onWords = { page = "words" },
+                            savedWallpaperUri = savedWallpaperUri,
+                            onWallpaperChange = { uri ->
+                                scope.launch { localRepository.setWallpaperUri(uri) }
+                            })
                     }
                 }
             }
