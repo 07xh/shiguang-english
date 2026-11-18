@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><script>(function(){try{
+var W=window;if(W.__TOY_PERF__){return;}
+var P=W.performance;if(!P||!P.getEntriesByType){return;}
+var M={fw:[],sent:false};W.__TOY_PERF__=M;
+M.pnow=function(){try{return P.now?P.now():(Date.now()-M.t0);}catch(e){return 0;}};
+M.head=Math.round(P.now?P.now():0);
+M.t0=Math.round((P.timeOrigin!==undefined&&P.timeOrigin!==null)?P.timeOrigin:
+ ((P.timing&&P.timing.navigationStart)||Date.now()));
+M.sid=(W.crypto&&W.crypto.randomUUID)?W.crypto.randomUUID():
+ (Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10));
+M.fcp=undefined;
+M.readFCP=function(){try{
+ if(M.fcp!==undefined){return M.fcp;}
+ var es=P.getEntriesByType("paint")||[];
+ for(var i=0;i<es.length;i++){
+  if(es[i].name==="first-contentful-paint"){M.fcp=Math.round(es[i].startTime);return M.fcp;}}
+}catch(e){}
+return M.fcp;};
+try{var po=new W.PerformanceObserver(function(l){try{
+ var es=l.getEntries();for(var i=0;i<es.length;i++){
+  if(es[i].name==="first-contentful-paint"&&M.fcp===undefined){M.fcp=Math.round(es[i].startTime);
+   try{if(M.onFCP){M.onFCP();}}catch(e){}}}
+}catch(e){}});
+try{po.observe({type:"paint",buffered:true});}catch(e){po.observe({entryTypes:["paint"]});}
+}catch(e){}
+M.probe=function(){try{
+ var hit=[];var d=document;
+ var add=function(k){if(hit.indexOf(k)<0){hit.push(k);}};
+ if(W.unityInstance||W.UnityLoader||W.createUnityInstance){add("unity");}
+ if(W.vm||W.Scratch||W.ScratchVM){add("scratch");}
+ if(W.cc||W.cocos){add("cocos");}
+ if(W.Godot){add("godot");}
+ if(W.PIXI){add("pixi");}
+ if(W.Phaser){add("phaser");}
+ if(W.THREE){add("three");}
+ if(W.BABYLON){add("babylon");}
+ if(W.WebAssembly&&W.Module&&(W.Module.asm||W.Module.wasmBinary||W._malloc)){add("wasm");}
+ if(W.Vue||d.querySelector&&d.querySelector("[data-v-app]")){add("vue");}
+ if(W.React||W.ReactDOM){add("react");}
+ for(var i=0;i<hit.length;i++){if(M.fw.indexOf(hit[i])<0){M.fw.push(hit[i]);}}
+}catch(e){}};
+M.kind=function(){try{
+ var cv=document.getElementsByTagName?document.getElementsByTagName("canvas"):[];
+ var engine=["unity","scratch","cocos","godot","pixi","phaser","three","babylon"];
+ var hasEngine=false;
+ for(var i=0;i<engine.length;i++){if(M.fw.indexOf(engine[i])>=0){hasEngine=true;break;}}
+ if(cv&&cv.length>0){return hasEngine?"canvas-engine":"canvas";}
+ return hasEngine?"dom-engine":"dom";
+}catch(e){return "unknown";}};
+M.collect=function(withKind){try{
+ var nav=(P.getEntriesByType("navigation")||[])[0]||{};
+ var o={toy_id:M.toyID,render_mode:M.renderMode,layer:M.layer,
+  session_id:M.sid,time_origin:M.t0};
+ var put=function(k,v){try{var x=Math.round(v||0);if(x>0){o[k]=x;}}catch(e){}};
+ put("ttfb",nav.responseStart);put("dcl",nav.domContentLoadedEventEnd);
+ put("load",nav.loadEventEnd);put("doc_bytes",nav.decodedBodySize);
+ put("head_ms",M.head);put("transfer_bytes",nav.transferSize);
+ put("encoded_bytes",nav.encodedBodySize);
+ if(withKind){M.probe();o.kind=M.kind();o.fw=M.fw.join(",");}
+ var fcp=M.readFCP();
+ if(fcp!==undefined){o.fcp=fcp;}
+ if(M.fcpEst!==undefined){o.fcp_est=M.fcpEst;}
+ if(M.selfArmed){put("ff_self",M.ffSelf);o.ff_self_src=M.ffSrc||(M.selfDone?"none":"pending");}
+ return o;
+}catch(e){return null;}};
+}catch(e){}})();(function(){try{
+var W=window;var M=W.__TOY_PERF__;if(!M){return;}
+var P=W.performance;if(!P){return;}
+M.fcpEst=undefined;
+M.armEst=function(){try{
+ if(M.estArmed){return;}M.estArmed=true;
+ if(!W.MutationObserver){return;}
+ var D=document;
+ var SKIP={SCRIPT:1,STYLE:1,LINK:1,META:1,HEAD:1,TITLE:1,NOSCRIPT:1,TEMPLATE:1};
+ var INK={IMG:1,SVG:1,VIDEO:1,INPUT:1,BUTTON:1,TEXTAREA:1,SELECT:1};
+ var vis=function(n){try{var s=W.getComputedStyle(n);
+  return !s||(s.display!=="none"&&s.visibility!=="hidden"&&s.opacity!=="0");
+ }catch(e){return true;}};
+ var scan=function(n,dep){try{
+  if(dep>14){return false;}
+  if(n.nodeType===3){return /\S/.test(n.nodeValue||"");}
+  if(n.nodeType!==1){return false;}
+  if(SKIP[n.tagName]){return false;}
+  if(!vis(n)){return false;}
+  if(INK[n.tagName]){return true;}
+  try{var s=W.getComputedStyle(n);
+   if(s&&s.backgroundImage&&s.backgroundImage!=="none"){return true;}}catch(e){}
+  var c=n.childNodes||[];
+  for(var i=0;i<c.length;i++){if(scan(c[i],dep+1)){return true;}}
+  return false;
+ }catch(e){return false;}};
+ var anc=function(n){try{var p=n.parentNode;
+  while(p&&p.nodeType===1){if(SKIP[p.tagName]||!vis(p)){return false;}p=p.parentNode;}
+  return true;
+ }catch(e){return true;}};
+ var ink=function(n){try{
+  if(!n||!D.body){return false;}
+  if(n!==D.body&&(!D.body.contains||!D.body.contains(n))){return false;}
+  if(!anc(n)){return false;}
+  return scan(n,0);
+ }catch(e){return false;}};
+ var now=function(){try{return Math.round(P.now?P.now():(Date.now()-M.t0));}catch(e){return 0;}};
+ var mark=function(){try{
+  if(M.fcpEst!==undefined){return;}
+  var set=function(){try{if(M.fcpEst===undefined){M.fcpEst=now();}}catch(e){}};
+  if(W.requestAnimationFrame){W.requestAnimationFrame(function(){try{setTimeout(set,0);}catch(e){set();}});}
+  else{setTimeout(set,16);}
+ }catch(e){}};
+ var both=function(){try{mark();if(M.selfMark){M.selfMark();}}catch(e){}};
+ var mo=new W.MutationObserver(function(rs){try{
+  for(var i=0;i<rs.length;i++){
+   var a=rs[i].addedNodes||[];
+   for(var j=0;j<a.length;j++){if(ink(a[j])){both();mo.disconnect();return;}}
+   if(rs[i].type==="characterData"&&ink(rs[i].target)){both();mo.disconnect();return;}}
+ }catch(e){}});
+ mo.observe(D,{childList:true,subtree:true,characterData:true});
+}catch(e){}};
+}catch(e){}})();(function(){try{
+var W=window;var M=W.__TOY_PERF__;if(!M){return;}
+var P=W.performance;if(!P){return;}
+M.ffSelf=undefined;M.ffSrc=undefined;M.cvs=[];
+var hit=function(src){try{
+ if(M.ffSelf!==undefined){return;}
+ M.ffSelf=Math.round(M.pnow());M.ffSrc=src;M.unhookCtx();
+ try{if(M.onSelf){M.onSelf();}}catch(e){}
+}catch(e){}};
+M.unhookCtx=function(){try{
+ var H=W.HTMLCanvasElement;
+ if(M.gcOrig&&H&&H.prototype&&H.prototype.getContext===M.gcWrap){H.prototype.getContext=M.gcOrig;}
+ M.gcOrig=null;M.gcWrap=null;M.cvs=[];
+}catch(e){}};
+M.selfMark=function(){try{
+ if(M.ffSelf!==undefined||!W.requestAnimationFrame){return;}
+ W.requestAnimationFrame(function(){try{
+  W.requestAnimationFrame(function(){try{hit("raf2");}catch(e){}});
+ }catch(e){}});
+}catch(e){}};
+M.armSelf=function(){try{
+ if(M.selfArmed){return;}M.selfArmed=true;
+ var H=W.HTMLCanvasElement;
+ if(!H||!H.prototype||typeof H.prototype.getContext!=="function"){return;}
+ var orig=H.prototype.getContext;
+ M.gcOrig=orig;
+ M.gcWrap=function(t){
+  var r=orig.apply(this,arguments);
+  try{if(r&&M.cvs.length<8){
+   var dup=false;
+   for(var i=0;i<M.cvs.length;i++){if(M.cvs[i].c===this){dup=true;break;}}
+   if(!dup){M.cvs.push({c:this,t:(""+t).toLowerCase(),x:r,bad:false});}}}catch(e){}
+  return r;};
+ H.prototype.getContext=M.gcWrap;
+}catch(e){}};
+M.probeCanvas=function(round){try{
+ if(M.ffSelf!==undefined){return;}
+ var D=document;var gl=false;var tainted=false;
+ for(var i=0;i<M.cvs.length;i++){
+  var q=M.cvs[i];var cv=q.c;var x=q.x;
+  if(q.t.indexOf("webgl")>=0||q.t.indexOf("webgpu")>=0){gl=true;continue;}
+  if(q.bad||q.t!=="2d"||!x||!x.getImageData||!cv){continue;}
+  if(D.body&&D.body.contains&&!D.body.contains(cv)){continue;}
+  if(!cv.clientWidth||!cv.clientHeight||!cv.width||!cv.height){continue;}
+  var w=cv.width,h=cv.height;
+  var pts=[[w>>1,h>>1],[0,0],[w-1,h-1],[w>>2,h>>2]];
+  var p=pts[(round||0)%pts.length];
+  try{
+   var d=x.getImageData(p[0],p[1],1,1).data;
+   if(d[3]!==0||d[0]!==0||d[1]!==0||d[2]!==0){hit("pixel");return;}
+  }catch(er){q.bad=true;if(er&&er.name==="SecurityError"){tainted=true;}}
+ }
+ if(M.ffSrc===undefined){if(gl){M.ffSrc="gl-blind";}else if(tainted){M.ffSrc="tainted";}}
+}catch(e){}};
+}catch(e){}})();(function(){try{
+var W=window;var M=W.__TOY_PERF__;if(!M){return;}
+var NS="toy-shell-ability";
+M.toyID=24227927458816;M.renderMode=2;
+M.layer="content";
+M.armEst();M.armSelf();
+try{var pn=0;var pt=M.pnow();var pdone=function(){try{clearInterval(pk);}catch(e){}
+ try{if(M.unhookCtx){M.unhookCtx();}}catch(e){}
+ M.selfDone=true;try{if(M.onSelf){M.onSelf();}}catch(e){}};
+var pk=setInterval(function(){try{
+ M.probeCanvas(pn);
+ if(M.ffSelf!==undefined||++pn>=12||
+  (M.pnow()-pt)>=3600){pdone();}
+}catch(e){pdone();}},300);}catch(e){}
+M.seq=0;
+var flush=function(rs,up){try{
+ if(up==="self"){if(M.sent3){return;}M.sent3=true;}
+ else if(up){if(M.sent2){return;}M.sent2=true;}
+ else{if(M.sent){return;}M.sent=true;}
+ var o=M.collect(true);if(!o){return;}
+ o.flush_reason=up?(up==="self"?"self":"up"):rs;o.seq=++M.seq;o.ns=NS;o.type="perf";
+ M.pendingOut=(o.ff_self_src==="pending");
+ if(W.parent&&W.parent!==W){W.parent.postMessage(o,"*");}
+}catch(e){}};
+try{var n=0;var tk=setInterval(function(){try{M.probe();if(++n>8||M.done){clearInterval(tk);}}catch(e){}},400);}catch(e){}
+var arm=function(){try{
+ var waited=0;
+ var stop=function(t){try{M.done=true;clearInterval(t);}catch(e){}};
+ var tick=setInterval(function(){try{
+  waited+=300;
+  if(M.readFCP()!==undefined){stop(tick);flush("fcp",M.sent);return;}
+  if(M.fcpEst!==undefined){flush("est",false);}
+  if(waited>=5000){stop(tick);flush("bound",false);}
+ }catch(e){stop(tick);flush("err",false);}},300);
+ M.onFCP=function(){try{
+  if(!M.sent||M.sent2){return;}
+  stop(tick);flush("fcp",true);
+ }catch(e){}};
+ M.onSelf=function(){try{
+  if(!M.sent||M.sent3||!M.pendingOut){return;}
+  flush("self","self");
+ }catch(e){}};
+}catch(e){flush("err",false);}};
+if(document.readyState==="complete"){arm();}
+else{W.addEventListener("load",arm,false);}
+}catch(e){}})();</script><script>if(window.self===window.top){window.location.replace("https://www.bilibili.com/toy/qDif2poHemIk0VJH/24227927458816-v53236/index.html");}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>B站·四六级英语真题精练特训 Toy App</title>
+    
+    <!-- Automatic Base Path Normalization & Bulletproof iOS WKWebView Storage Engine -->
+    <script>
+    (function() {
+        try {
+            var loc = window.location;
+            var path = loc.pathname || '';
+            if (path && !path.endsWith('/') && !path.endsWith('.html') && !path.endsWith('.htm')) {
+                var base = document.createElement('base');
+                base.href = loc.origin + path + '/';
+                document.head.appendChild(base);
+            }
+        } catch(e) {}
+        window.__TOY_DICT_URL = 'dictionary_data.js?v=4.27&t=1795011679';
+    })();
+/* === Bulletproof iOS WKWebView Cross-Origin Iframe Storage Engine === */
+(function() {
+    if (window.__toyLS && window.__toySS) return;
+    function createSafeStorage(nativeName) {
+        var mem = Object.create(null);
+        var nativeStore = null;
+        try {
+            var s = window[nativeName];
+            if (s) {
+                var probe = '__toy_st_probe__';
+                s.setItem(probe, '1');
+                s.removeItem(probe);
+                nativeStore = s;
+            }
+        } catch (e) {
+            nativeStore = null;
+        }
+        return {
+            getItem: function(k) {
+                var key = String(k);
+                if (nativeStore) {
+                    try { return nativeStore.getItem(key); } catch (e) {}
+                }
+                return Object.prototype.hasOwnProperty.call(mem, key) ? mem[key] : null;
+            },
+            setItem: function(k, v) {
+                var key = String(k), val = String(v);
+                mem[key] = val;
+                if (nativeStore) {
+                    try {
+                        nativeStore.setItem(key, val);
+                    } catch (e) {
+                        try {
+                            var toDel = [];
+                            for (var i = 0; i < nativeStore.length; i++) {
+                                var nk = nativeStore.key(i);
+                                if (nk && nk !== 'toy_exam_mode' && nk !== 'toy_daily_accent' && nk !== 'toy_daily_repeat_count' && nk !== 'toy_daily_design_variant' && (nk.indexOf('toy_exam_') === 0 || nk.indexOf('toy_daily_') === 0)) {
+                                    toDel.push(nk);
+                                }
+                            }
+                            for (var j = 0; j < toDel.length; j++) nativeStore.removeItem(toDel[j]);
+                            nativeStore.setItem(key, val);
+                        } catch (e2) {}
+                    }
+                }
+            },
+            removeItem: function(k) {
+                var key = String(k);
+                delete mem[key];
+                if (nativeStore) {
+                    try { nativeStore.removeItem(key); } catch (e) {}
+                }
+            },
+            clear: function() {
+                mem = Object.create(null);
+                if (nativeStore) {
+                    try { nativeStore.clear(); } catch (e) {}
+                }
+            },
+            key: function(i) {
+                if (nativeStore) {
+                    try { return nativeStore.key(i); } catch (e) {}
+                }
+                var keys = Object.keys(mem);
+                return (i >= 0 && i < keys.length) ? keys[i] : null;
+            },
+            get length() {
+                if (nativeStore) {
+                    try { return nativeStore.length; } catch (e) {}
+                }
+                return Object.keys(mem).length;
+            }
+        };
+    }
+    window.__toyLS = window.__toyLS || createSafeStorage('localStorage');
+    window.__toySS = window.__toySS || createSafeStorage('sessionStorage');
+})();
+
+    </script>
+    
+    <!-- Bundled Stylesheet & WebFonts -->
+    <link rel="stylesheet" href="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/css/bundle.css">
+</head>
+<body class="view-home-active">
+
+    <!-- App Splash Loading Screen with Exact Matching Kraft Grid Background & Minimalist Dual-Arc Motion -->
+    <div id="app-splash-screen" class="app-splash-screen">
+        <div class="splash-card">
+            <div class="mini-art-canvas">
+                <svg viewBox="0 0 80 80" width="80" height="80" fill="none">
+                    <g class="v2-taiji-group">
+                        <path d="M 40 24 A 16 16 0 0 1 56 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+                        <path d="M 40 56 A 16 16 0 0 1 24 40" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <!-- Bulletproof Splash Screen Dismissal System (Controlled by app bootstrap) -->
+    <script>
+    (function() {
+        var splashRemoved = false;
+        var removeSplash = function() {
+            if (splashRemoved) return;
+            var el = document.getElementById('app-splash-screen');
+            if (el) {
+                splashRemoved = true;
+                el.classList.add('dissolving');
+                el.style.opacity = '0';
+                el.style.pointerEvents = 'none';
+                setTimeout(function() {
+                    el.classList.add('dissolved');
+                    el.style.display = 'none';
+                    try {
+                        if (el.parentNode) el.parentNode.removeChild(el);
+                    } catch(e) {}
+                }, 350);
+            }
+        };
+        window.__dismissSplash = removeSplash;
+        // Ultimate emergency failsafe watchdog: only triggers if JS runtime completely hangs
+        window.__splashWatchdog = setTimeout(removeSplash, 2200);
+    })();
+    </script>
+
+    <!-- Confetti Fireworks Canvas Layer (High z-index: 300, strictly click-through) -->
+    <canvas id="confetti-canvas" style="pointer-events: none;"></canvas>
+
+    <!-- Main Phone Frame Wrapper (for desktop simulation) -->
+    <div id="phone-frame-wrapper">
+        <div class="phone-btn phone-btn-action"></div>
+        <div class="phone-btn phone-btn-vol-up"></div>
+        <div class="phone-btn phone-btn-vol-down"></div>
+        <div class="phone-btn phone-btn-power"></div>
+
+        <!-- Main Layout Container (z-index: 10) -->
+        <div id="app-layout">
+        
+        <!-- Top Header Bar (Hidden on Home Portal) -->
+        <header class="top-header" style="display: none;">
+            <div class="header-left">
+                <!-- Squircle Back Button -->
+                <button class="icon-squircle-btn" id="btn-top-nav-action" style="display: none;" title="返回上一级">
+                    <span class="squircle-icon" id="nav-action-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 18l-6-6 6-6"/>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+            <div class="header-center">
+                <!-- Header Mode Switcher Segmented Control (全真模考 vs 随刷随解) -->
+                <div class="header-mode-segmented" id="header-mode-segmented" style="display: none;">
+                    <div class="mode-tab-btn" id="tab-mode-exam" data-mode="exam" title="答题卡模式，交卷前不剧透">
+                        <span class="tab-label">模考</span>
+                    </div>
+                    <div class="mode-tab-btn active" id="tab-mode-practice" data-mode="practice" title="做题即出解析与答案">
+                        <span class="tab-label">练习</span>
+                    </div>
+                </div>
+
+                <!-- Header Dictation Difficulty Switcher Segmented Control (基础模式 vs 进阶模式) -->
+                <div class="header-mode-segmented" id="header-dict-segmented" style="display: none;">
+                    <div class="mode-tab-btn active" id="tab-dict-basic" data-mode="basic" title="基础（挖空约30%实词）">
+                        <span class="tab-label">基础</span>
+                    </div>
+                    <div class="mode-tab-btn" id="tab-dict-advanced" data-mode="advanced" title="进阶（挖空约60%实词）">
+                        <span class="tab-label">进阶</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-right" style="position: relative; display: flex; align-items: center; gap: 6px;">
+
+
+                <!-- Squircle Action Button with 3-Dot Icon -->
+                <button class="icon-squircle-btn" id="btn-top-settings-action" style="display: none;" title="设置与功能">
+                    <span class="squircle-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="5" r="2" fill="#1c1c1e"/>
+                            <circle cx="12" cy="12" r="2" fill="#1c1c1e"/>
+                            <circle cx="12" cy="19" r="2" fill="#1c1c1e"/>
+                        </svg>
+                    </span>
+                </button>
+
+                <!-- Expanded Floating Action Menu Popover Card -->
+                <div class="header-popover-card" id="popover-quiz-actions">
+                    <div class="popover-menu-item" id="pop-item-dict-keyboard" style="display: none;">
+                        <span class="pop-item-icon" id="pop-icon-dict-keyboard">⌨️</span>
+                        <span class="pop-item-text" id="pop-text-dict-keyboard">展开键盘</span>
+                    </div>
+                    <div class="popover-menu-item" id="pop-item-redo">
+                        <span class="pop-item-icon">🔄</span>
+                        <span class="pop-item-text">重刷本套</span>
+                    </div>
+                    <div class="popover-menu-item" id="pop-item-orientation">
+                        <span class="pop-item-icon">📐</span>
+                        <span class="pop-item-text" id="pop-text-orientation">屏幕方向: 竖屏</span>
+                    </div>
+                    <div class="popover-menu-item" id="pop-item-hide-question" style="display: none;">
+                        <span class="pop-item-icon">🎧</span>
+                        <span class="pop-item-text" id="pop-text-hide-question">隐藏题目: 关</span>
+                    </div>
+                    <div class="popover-menu-item" id="pop-item-bilingual">
+                        <span class="pop-item-icon">🌐</span>
+                        <span class="pop-item-text" id="pop-text-bilingual">双语对照: 关</span>
+                    </div>
+                    <div class="popover-menu-item" id="pop-item-lookup">
+                        <span class="pop-item-icon">📖</span>
+                        <span class="pop-item-text" id="pop-text-lookup">查词模式: 关</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Views Container -->
+        <div class="views-container">
+
+            <!-- VIEW 0: MAIN MENU (Nature Hero Cover + Elevated Floating Bottom Sheet) -->
+            <div class="app-view active" id="view-home">
+                <div class="warm-app-portal">
+                    
+                    <!-- Top Hero Mountain/Nature Backdrop Cover -->
+                    <div class="home-hero-cover" style="background-image: url('vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/assets/images/background1.jpg');">
+                        <div class="hero-cover-overlay"></div>
+                        <div class="hero-cover-content">
+                            <!-- Top Right Profile & Menu Actions -->
+                            <div class="hero-cover-top-row">
+                                <div class="hero-cover-top-spacer"></div>
+                                <div class="hero-right-action-stack">
+
+                                    <button class="hero-glass-menu-btn" id="btn-change-hero-bg" title="更换头图壁纸">
+                                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5" fill="#FFFFFF"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                    </button>
+                                    <!-- 转发 / 生成打卡明信片 -->
+                                    <button class="hero-glass-menu-btn" id="btn-hero-share-card" title="分享打卡明信片">
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="#FFFFFF">
+                                            <path d="M13.5 5.2v3.6c-5.8 0.3-9.2 3.8-11 9.8 2.6-3.2 5.8-4.8 11-4.8v3.8c0 0.6 0.7 0.9 1.1 0.5l7.5-6.1c0.4-0.3 0.4-0.9 0-1.2l-7.5-6.1c-0.4-0.4-1.1-0.1-1.1 0.5z"/>
+                                        </svg>
+                                    </button>
+                                    <input type="file" id="input-hero-bg-upload" accept="image/*" style="display: none;">
+                                    <div class="hero-top-avatar-wrap btn-entry-rank" id="home-user-avatar-wrap" title="今日学习时长排行榜">
+                                        <div class="hero-top-avatar-placeholder" id="home-avatar-placeholder" style="pointer-events: none;">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="pointer-events: none;">
+                                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                                <circle cx="12" cy="7" r="4"></circle>
+                                            </svg>
+                                        </div>
+                                        <img id="home-user-avatar-img" class="hero-top-user-avatar" style="display: none; pointer-events: none;" alt="User Avatar">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom-Left Greeting Area -->
+                            <div class="hero-welcome-box">
+                                <div class="hero-welcome-sub">Welcome back 👋</div>
+                                <h1 class="hero-welcome-title" id="home-user-name">同学</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Elevated White Rounded Bottom Sheet Overlapping Hero -->
+                    <div class="home-bottom-sheet">
+                        <div class="sheet-pull-handle"></div>
+
+                        <!-- Preserved DOM IDs for compatibility / stats bindings (Hidden) -->
+                        <div style="display: none !important;">
+                            <span id="home-pill-total"></span>
+                            <span id="home-pill-duration"></span>
+                            <span id="home-pill-total-alt"></span>
+                            <span id="home-pill-duration-alt"></span>
+                            <span id="home-pill-today" class="home-pill-today-bind stat-lifetime-duration"></span>
+                            <button id="btn-switch-exam-category"></button>
+                        </div>
+
+                        <!-- Calendar Section: Expandable Week/Month Strip (1:1 Reference from 单词Toy) -->
+                        <div class="home-calendar-section" id="home-calendar-section">
+                            <div class="calendar-container-wrap is-collapsed" id="calendar-container-wrap">
+                                <!-- Collapsed Week Strip (1:1 Match Figure 1) -->
+                                <div class="calendar-week-strip" id="calendar-week-strip" title="轻触展开完整月历">
+                                    <!-- Rendered dynamically by home_calendar.js -->
+                                </div>
+                                <!-- Expanded Month Card (1:1 Match StyleStoicObsidian.vue) -->
+                                <div class="calendar-month-card" id="calendar-month-card">
+                                    <div class="month-card-header">
+                                        <div class="month-card-left">
+                                            <button class="btn-calendar-today" id="btn-calendar-today" style="display: none;" title="回到当月">今</button>
+                                        </div>
+                                        <div class="month-card-center">
+                                            <button class="btn-month-nav" id="btn-month-prev" title="上一月">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                                </svg>
+                                            </button>
+                                            <span class="month-title-text" id="month-title-text">October 2026</span>
+                                            <button class="btn-month-nav" id="btn-month-next" title="下一月">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="month-card-right">
+                                            <button class="btn-calendar-collapse" id="btn-calendar-collapse" title="收起月历">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- ★ 三项核心数据卡片 (累计打卡 · 学习时长 · 连续打卡) 1:1 复刻 StyleStoicObsidian.vue ★ -->
+                                    <div class="calendar-month-stats-card">
+                                        <div class="calendar-month-stats-grid">
+                                            <div class="month-stat-col">
+                                                <div class="month-stat-val">
+                                                    <span id="calendar-stat-total-val">2</span>
+                                                    <span class="month-stat-unit">天</span>
+                                                </div>
+                                                <p class="month-stat-lbl">累计打卡</p>
+                                            </div>
+                                            <div class="month-stat-col">
+                                                <div class="month-stat-val">
+                                                    <span id="calendar-stat-duration-val">0</span>
+                                                    <span class="month-stat-unit" id="calendar-stat-duration-unit">分</span>
+                                                </div>
+                                                <p class="month-stat-lbl">学习时长</p>
+                                            </div>
+                                            <div class="month-stat-col">
+                                                <div class="month-stat-val">
+                                                    <span id="calendar-stat-streak-val" class="home-streak-number-bind">2</span>
+                                                    <span class="month-stat-unit">天</span>
+                                                </div>
+                                                <p class="month-stat-lbl">连续打卡</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="month-weekdays-row">
+                                        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                                    </div>
+                                    <div class="month-grid" id="month-grid">
+                                        <!-- Rendered dynamically by home_calendar.js -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SVG 渐变着色定义 (1:1 移植单词Toy 灵狐火焰专属高透活力渐变与里程碑神火渐变) -->
+                        <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+                            <defs>
+                                <!-- 基础火相渐变 (1~6天)：绯红 -> 亮橙 -> 明金 -->
+                                <linearGradient id="flame-l1-out" x1="0%" y1="100%" x2="0%" y2="0%">
+                                    <stop offset="0%" stop-color="#FF2E4D" />
+                                    <stop offset="45%" stop-color="#FF6600" />
+                                    <stop offset="100%" stop-color="#FFA800" />
+                                </linearGradient>
+                                <linearGradient id="flame-l1-in" x1="0%" y1="100%" x2="0%" y2="0%">
+                                    <stop offset="0%" stop-color="#FF7B00" />
+                                    <stop offset="55%" stop-color="#FFCE00" />
+                                    <stop offset="100%" stop-color="#FFF890" />
+                                </linearGradient>
+
+                                <linearGradient id="flame-l2-out" href="#flame-l1-out" />
+                                <linearGradient id="flame-l2-in" href="#flame-l1-in" />
+                                <linearGradient id="flame-l3-out" href="#flame-l1-out" />
+                                <linearGradient id="flame-l3-in" href="#flame-l1-in" />
+                                <linearGradient id="flame-l4-out" href="#flame-l1-out" />
+                                <linearGradient id="flame-l4-in" href="#flame-l1-in" />
+                                <linearGradient id="flame-l5-out" href="#flame-l1-out" />
+                                <linearGradient id="flame-l5-in" href="#flame-l1-in" />
+                                <linearGradient id="flame-l6-out" href="#flame-l1-out" />
+                                <linearGradient id="flame-l6-in" href="#flame-l1-in" />
+
+                                <!-- 里程碑神火渐变 (7天满周 / 14天狂飙 / 30天满月 / 100+天登峰)：宝石炽红 -> 烈焰橙 -> 辉煌明金 -->
+                                <linearGradient id="flame-epic-out" x1="0%" y1="100%" x2="0%" y2="0%">
+                                    <stop offset="0%" stop-color="#E11D48" />
+                                    <stop offset="35%" stop-color="#FF3838" />
+                                    <stop offset="70%" stop-color="#FF6600" />
+                                    <stop offset="100%" stop-color="#FFA800" />
+                                </linearGradient>
+                                <linearGradient id="flame-epic-in" x1="0%" y1="100%" x2="0%" y2="0%">
+                                    <stop offset="0%" stop-color="#FF7500" />
+                                    <stop offset="50%" stop-color="#FFD400" />
+                                    <stop offset="100%" stop-color="#FFFAD0" />
+                                </linearGradient>
+
+                                <linearGradient id="flame-l7-out" href="#flame-epic-out" />
+                                <linearGradient id="flame-l7-in" href="#flame-epic-in" />
+                                <linearGradient id="flame-l8-out" href="#flame-epic-out" />
+                                <linearGradient id="flame-l8-in" href="#flame-epic-in" />
+                                <linearGradient id="flame-l9-out" href="#flame-epic-out" />
+                                <linearGradient id="flame-l9-in" href="#flame-epic-in" />
+                                <linearGradient id="flame-l10-out" href="#flame-epic-out" />
+                                <linearGradient id="flame-l10-in" href="#flame-epic-in" />
+
+                                <!-- 今日学习「斜倚丝带手帐书」莫兰迪燕麦奶茶专属渐变定义 -->
+                                <linearGradient id="book-oat-cover" x1="0%" y1="100%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#B09882" />
+                                    <stop offset="55%" stop-color="#C4AE99" />
+                                    <stop offset="100%" stop-color="#D7C4B2" />
+                                </linearGradient>
+                                <linearGradient id="book-oat-ribbon" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stop-color="#DF9A7E" />
+                                    <stop offset="100%" stop-color="#C27457" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+
+                        <!-- Top Symmetrical Bento Dashboard Grid: 一屏直出 (左: 今日排名大卡 | 右上: 连续打卡+灵动火苗 | 右下: 今日学习+燕麦茶手帐书) -->
+                        <div class="sheet-split-dashboard-grid is-static-bento" id="split-carousel-container">
+                            <div class="split-carousel-track" id="split-carousel-track">
+                                <div class="dashboard-carousel-page" data-page="1">
+                                    <!-- 左栏：今日排名大卡 -->
+                                    <div class="split-carousel-item" data-card="rank">
+                                        <div class="rank-square-card split-tall-map-card btn-entry-rank" id="top-card-entry-rank" title="查看今日全站排行榜">
+                                            <div class="rank-card-pill">
+                                                <div class="rank-avatar-stack">
+                                                    <img src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/assets/images/default_avatar.svg" class="rank-stack-avatar" alt="Avatar">
+                                                </div>
+                                                <span class="rank-pill-count">虚位以待</span>
+                                            </div>
+                                            <div class="rank-card-middle">
+                                                <div class="rank-card-value">
+                                                    第 <span class="home-user-rank-bind" id="home-user-rank">-</span> 名
+                                                </div>
+                                                <div class="rank-card-label">今日排名</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 右栏：上下双胶囊看板 (右上: 连续打卡+动态火苗 | 右下: 今日学习+莫兰迪燕麦奶茶手帐书) -->
+                                    <div class="split-carousel-item" data-card="metrics">
+                                        <div class="split-metric-stack">
+                                            <!-- 右上：连续打卡 + 11级动态SVG火苗 -->
+                                            <div class="split-mini-metric-card split-mini-bento-row split-mini-streak-card" id="card-streak-hero">
+                                                <div class="split-mini-left-col">
+                                                    <span class="split-metric-lbl">连续打卡</span>
+                                                    <div class="split-metric-val">
+                                                        <span class="home-streak-number-bind" id="dashboard-streak-number">1</span><small class="streak-unit-sub">天</small>
+                                                    </div>
+                                                </div>
+                                                <div class="streak-flame-box" id="streak-flame-wrap" aria-hidden="true">
+                                                    <svg viewBox="0 0 100 120" class="flame-svg flame-svg-l1">
+                                                        <path d="M52 26 C57 38 73 52 73 78 C73 98 62 112 50 112 C38 112 28 98 28 78 C28 60 40 46 46 34 C45 42 47 49 51 53 C50 42 48 32 52 26 Z" fill="url(#flame-l1-out)"/>
+                                                        <path d="M50 62 C54 72 63 80 63 92 C63 101 57 106 50 106 C43 106 37 101 37 92 C37 82 43 74 46 68 C46 72 48 76 50 62 Z" fill="url(#flame-l1-in)"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+
+                                            <!-- 右下：今日学习 + 莫兰迪燕麦奶茶斜倚丝带手帐书 -->
+                                            <div class="split-mini-metric-card split-mini-bento-row split-mini-study-card" id="card-study-hero">
+                                                <div class="split-mini-left-col">
+                                                    <span class="split-metric-lbl">今日学习</span>
+                                                    <div class="split-metric-val">
+                                                        <span class="home-pill-today-learning-bind stat-today-learning-time" id="home-pill-today-learning">0<small>分</small>0<small>秒</small></span>
+                                                    </div>
+                                                </div>
+                                                <div class="split-metric-art-icon study-svg-box" id="study-svg-wrap" aria-hidden="true">
+                                                    <svg viewBox="0 0 100 100" class="study-svg-icon">
+                                                        <g transform="rotate(-6 50 50)">
+                                                            <rect x="20" y="16" width="58" height="72" rx="11" fill="#8C7560" />
+                                                            <rect x="24" y="14" width="53" height="69" rx="8.5" fill="#FDFBF7" />
+                                                            <path d="M29 80 L73 80" stroke="#E5DDD3" stroke-width="2.6" stroke-linecap="round" />
+                                                            <rect x="20" y="10" width="55" height="66" rx="10" fill="url(#book-oat-cover)" />
+                                                            <path d="M29.5 11.5 L29.5 74.5" stroke="#735E4B" stroke-width="2.4" opacity="0.28" />
+                                                            <path d="M25.5 14 L25.5 72" stroke="#F5EFE8" stroke-width="2" stroke-linecap="round" opacity="0.55" />
+                                                            <path d="M51 10 L64 10 L64 52 L57.5 45.5 L51 52 Z" fill="url(#book-oat-ribbon)" />
+                                                        </g>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Primary Training Mode Switcher: 笔试特训 / 听力特训 / 逐句精听 (Apple Fitness+ 原生健身卡片风格) -->
+                        <div class="training-mode-switcher-container" id="training-mode-switcher-container">
+                            <div class="training-mode-switcher" id="home-training-mode-switcher">
+                                <button class="training-mode-tab-btn active" data-mode="written" id="tab-mode-written" onclick="switchTrainingMode('written')">
+                                    <span class="mode-tab-icon">✍️</span>
+                                    <span class="mode-tab-text">笔试特训</span>
+                                    <span class="mode-tab-pip"></span>
+                                </button>
+                                <button class="training-mode-tab-btn" data-mode="listening" id="tab-mode-listening" onclick="switchTrainingMode('listening')">
+                                    <span class="mode-tab-icon">🎧</span>
+                                    <span class="mode-tab-text">听力特训</span>
+                                    <span class="mode-tab-pip"></span>
+                                </button>
+                                <button class="training-mode-tab-btn" data-mode="dictation" id="tab-mode-dictation" onclick="switchTrainingMode('dictation')">
+                                    <span class="mode-tab-icon">🎙️</span>
+                                    <span class="mode-tab-text">逐句精听</span>
+                                    <span class="mode-tab-pip"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ✍️ Zone 1: 笔试特训专区 (CET-4 / CET-6 / 高考) -->
+                        <div class="training-section-content" id="section-content-written">
+                            <div class="home-modules-grid">
+                                <!-- CET4 Written -->
+                                <div class="capsule-module-card written written-sub-card" onclick="selectTrainingLevel('written', 'cet4')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="12" y="10" width="26" height="36" rx="4" stroke="#1E293B" stroke-width="2" fill="#F8FAFC"/>
+                                            <path d="M30 10 L38 18 H30 V10 Z" fill="#E2E8F0" stroke="#1E293B" stroke-width="1.8" stroke-linejoin="round"/>
+                                            <line x1="18" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="18" y1="25" x2="32" y2="25" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <line x1="18" y1="31" x2="30" y2="31" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <g transform="rotate(-30 40 34)">
+                                                <rect x="38" y="16" width="6" height="28" rx="1.5" fill="#3B82F6" stroke="#1E293B" stroke-width="1.8"/>
+                                                <polygon points="38,44 44,44 41,49" fill="#1E293B"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-4</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">READING</span>
+                                        <h3 class="capsule-card-title">四级英语</h3>
+                                    </div>
+                                </div>
+
+                                <!-- CET6 Written -->
+                                <div class="capsule-module-card written written-sub-card" onclick="selectTrainingLevel('written', 'cet6')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="12" y="10" width="26" height="36" rx="4" stroke="#1E293B" stroke-width="2" fill="#F8FAFC"/>
+                                            <path d="M30 10 L38 18 H30 V10 Z" fill="#E2E8F0" stroke="#1E293B" stroke-width="1.8" stroke-linejoin="round"/>
+                                            <line x1="18" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="18" y1="25" x2="32" y2="25" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <line x1="18" y1="31" x2="30" y2="31" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <g transform="rotate(-30 40 34)">
+                                                <rect x="38" y="16" width="6" height="28" rx="1.5" fill="#F43F5E" stroke="#1E293B" stroke-width="1.8"/>
+                                                <polygon points="38,44 44,44 41,49" fill="#1E293B"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-6</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">READING</span>
+                                        <h3 class="capsule-card-title">六级英语</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Gaokao Written -->
+                                <div class="capsule-module-card written written-sub-card" onclick="selectTrainingLevel('written', 'gaokao')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="12" y="10" width="26" height="36" rx="4" stroke="#1E293B" stroke-width="2" fill="#F8FAFC"/>
+                                            <path d="M30 10 L38 18 H30 V10 Z" fill="#E2E8F0" stroke="#1E293B" stroke-width="1.8" stroke-linejoin="round"/>
+                                            <line x1="18" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="18" y1="25" x2="32" y2="25" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <line x1="18" y1="31" x2="30" y2="31" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <g transform="rotate(-30 40 34)">
+                                                <rect x="38" y="16" width="6" height="28" rx="1.5" fill="#10B981" stroke="#1E293B" stroke-width="1.8"/>
+                                                <polygon points="38,44 44,44 41,49" fill="#1E293B"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">高考</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">READING</span>
+                                        <h3 class="capsule-card-title">高考英语</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Kaoyan English 1 Written -->
+                                <div class="capsule-module-card written kaoyan-top-card" onclick="selectTrainingLevel('written', 'kaoyan_eng1')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="12" y="10" width="26" height="36" rx="4" stroke="#1E293B" stroke-width="2" fill="#F8FAFC"/>
+                                            <path d="M30 10 L38 18 H30 V10 Z" fill="#E2E8F0" stroke="#1E293B" stroke-width="1.8" stroke-linejoin="round"/>
+                                            <line x1="18" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="18" y1="25" x2="32" y2="25" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <line x1="18" y1="31" x2="30" y2="31" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <g transform="rotate(-30 40 34)">
+                                                <rect x="38" y="16" width="6" height="28" rx="1.5" fill="#8B5CF6" stroke="#1E293B" stroke-width="1.8"/>
+                                                <polygon points="38,44 44,44 41,49" fill="#1E293B"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">英语(一)</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">READING</span>
+                                        <h3 class="capsule-card-title">考研英语(一)</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Kaoyan English 2 Written -->
+                                <div class="capsule-module-card written kaoyan-top-card" onclick="selectTrainingLevel('written', 'kaoyan_eng2')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="12" y="10" width="26" height="36" rx="4" stroke="#1E293B" stroke-width="2" fill="#F8FAFC"/>
+                                            <path d="M30 10 L38 18 H30 V10 Z" fill="#E2E8F0" stroke="#1E293B" stroke-width="1.8" stroke-linejoin="round"/>
+                                            <line x1="18" y1="19" x2="26" y2="19" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+                                            <line x1="18" y1="25" x2="32" y2="25" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <line x1="18" y1="31" x2="30" y2="31" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round"/>
+                                            <g transform="rotate(-30 40 34)">
+                                                <rect x="38" y="16" width="6" height="28" rx="1.5" fill="#F59E0B" stroke="#1E293B" stroke-width="1.8"/>
+                                                <polygon points="38,44 44,44 41,49" fill="#1E293B"/>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">英语(二)</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">READING</span>
+                                        <h3 class="capsule-card-title">考研英语(二)</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🎧 Zone 2: 听力特训专区 (CET-4 / CET-6 / 高考) -->
+                        <div class="training-section-content" id="section-content-listening" style="display: none;">
+                            <div class="home-modules-grid">
+                                <!-- CET4 Listening -->
+                                <div class="capsule-module-card listening" onclick="selectTrainingLevel('listening', 'cet4')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M 15.25 25 A 12.75 14.5 0 0 1 40.75 25" stroke="#1E293B" stroke-width="2.4" stroke-linecap="round"/>
+                                            <rect x="11" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <rect x="36.5" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="15.25" cy="32.5" r="1.6" fill="#3B82F6"/>
+                                            <circle cx="40.75" cy="32.5" r="1.6" fill="#3B82F6"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-4</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">LISTENING</span>
+                                        <h3 class="capsule-card-title">四级听力</h3>
+                                    </div>
+                                </div>
+
+                                <!-- CET6 Listening -->
+                                <div class="capsule-module-card listening" onclick="selectTrainingLevel('listening', 'cet6')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M 15.25 25 A 12.75 14.5 0 0 1 40.75 25" stroke="#1E293B" stroke-width="2.4" stroke-linecap="round"/>
+                                            <rect x="11" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <rect x="36.5" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="15.25" cy="32.5" r="1.6" fill="#F43F5E"/>
+                                            <circle cx="40.75" cy="32.5" r="1.6" fill="#F43F5E"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-6</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">LISTENING</span>
+                                        <h3 class="capsule-card-title">六级听力</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Gaokao Listening -->
+                                <div class="capsule-module-card listening" onclick="selectTrainingLevel('listening', 'gaokao')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M 15.25 25 A 12.75 14.5 0 0 1 40.75 25" stroke="#1E293B" stroke-width="2.4" stroke-linecap="round"/>
+                                            <rect x="11" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <rect x="36.5" y="24" width="8.5" height="17" rx="4.25" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="15.25" cy="32.5" r="1.6" fill="#10B981"/>
+                                            <circle cx="40.75" cy="32.5" r="1.6" fill="#10B981"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">高考</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">LISTENING</span>
+                                        <h3 class="capsule-card-title">高考听力</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🎙️ Zone 3: 逐句精听专区 (每日精听30天打卡 + CET-4 / CET-6 / 高考逐句听写) -->
+                        <div class="training-section-content" id="section-content-dictation" style="display: none;">
+                            <div class="home-modules-grid">
+                                <!-- CET4 Dictation -->
+                                <div class="capsule-module-card dictation" onclick="selectTrainingLevel('dictation', 'cet4')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="25" cy="28" r="18" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="25" cy="28" r="13" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="25" cy="28" r="8" stroke="#CBD5E1" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="4.5" fill="#3B82F6" stroke="#1E293B" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="1.5" fill="#1E293B"/>
+                                            <circle cx="43" cy="14" r="3" fill="#6366F1" stroke="#1E293B" stroke-width="1.6"/>
+                                            <path d="M43 14 L39 25 L32 30" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-4</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">DICTATION</span>
+                                        <h3 class="capsule-card-title">四级精听</h3>
+                                    </div>
+                                </div>
+
+                                <!-- CET6 Dictation -->
+                                <div class="capsule-module-card dictation" onclick="selectTrainingLevel('dictation', 'cet6')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="25" cy="28" r="18" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="25" cy="28" r="13" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="25" cy="28" r="8" stroke="#CBD5E1" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="4.5" fill="#F43F5E" stroke="#1E293B" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="1.5" fill="#1E293B"/>
+                                            <circle cx="43" cy="14" r="3" fill="#6366F1" stroke="#1E293B" stroke-width="1.6"/>
+                                            <path d="M43 14 L39 25 L32 30" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">CET-6</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">DICTATION</span>
+                                        <h3 class="capsule-card-title">六级精听</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Gaokao Dictation -->
+                                <div class="capsule-module-card dictation" onclick="selectTrainingLevel('dictation', 'gaokao')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="25" cy="28" r="18" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="25" cy="28" r="13" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="25" cy="28" r="8" stroke="#CBD5E1" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="4.5" fill="#10B981" stroke="#1E293B" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="1.5" fill="#1E293B"/>
+                                            <circle cx="43" cy="14" r="3" fill="#6366F1" stroke="#1E293B" stroke-width="1.6"/>
+                                            <path d="M43 14 L39 25 L32 30" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">高考</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">DICTATION</span>
+                                        <h3 class="capsule-card-title">高考精听</h3>
+                                    </div>
+                                </div>
+
+
+                                                                <!-- IELTS Dictation -->
+                                <div class="capsule-module-card dictation" onclick="selectTrainingLevel('dictation', 'ielts')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="25" cy="28" r="18" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="25" cy="28" r="13" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="25" cy="28" r="8" stroke="#CBD5E1" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="4.5" fill="#8B5CF6" stroke="#1E293B" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="1.5" fill="#1E293B"/>
+                                            <circle cx="43" cy="14" r="3" fill="#6366F1" stroke="#1E293B" stroke-width="1.6"/>
+                                            <path d="M43 14 L39 25 L32 30" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">雅思</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">DICTATION</span>
+                                        <h3 class="capsule-card-title">雅思精听</h3>
+                                    </div>
+                                </div>
+
+                                <!-- Daily Listening Dictation (第五期) -->
+                                <div class="capsule-module-card dictation" onclick="selectTrainingLevel('dictation', 'daily')">
+                                    <div class="capsule-card-art">
+                                        <svg class="capsule-art-svg active" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="25" cy="28" r="18" stroke="#1E293B" stroke-width="2.2" fill="#F8FAFC"/>
+                                            <circle cx="25" cy="28" r="13" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                            <circle cx="25" cy="28" r="8" stroke="#CBD5E1" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="4.5" fill="#F59E0B" stroke="#1E293B" stroke-width="1.5"/>
+                                            <circle cx="25" cy="28" r="1.5" fill="#1E293B"/>
+                                            <circle cx="43" cy="14" r="3" fill="#0EA5E9" stroke="#1E293B" stroke-width="1.6"/>
+                                            <path d="M43 14 L39 25 L32 30" stroke="#1E293B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="capsule-level-badge">第五期</div>
+                                    <div class="capsule-card-info">
+                                        <span class="capsule-card-category">DICTATION</span>
+                                        <h3 class="capsule-card-title">每日英语听力</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 1: LOBBY VIEW (听力真题大厅) -->
+            <div class="app-view" id="view-lobby">
+                <div class="lobby-hero">
+                    <div class="hero-left">
+                        <h2>🎧 历年<span class="level-tag-bind">四级</span>听力精刷</h2>
+                        <p>"We are what we repeatedly do. Excellence, then, is not an act, but a habit." — Aristotle</p>
+                    </div>
+                </div>
+
+                <div class="matrix-container">
+                    <!-- 听力大厅考级切换器 -->
+                    <div class="lobby-level-pills-bar" id="listening-level-pills-bar">
+                        <button class="lobby-level-pill active" data-level="cet4" onclick="switchLobbyLevel('listening', 'cet4')">📘 四级听力</button>
+                        <button class="lobby-level-pill" data-level="cet6" onclick="switchLobbyLevel('listening', 'cet6')">📕 六级听力</button>
+                        <button class="lobby-level-pill" data-level="gaokao" onclick="switchLobbyLevel('listening', 'gaokao')">🎓 高考听力</button>
+                    </div>
+
+                    <div class="matrix-header">
+                        <div class="matrix-title">选择试卷</div>
+                        <div class="year-filter-bar" id="year-filter-bar">
+                            <span class="chip-year active" data-range="ALL">全部年份</span>
+                            <span class="chip-year" data-range="2021-2026">2021–2026年</span>
+                            <span class="chip-year" data-range="2015-2020">2015–2020年</span>
+                            <span class="chip-year" data-range="2008-2014" style="display: none;">2008–2014年</span>
+                        </div>
+                    </div>
+
+                    <div class="exam-grid" id="exam-grid">
+                        <!-- Exam cards injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 1.5: WRITTEN LOBBY VIEW (笔试真题大厅) -->
+            <div class="app-view" id="view-written-lobby">
+                <div class="lobby-hero">
+                    <div class="hero-left">
+                        <h2>✍️ 历年<span class="level-tag-bind">四级</span>笔试精刷</h2>
+                        <p>"Skill and confidence are an unconquered army." — George Herbert</p>
+                    </div>
+                </div>
+
+                <div class="matrix-container">
+                    <!-- 笔试大厅考级切换器 -->
+                    <div class="lobby-level-pills-bar" id="written-level-pills-bar">
+                        <button class="lobby-level-pill active" data-level="cet4" onclick="switchLobbyLevel('written', 'cet4')">📘 四级笔试</button>
+                        <button class="lobby-level-pill" data-level="cet6" onclick="switchLobbyLevel('written', 'cet6')">📕 六级笔试</button>
+                        <button class="lobby-level-pill" data-level="gaokao" onclick="switchLobbyLevel('written', 'gaokao')">🎓 高考笔试</button>
+                        <button class="lobby-level-pill" data-level="kaoyan_eng1" onclick="switchLobbyLevel('written', 'kaoyan_eng1')">🏛️ 考研英语(一)</button>
+                        <button class="lobby-level-pill" data-level="kaoyan_eng2" onclick="switchLobbyLevel('written', 'kaoyan_eng2')">🏛️ 考研英语(二)</button>
+                    </div>
+
+                    <div class="matrix-header">
+                        <div class="matrix-title">选择试卷</div>
+                        <div class="year-filter-bar" id="written-year-filter-bar">
+                            <span class="chip-year active" data-range="ALL">全部年份</span>
+                            <span class="chip-year" data-range="2021-2026">2021–2026年</span>
+                            <span class="chip-year" data-range="2015-2020">2015–2020年</span>
+                            <span class="chip-year" data-range="2008-2014" style="display: none;">2008–2014年</span>
+                        </div>
+                    </div>
+
+                    <div class="exam-grid" id="written-exam-grid">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: QUIZ ARENA (听力答题舞台) -->
+            <div class="app-view" id="view-quiz">
+                <div class="quiz-stage-card" id="quiz-stage-card">
+                    <div class="quiz-card-inner">
+                        <!-- Floating Lookup Mode Active Indicator Banner -->
+                        <div class="lookup-mode-floating-bar" id="lookup-mode-bar" style="display: none;">
+                            <span class="lookup-bar-text">📖 查词模式中 · 点击英文单词即查</span>
+                            <button class="lookup-bar-exit-btn" id="btn-exit-lookup-mode" onclick="window.applyLookupMode && window.applyLookupMode(false)">退出查词 ✕</button>
+                        </div>
+
+                        <div class="quiz-split-container">
+                            <div class="quiz-split-left">
+                                <div class="quiz-card-top-bar">
+                                    <div class="sequence-badge">
+                                        <span class="seq-lbl">NO.</span>
+                                        <span class="seq-val" id="seq-val">01</span>
+                                    </div>
+                                    <div class="section-badge" id="section-badge">News Report 1</div>
+                                </div>
+
+                                <h2 class="question-h2" id="q-h2">Loading...</h2>
+                                <p class="question-zh-p" id="q-zh-p">加载翻译...</p>
+
+                                <div class="explanation-card" id="explanation-card">
+                                    <div class="exp-title-lbl">
+                                        💡 听力考点精析与思路剖析
+                                    </div>
+                                    <p class="exp-body-p" id="exp-body-p"></p>
+                                    <div id="exp-evidence-container"></div>
+                                    <div id="exp-synonym-container"></div>
+                                </div>
+                            </div>
+
+                            <div class="quiz-split-right">
+                                <div class="options-wrapper" id="options-wrapper">
+                                    <!-- Options injected via JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2.5: WRITTEN ARENA (笔试答题舞台) -->
+            <div class="app-view" id="view-written-arena">
+                <!-- Single Stage Card Architecture identical to view-quiz -->
+                <div class="quiz-stage-card" id="written-stage-card">
+                    <div class="quiz-card-inner">
+                        <!-- Floating Lookup Mode Active Indicator Banner -->
+                        <div class="lookup-mode-floating-bar" id="written-lookup-mode-bar" style="display: none;">
+                            <span class="lookup-bar-text">📖 查词模式中 · 点击英文单词即查</span>
+                            <button class="lookup-bar-exit-btn" id="btn-written-exit-lookup-mode" onclick="window.applyLookupMode && window.applyLookupMode(false)">退出查词 ✕</button>
+                        </div>
+
+                        <!-- Top Bar: Sequence NO. XX & Section Badge -->
+                        <div class="quiz-card-top-bar">
+                            <div class="sequence-badge">
+                                <span class="seq-lbl">NO.</span>
+                                <span class="seq-val" id="written-seq-val">26</span>
+                            </div>
+                            <div class="section-badge" id="written-section-badge">选词填空 · Section A</div>
+                        </div>
+
+                        <div class="written-split-container">
+                            <div class="written-split-quiz">
+                                <!-- Question Statement (Top in Portrait / Right Column in Landscape) -->
+                                <h2 class="question-h2" id="written-q-h2">Loading...</h2>
+                                <p class="question-zh-p" id="written-q-zh-p">加载翻译...</p>
+
+                                <!-- Options Wrapper -->
+                                <div class="options-wrapper" id="written-options-wrapper">
+                                    <!-- Options injected via JS -->
+                                </div>
+
+                                <!-- Explanation Card -->
+                                <div class="explanation-card" id="written-explanation-card">
+                                    <div class="exp-title-lbl">
+                                        💡 笔试考点精析与思路剖析
+                                    </div>
+                                    <p class="exp-body-p" id="written-exp-body-p"></p>
+                                    <div id="written-exp-evidence-container"></div>
+                                    <div id="written-exp-synonym-container"></div>
+                                </div>
+                            </div>
+
+                            <div class="written-split-passage">
+                                <!-- Parchment Reading Passage Card (Bottom in Portrait / Left Column in Landscape) -->
+                                <div class="written-passage-card" id="written-passage-card" style="margin-top: 10px; margin-bottom: 0;">
+                                    <!-- Injected passage text with clickable dictionary words -->
+                                </div>
+
+                                <!-- Translation Box -->
+                                <div class="written-passage-card" id="written-translation-card" style="display: none; background: #fffcf5; border-color: rgba(240, 190, 77, 0.3); margin-top: 14px; margin-bottom: 0;">
+                                    <!-- Injected translation -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DICTATION LOBBY (逐句精听大厅) -->
+            <div class="app-view" id="view-dictation-lobby">
+                <div class="lobby-hero">
+                    <div class="hero-left">
+                        <h2>🎧 历年<span class="level-tag-bind">四级</span>原声精听</h2>
+                        <p>"Continuous effort — not strength or intelligence — is the key to unlocking our potential."</p>
+                    </div>
+                </div>
+
+                <div class="matrix-container">
+                    <!-- 精听专区切换器 -->
+                    <div class="lobby-level-pills-bar" id="dictation-level-pills-bar">
+                        <button class="lobby-level-pill" data-level="daily" onclick="switchLobbyLevel('dictation', 'daily')">🎙️ 每日精听</button>
+                        <button class="lobby-level-pill active" data-level="cet4" onclick="switchLobbyLevel('dictation', 'cet4')">📘 四级精听</button>
+                        <button class="lobby-level-pill" data-level="cet6" onclick="switchLobbyLevel('dictation', 'cet6')">📕 六级精听</button>
+                        <button class="lobby-level-pill" data-level="gaokao" onclick="switchLobbyLevel('dictation', 'gaokao')">🎓 高考精听</button>
+                        <button class="lobby-level-pill" data-level="ielts" onclick="switchLobbyLevel('dictation', 'ielts')">🇬🇧 雅思精听</button>
+                    </div>
+
+                    <div class="matrix-header">
+                        <div class="matrix-title">选择精听音频</div>
+                        <div class="year-filter-bar" id="dictation-year-filter-bar">
+                            <span class="chip-year active" data-range="ALL">全部年份</span>
+                            <span class="chip-year" data-range="2021-2026">2021–2026年</span>
+                            <span class="chip-year" data-range="2015-2020">2015–2020年</span>
+                            <span class="chip-year" data-range="2008-2014" style="display: none;">2008–2014年</span>
+                        </div>
+                    </div>
+                    <div class="exam-grid" id="dictation-exam-grid">
+                        <!-- Dictation Exam cards injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DAILY LISTENING LOBBY (每日精听 30天精选大厅) -->
+            <div class="app-view" id="view-daily-lobby">
+                <div class="lobby-hero daily-lobby-hero">
+                    <div class="hero-left">
+                        <h2>🎙️ 每日英语听力 · 第五期</h2>
+                        <p>"Consistent daily listening shapes your natural English fluency."</p>
+                        <div class="header-mode-segmented daily-accent-segmented" style="margin-top: 14px; max-width: 260px;">
+                            <div class="mode-tab-btn active" id="daily-lobby-uk-btn" onclick="setDailyLobbyAccent('uk')" title="切换为标准英音">
+                                <span class="tab-icon">🇬🇧</span>
+                                <span class="tab-label">英音精听</span>
+                            </div>
+                            <div class="mode-tab-btn" id="daily-lobby-us-btn" onclick="setDailyLobbyAccent('us')" title="切换为标准美音">
+                                <span class="tab-icon">🇺🇸</span>
+                                <span class="tab-label">美音精听</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="matrix-container">
+                    <!-- 精听专区切换器 -->
+                    <div class="lobby-level-pills-bar" id="daily-level-pills-bar">
+                        <button class="lobby-level-pill active" data-level="daily" onclick="switchLobbyLevel('daily', 'daily')">🎙️ 每日精听</button>
+                        <button class="lobby-level-pill" data-level="cet4" onclick="switchLobbyLevel('daily', 'cet4')">📘 四级精听</button>
+                        <button class="lobby-level-pill" data-level="cet6" onclick="switchLobbyLevel('daily', 'cet6')">📕 六级精听</button>
+                        <button class="lobby-level-pill" data-level="gaokao" onclick="switchLobbyLevel('daily', 'gaokao')">🎓 高考精听</button>
+                        <button class="lobby-level-pill" data-level="ielts" onclick="switchLobbyLevel('daily', 'ielts')">🇬🇧 雅思精听</button>
+                    </div>
+
+                    <div class="matrix-header">
+                        <div class="matrix-title">30天逐句精听训练</div>
+                    </div>
+                    <div class="exam-grid" id="daily-exam-grid">
+                        <!-- 30-Day Cards injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DICTATION ARENA (逐句精听舞台 - 极致清爽设计) -->
+            <div class="app-view" id="view-dictation-arena">
+                <div class="dict-zen-canvas">
+                    <!-- Floating Lookup Mode Active Indicator Banner -->
+                    <div class="lookup-mode-floating-bar" id="dict-lookup-mode-bar" style="display: none;">
+                        <span class="lookup-bar-text">📖 查词模式中 · 点击英文单词即查</span>
+                        <button class="lookup-bar-exit-btn" id="btn-dict-exit-lookup-mode" onclick="window.applyLookupMode && window.applyLookupMode(false)">退出查词 ✕</button>
+                    </div>
+                    
+                    <!-- Top Minimal Nav & Status -->
+                    <div class="dict-canvas-header">
+                        <!-- Top-Left Inside Card: Progress Badge -->
+                        <div class="dict-canvas-header-left">
+                            <button class="btn-canvas-drawer" id="btn-dict-card-drawer" title="查看选句">
+                                <span id="dict-seq-val">01 / 98</span>
+                            </button>
+                        </div>
+
+                        <!-- Top-Right Inside Card: Replay, Playback Speed & Daily Audio Config -->
+                        <div class="dict-canvas-header-right">
+                            <button class="btn-island-pill" id="btn-dict-replay" title="重听本句">↺ 重听</button>
+                            <button class="btn-island-pill speed-pill" id="btn-dict-speed" title="调节语速">1.0X</button>
+                            <button class="btn-island-pill dict-kb-toggle-pill" id="btn-dict-canvas-kb-toggle" title="切换键盘模式（自制26键 / 手机自带输入法）" style="display: none !important;">
+                                <span id="canvas-kb-toggle-icon">⌨️</span>
+                                <span id="canvas-kb-toggle-text">自制键盘</span>
+                            </button>
+                            <button class="btn-island-pill daily-audio-config-btn is-hidden" id="btn-dict-audio-config" onclick="openDictAudioSettingsModal()" title="发音与朗读设置">
+                                <span id="dict-audio-config-label">英音 · 1遍</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Main Hero Typography Stage (Figure 1 & 2 Style) -->
+                    <!-- Main Hero Typography Stage (Figure 1 & 2 Style) -->
+                    <div class="dict-hero-stage">
+                        <div class="dict-hero-sub" id="dict-section-badge">News Report 1</div>
+                        
+
+                        <!-- Large Bold Sentence with Ghosted / Inline Blanks -->
+                        <div class="dict-hero-sentence" id="dict-cloze-card">
+                            <!-- Injected Cloze words and inputs -->
+                        </div>
+
+                        <!-- Soft Subtitle Translation -->
+                        <div class="dict-hero-translation" id="dict-zh-box"></div>
+
+                        <!-- Floating Organic Control Row (Unified Centered Cluster) -->
+                        <div class="dict-floating-island">
+                            <!-- Left Tools: 📖 查看答案 -->
+                            <div class="island-left-group">
+                                <button class="btn-island-pill" id="btn-dict-reveal-answer" title="查看答案与译文">📖 答案</button>
+                            </div>
+
+                            <!-- Center Play / Audio Button (Strict Center) -->
+                            <button class="btn-island-play" id="btn-dict-play">
+                                <span id="zen-play-icon">▶</span>
+                                <span id="zen-play-text">播放</span>
+                                <div class="island-wave-bars" id="dict-wave-bars">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </button>
+
+                            <!-- Right Tools: 💡 首尾骨架提示 -->
+                            <div class="island-right-group">
+                                <button class="btn-island-pill hint-pill" id="btn-dict-hint-first" title="首尾提示（免输首尾字母）">💡 提示</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: LEADERBOARD (全站排行榜) -->
+            <div class="app-view" id="view-rank">
+                <div class="rank-container">
+                    
+                    <!-- My Rank Status Card -->
+                    <div class="my-rank-card" id="my-rank-card">
+                        <!-- My rank status injected via JS -->
+                    </div>
+
+                    <!-- Global Leaderboard List (Locked to Style 1: 🌟 星芒晶透 2-1-3 浮空台) -->
+                    <div class="rank-list-scroll" id="rank-list-container">
+                        <!-- Rank items injected via JS -->
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Hidden Audio Player for Dictation (preload="none" for maximum bandwidth saving) -->
+        <audio id="dictation-audio-player" preload="auto" playsinline webkit-playsinline style="display:none;"></audio>
+
+        <!-- Bottom Navigation Controls (Liquid Glass Capsule Dock) -->
+        <footer class="bottom-nav-bar" id="bottom-nav-bar">
+            <i class="lg-glass" aria-hidden="true"></i>
+            <div class="nav-btn-group" id="quiz-nav-group" style="display: none;">
+                <button class="btn-nav-action" id="btn-prev-q" disabled>← 上一题</button>
+                <button class="btn-nav-action lg-pill-btn" id="btn-open-drawer">答题卡 <span id="ans-progress">1/25</span></button>
+                <button class="btn-nav-action" id="btn-next-q">下一题 →</button>
+            </div>
+            <div class="nav-btn-group" id="written-nav-group" style="display: none;">
+                <button class="btn-nav-action" id="btn-written-prev-q" disabled>← 上一题</button>
+                <button class="btn-nav-action lg-pill-btn" id="btn-written-open-drawer">答题卡 <span id="written-ans-progress">1/32</span></button>
+                <button class="btn-nav-action" id="btn-written-next-q">下一题 →</button>
+            </div>
+            <div class="nav-btn-group" id="dictation-nav-group" style="display: none; position: relative;">
+                <button class="btn-nav-action" id="btn-dict-prev" disabled>← 上一句</button>
+                <button class="btn-nav-action lg-pill-btn" id="btn-dict-drawer">选句</button>
+                <button class="btn-nav-action btn-dict-nav-kb" id="btn-dict-nav-keyboard" title="展开/切换键盘" style="display: none !important;">
+                    <span id="dict-nav-kb-icon">⌨️</span>
+                    <span id="dict-nav-kb-text">键盘</span>
+                </button>
+                <button class="btn-nav-action primary" id="btn-dict-next">下一句 →</button>
+            </div>
+        </footer>
+
+        <!-- ==========================================================================
+             Home Tab Page (统计 · 学习复盘) & Liquid-Glass Floating Tab Bar
+             (1:1 ported from 单词Toy LiquidGlassTabBar / StudyStatsModal)
+             ========================================================================== -->
+        <div id="home-tab-panel-stats" class="home-tab-panel" aria-hidden="true">
+            <div class="htp-scroll">
+                <div class="htp-inner" id="tab-stats-root"></div>
+            </div>
+        </div>
+
+        <nav id="home-tabbar" class="home-tabbar" role="tablist" aria-label="主导航" data-active="home">
+            <i class="htb-glass" aria-hidden="true"></i>
+            <i class="htb-pill" aria-hidden="true"></i>
+            <button type="button" class="htb-tab on" role="tab" data-id="home" aria-selected="true" aria-label="首页">
+                <svg class="htb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4.5 10.4 12 4.3l7.5 6.1v8.4a1.7 1.7 0 0 1-1.7 1.7H15v-4.2a3 3 0 0 0-6 0v4.2H6.2a1.7 1.7 0 0 1-1.7-1.7z" />
+                </svg>
+                <span>首页</span>
+            </button>
+            <button type="button" class="htb-tab" role="tab" data-id="stats" aria-selected="false" aria-label="统计">
+                <svg class="htb-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="8.3" />
+                    <path d="m8 14.6 2.8-3 2.3 2 3.1-3.7M13.9 9.9h2.3v2.3" />
+                </svg>
+                <span>统计</span>
+            </button>
+        </nav>
+
+        <!-- ==========================================================================
+             Leaderboard Bottom Sheet Drawer Modal (1:1 单词Toy RankModal 规范，严格置于手机容器内部)
+             ========================================================================== -->
+        <div id="rank-modal-overlay" class="rank-modal-overlay" aria-hidden="true">
+            <div class="rank-modal-backdrop"></div>
+            <div class="rank-drawer-content" id="rank-drawer-content">
+                <!-- 抽屉顶部把手 -->
+                <div class="rank-drawer-handle-wrap">
+                    <div class="rank-drawer-handle"></div>
+                </div>
+
+                <!-- 头部：标题与关闭按钮 (无多余 Tab，纯粹今日专注榜) -->
+                <div class="rank-drawer-header">
+                    <div class="rank-header-left">
+                        <div class="rank-header-title-row">
+                            <h3 class="rank-header-title">今日学习时长排行榜</h3>
+                            <span class="rank-header-tag">Top 100</span>
+                        </div>
+                        <p class="rank-header-subtitle">每日零点重置</p>
+                    </div>
+                    <button 
+                        type="button" 
+                        class="rank-drawer-close-btn" 
+                        title="关闭"
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                <!-- 排行榜滚动列表 (前 100 名今日学习时长) -->
+                <div class="rank-drawer-scroll no-scrollbar" id="rank-drawer-list">
+                    <div class="rank-drawer-loading">
+                        <span>加载今日学习时长排行榜中...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- In-App QWERTY 26-Key Virtual Keyboard for Dictation Arena (Root Fixed Viewport Layer) -->
+    <div id="dict-virtual-keyboard" class="dict-virtual-keyboard" style="display: none;">
+        <!-- Keyboard Quick Controls Toolbar -->
+        <div class="dict-kb-toolbar">
+            <button type="button" class="dict-kb-tool-btn dict-kb-hint-btn" id="btn-dict-kb-hint" title="首尾字母提示">
+                <span class="dict-kb-tool-icon">💡</span>
+                <span class="dict-kb-tool-text">提示</span>
+            </button>
+            <button type="button" class="dict-kb-tool-btn dict-kb-answer-btn" id="btn-dict-kb-answer" title="查看本句答案">
+                <span class="dict-kb-tool-icon">📖</span>
+                <span class="dict-kb-tool-text">答案</span>
+            </button>
+            <button type="button" class="dict-kb-tool-btn dict-kb-switch-native-btn" id="btn-dict-kb-switch-native" title="切换使用手机自带输入法打字">
+                <span class="dict-kb-tool-icon">⌨️</span>
+                <span class="dict-kb-tool-text">系统键盘</span>
+            </button>
+            <button type="button" class="dict-kb-tool-btn dict-kb-collapse-btn" id="btn-dict-kb-collapse" title="收起键盘">
+                <span class="dict-kb-tool-text">收起</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Keyboard Keys Grid -->
+        <div class="dict-kb-keys-container">
+            <!-- Row 1: 10 Letters (Q W E R T Y U I O P) -->
+            <div class="dict-kb-row dict-kb-row-1">
+                <button type="button" class="dict-key dict-key-letter" data-key="q">Q</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="w">W</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="e">E</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="r">R</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="t">T</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="y">Y</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="u">U</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="i">I</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="o">O</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="p">P</button>
+            </div>
+
+            <!-- Row 2: 9 Letters (A S D F G H J K L) -->
+            <div class="dict-kb-row dict-kb-row-2">
+                <button type="button" class="dict-key dict-key-letter" data-key="a">A</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="s">S</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="d">D</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="f">F</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="g">G</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="h">H</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="j">J</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="k">K</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="l">L</button>
+            </div>
+
+            <!-- Row 3: Special + 7 Letters + Backspace (↺重听 | Z X C V B N M | ⌫退格) -->
+            <div class="dict-kb-row dict-kb-row-3">
+                <button type="button" class="dict-key dict-key-fn dict-key-replay" id="btn-dict-kb-replay" data-action="replay" title="重听本句音频">
+                    <span class="dict-key-icon">↺</span>
+                    <span class="dict-key-subtext">重听</span>
+                </button>
+                <button type="button" class="dict-key dict-key-letter" data-key="z">Z</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="x">X</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="c">C</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="v">V</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="b">B</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="n">N</button>
+                <button type="button" class="dict-key dict-key-letter" data-key="m">M</button>
+                <button type="button" class="dict-key dict-key-fn dict-key-backspace" id="btn-dict-kb-backspace" data-action="backspace" title="删除">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/>
+                        <line x1="18" y1="9" x2="12" y2="15"/>
+                        <line x1="12" y1="9" x2="18" y2="15"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Row 4: Action Bar (← 上一空 | ← 上句 | 下句 ➔ | 下一空 →) -->
+            <div class="dict-kb-row dict-kb-row-4">
+                <button type="button" class="dict-key dict-key-action dict-key-prev-blank" id="btn-dict-kb-prev-blank" data-action="prev-blank" title="跳转上一空">
+                    <span>← 上一空</span>
+                </button>
+                <button type="button" class="dict-key dict-key-action dict-key-prev" id="btn-dict-kb-prev" data-action="prev" title="上一句">
+                    <span>← 上句</span>
+                </button>
+                <button type="button" class="dict-key dict-key-action dict-key-next" id="btn-dict-kb-next" data-action="next" title="下一句">
+                    <span id="dict-kb-next-text">下句 ➔</span>
+                </button>
+                <button type="button" class="dict-key dict-key-action dict-key-next-blank" id="btn-dict-kb-next-blank" data-action="next-blank" title="跳转下一空">
+                    <span>下一空 →</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dictation Sentence Drawer -->
+    <div class="drawer-mask" id="dict-drawer-mask" onclick="if(event.target===this) closeDictationDrawer()">
+        <div class="drawer-box">
+            <div class="drawer-top">
+                <span id="dict-drawer-title">精听选句清单</span>
+                <button class="btn-sketch-pill" id="btn-dict-close-drawer">✕</button>
+            </div>
+            <!-- Section Jump Navigation Tabs in Dictation Drawer -->
+            <div class="drawer-section-nav-wrapper" id="dict-drawer-section-nav-wrapper">
+                <div class="drawer-section-nav" id="dict-drawer-section-nav"></div>
+            </div>
+            <div class="drawer-q-grid" id="dict-drawer-grid"></div>
+        </div>
+    </div>
+
+    <!-- Drawer Mask -->
+    <div class="drawer-mask" id="drawer-mask" onclick="if(event.target===this) closeQuestionDrawer()">
+        <div class="drawer-box">
+            <div class="drawer-top">
+                <span id="drawer-title-text">题目快速跳转</span>
+                <button class="btn-sketch-pill" id="btn-close-drawer">✕</button>
+            </div>
+            <!-- Section Jump Navigation Tabs in Drawer -->
+            <div class="drawer-section-nav-wrapper" id="drawer-section-nav-wrapper">
+                <div class="drawer-section-nav" id="drawer-section-nav"></div>
+            </div>
+            <!-- Question Grid in Drawer -->
+            <div class="drawer-q-grid" id="drawer-q-grid"></div>
+        </div>
+    </div>
+
+    <!-- Score Modal -->
+    <div class="modal-mask" id="score-modal">
+        <div class="modal-card">
+            <h2>🎉 试卷练习完成！</h2>
+            <p id="modal-exam-name" style="color: var(--ink-sub); margin-top: 4px; font-size: 14px;"></p>
+            <div class="score-num" id="modal-score-num">0分</div>
+            <p id="modal-score-detail" style="font-size: 16px; font-weight: 600; color: var(--ink-primary);"></p>
+            <button class="btn-modal-primary" id="btn-modal-confirm">同步成绩并返回大厅</button>
+            <button class="btn-modal-secondary" id="btn-modal-review" style="width:100%; margin-top:10px; background:transparent; border:1.5px solid #0284c7; color:#0284c7; border-radius:12px; padding:10px 16px; font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s ease;">📋 回顾整卷与解析范文</button>
+        </div>
+    </div>
+
+    <!-- Membership Interactive Unlock Modal (Native iOS Clean Grouped Style) -->
+    <!-- Interactive Unlock Modal (No VIP, Native B站 Community Unlock) -->
+    <div class="modal-mask" id="membership-unlock-modal" onclick="if(event.target === this) window.ToyPermissions && window.ToyPermissions.closeUnlockModal()">
+        <div class="modal-card ios-unlock-modal" id="unlock-modal-card">
+
+            <div class="ios-modal-header">
+                <h3 id="unlock-modal-target-title" class="ios-modal-title">🎁 解锁学习特权</h3>
+                <p id="unlock-modal-target-desc" style="font-size: 12.5px; color: #8e8e93; margin: 4px 0 0 0;">支持UP主创作，多种权益即刻解锁</p>
+            </div>
+
+            <!-- Dynamic Community Channels Group -->
+            <div class="ios-channels-group" id="unlock-channels-group">
+                <!-- Dynamically populated by ToyPermissions.refreshModalDOM() -->
+            </div>
+
+            <button class="ios-close-btn" id="btn-unlock-modal-close" onclick="window.ToyPermissions && window.ToyPermissions.closeUnlockModal()">稍后再说</button>
+        </div>
+    </div>
+
+
+
+    <!-- Contextual Dictionary Popover Speech Bubble -->
+    <div class="dict-popover-bubble" id="dict-popover">
+        <div class="popover-header">
+            <span class="popover-word" id="popover-word"></span>
+            <span class="popover-phonetic" id="popover-phonetic"></span>
+        </div>
+        <div class="popover-def" id="popover-def"></div>
+    </div>
+
+    <!-- 🖼️ Wallpaper Customizer Action Sheet -->
+    <div class="wallpaper-action-mask" id="wallpaper-action-mask" style="display: none;">
+        <div class="wallpaper-action-sheet" id="wallpaper-action-sheet">
+            <div class="wallpaper-action-header">
+                <div class="wallpaper-action-title">🖼️ 头图壁纸设置</div>
+                <div class="wallpaper-action-sub">支持自定义上传封面或一键恢复默认</div>
+            </div>
+            <div class="wallpaper-action-buttons">
+                <button class="wallpaper-sheet-btn btn-action-upload" id="btn-sheet-upload-bg">
+                    <span class="sheet-btn-icon">📸</span>
+                    <span class="sheet-btn-text">从相册上传新壁纸</span>
+                </button>
+                <button class="wallpaper-sheet-btn btn-action-reset" id="btn-sheet-reset-bg">
+                    <span class="sheet-btn-icon">🔄</span>
+                    <span class="sheet-btn-text">恢复默认壁纸</span>
+                </button>
+                <button class="wallpaper-sheet-btn btn-action-cancel" id="btn-sheet-cancel-bg">
+                    <span class="sheet-btn-text">取消</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎴 Share Achievement Postcard Modal Overlay (1:1 Match Mockup) -->
+    <div class="share-card-modal-overlay" id="share-card-modal-overlay" style="display: none;">
+        <div class="share-card-modal-container">
+            <!-- The Beautiful Postcard (Matching Mockup 1:1) -->
+            <div class="share-achievement-card" id="share-achievement-card">
+                <!-- Card Header -->
+                <div class="share-card-header">
+                    <span class="share-card-brand">bilibili toy · 听什么听</span>
+                    <span class="share-card-date" id="share-card-date">2026年10月10日</span>
+                </div>
+
+                <!-- Hero Illustration Window (1:1 正方形居中裁剪插画) -->
+                <div class="share-card-hero-frame">
+                    <img class="share-card-hero-img" id="share-card-hero-img" src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/assets/images/background1.jpg" alt="Hero Illustration">
+                </div>
+
+                <!-- Key Metrics Capsule (显示累计学习时长、连续打卡天数、目前排名) -->
+                <div class="share-card-metrics-capsule">
+                    <div class="share-metric-col">
+                        <div class="share-metric-val" id="share-card-duration">0s</div>
+                        <div class="share-metric-lbl">累计学习时长</div>
+                    </div>
+                    <div class="share-metric-divider"></div>
+                    <div class="share-metric-col">
+                        <div class="share-metric-val" id="share-card-streak">1天</div>
+                        <div class="share-metric-lbl">连续打卡天数</div>
+                    </div>
+                    <div class="share-metric-divider"></div>
+                    <div class="share-metric-col">
+                        <div class="share-metric-val" id="share-card-rank">第 - 名</div>
+                        <div class="share-metric-lbl">目前排名</div>
+                    </div>
+                </div>
+
+                <!-- Footer User Profile & Toy QR Code -->
+                <div class="share-card-footer">
+                    <div class="share-card-user-info">
+                        <div class="share-card-avatar-wrap">
+                            <img class="share-card-avatar" id="share-card-avatar" src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/assets/images/default_avatar.svg" alt="Avatar">
+                        </div>
+                        <div class="share-card-user-texts">
+                            <span class="share-card-username" id="share-card-username">背词同学</span>
+                        </div>
+                    </div>
+                    <div class="share-card-qr-box">
+                        <img class="share-card-qr-img" id="share-card-qr-img" src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/assets/images/toy_qr.png" alt="Toy QR Code">
+                        <span class="share-card-qr-tip">扫码进入 Toy</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Actions Bar (返回 / 转发给朋友 / 分享并补签) -->
+            <div class="share-modal-action-bar">
+                <button type="button" class="share-action-btn btn-share-back" id="btn-close-share-card">返回</button>
+                <button type="button" class="share-action-btn btn-share-forward" id="btn-forward-share-card">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 14 20 9 15 4"></polyline>
+                        <path d="M4 20v-7a4 4 0 0 1 4-4h12"></path>
+                    </svg>
+                    <span id="share-card-forward-btn-text">转发给朋友</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📅 Minimalist White Makeup Confirmation Modal (有补签卡时直接弹出简约白弹窗) -->
+    <div class="makeup-confirm-modal-overlay" id="makeup-confirm-modal-overlay" style="display: none;">
+        <div class="makeup-confirm-card">
+            <div class="makeup-confirm-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="4"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <path d="m9 16 2 2 4-4"></path>
+                </svg>
+            </div>
+            <div class="makeup-confirm-title">补签打卡确认</div>
+            <div class="makeup-confirm-desc" id="makeup-confirm-desc">是否确定消耗 1 张补签卡，补签该日期的打卡记录？</div>
+            <div class="makeup-confirm-sub">补签后将点亮打卡记录并延续连胜 ✨</div>
+            <div class="makeup-confirm-actions">
+                <button type="button" class="makeup-confirm-btn btn-cancel" id="btn-cancel-makeup">取消</button>
+                <button type="button" class="makeup-confirm-btn btn-confirm" id="btn-ok-makeup">确定补签</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 🎙️ Dictation Audio Config Action Sheet Modal -->
+    <div class="dict-settings-mask" id="dict-audio-settings-mask" style="display: none;" onclick="if(event.target===this) closeDictAudioSettingsModal()">
+        <div class="dict-settings-sheet">
+            <div class="dict-settings-header">
+                <div class="dict-settings-title">🎙️ 朗读与发音设置</div>
+                <button class="dict-settings-close-btn" id="btn-close-audio-settings" onclick="closeDictAudioSettingsModal()">✕</button>
+            </div>
+            
+            <div class="dict-settings-section">
+                <div class="dict-settings-section-title">发音口音</div>
+                <div class="dict-settings-options">
+                    <button class="dict-opt-pill" id="opt-accent-uk" onclick="setDailyAudioAccent('uk')">
+                        <span class="opt-flag">🇬🇧</span>
+                        <span class="opt-title">英音 (UK)</span>
+                    </button>
+                    <button class="dict-opt-pill" id="opt-accent-us" onclick="setDailyAudioAccent('us')">
+                        <span class="opt-flag">🇺🇸</span>
+                        <span class="opt-title">美音 (US)</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="dict-settings-section">
+                <div class="dict-settings-section-title">单句朗读模式</div>
+                <div class="dict-settings-options col">
+                    <button class="dict-opt-pill row-pill" id="opt-repeat-1" onclick="setDailyAudioRepeatCount(1)">
+                        <div class="opt-left">
+                            <div class="opt-texts">
+                                <div class="opt-main">朗读 1 遍</div>
+                                <div class="opt-sub">单句播放 1 遍原声</div>
+                            </div>
+                        </div>
+                        <span class="opt-check">✓</span>
+                    </button>
+                    <button class="dict-opt-pill row-pill" id="opt-repeat-2" onclick="setDailyAudioRepeatCount(2)">
+                        <div class="opt-left">
+                            <div class="opt-texts">
+                                <div class="opt-main">朗读 2 遍</div>
+                                <div class="opt-sub">单句连续播放 2 遍原声</div>
+                            </div>
+                        </div>
+                        <span class="opt-check">✓</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Core Toy SDK & Lightweight Exam Manifest -->
+    <script src="vendor/s1_hdslb_com/bfs/seed/toy/app/sdk/toy-sdk.js"></script>
+    <script src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/exams_manifest.js"></script>
+    <!-- Bundled Core Application Logic -->
+    <script src="vendor/www_bilibilitoy_com/toy/qDif2poHemIk0VJH/24227927458816-v53236/js/bundle.js"></script>
+</body>
+</html>
+
