@@ -4,7 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -20,131 +21,147 @@ import com.shiguang.english.nativeapp.data.StudyProgress
 import com.shiguang.english.nativeapp.data.UniversityRepository
 import kotlinx.coroutines.launch
 
-private val mainTabs = listOf("home", "stats", "listening", "words", "profile")
-private val tabLabels = listOf("首页", "统计", "听力", "单词", "我的")
-
-@Composable
-private fun NavIcon(index: Int) {
-    val icon = when (index) {
-        0 -> Icons.Outlined.Home
-        1 -> Icons.Outlined.Assessment
-        2 -> Icons.Outlined.GraphicEq
-        3 -> Icons.Outlined.MenuBook
-        else -> Icons.Outlined.PersonOutline
-    }
-    Icon(icon, contentDescription = null)
-}
-
+/**
+ * The original listening/written Toy has only Home and Stats in the floating dock.
+ * Practice, profile and exam lobbies are routes, not extra permanent tabs.
+ */
 @Composable
 fun ShiguangApp() {
     val context = LocalContext.current
-    val repository = remember(context) { LocalStudyRepository(context.applicationContext) }
+    val localRepository = remember(context) { LocalStudyRepository(context.applicationContext) }
     val university = remember(context) { UniversityRepository(context.applicationContext) }
-    val progress by repository.progress.collectAsState(initial = StudyProgress())
+    val progress by localRepository.progress.collectAsState(initial = StudyProgress())
     val scope = rememberCoroutineScope()
     var page by rememberSaveable { mutableStateOf("home") }
     var bookId by rememberSaveable { mutableStateOf("cet4") }
+    var catalogLevel by rememberSaveable { mutableStateOf("cet4") }
+    var catalogModule by rememberSaveable { mutableStateOf("written") }
     var paperId by rememberSaveable { mutableStateOf("") }
     var paperLevel by rememberSaveable { mutableStateOf("cet4") }
-    var paperModule by rememberSaveable { mutableStateOf("listening") }
-    val saveableScreens = rememberSaveableStateHolder()
-    val secondary = page !in mainTabs
-    val goBack = {
+    var paperModule by rememberSaveable { mutableStateOf("written") }
+    val screenStates = rememberSaveableStateHolder()
+    val showDock = page == "home" || page == "stats"
+
+    fun openCatalog(mode: String, level: String) {
+        catalogModule = mode
+        catalogLevel = level
+        page = "university"
+    }
+    fun openPaper(exam: com.shiguang.english.nativeapp.data.UniversityExam, module: String) {
+        paperId = exam.id
+        paperLevel = exam.level
+        paperModule = module
+        page = "university-paper"
+    }
+    fun navigateBack() {
         page = when (page) {
             "word-session" -> "words"
             "written-session" -> "written"
-            "dictation-session" -> "listening"
-            "university-paper" -> "listening"
+            "dictation-session" -> "home"
+            "university-paper" -> "university"
+            "university", "written", "words", "profile" -> "home"
             else -> "home"
         }
     }
-    BackHandler(enabled = secondary) { goBack() }
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        val wide = maxWidth >= 700.dp
-        Scaffold(
-            containerColor = CanvasColor,
-            topBar = {
+    BackHandler(enabled = !showDock) { navigateBack() }
+
+    Box(Modifier.fillMaxSize().background(Color.White)) {
+        Column(Modifier.fillMaxSize()) {
+            if (!showDock) {
                 Row(
-                    Modifier.fillMaxWidth().height(58.dp).background(CanvasColor).padding(horizontal = 16.dp),
+                    Modifier.fillMaxWidth().height(54.dp).background(Color.White)
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (secondary) IconButton(onClick = goBack) {
+                    IconButton(onClick = { navigateBack() }) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = "返回")
                     }
                     Text(
-                        if (secondary) "拾光英语 · 练习" else "拾光英语",
+                        when (page) {
+                            "university" -> "历年真题"
+                            "university-paper" -> "真题训练"
+                            "words" -> "词书选择"
+                            "word-session" -> "单词训练"
+                            "profile" -> "个人设置"
+                            "written" -> "笔试特训"
+                            "written-session" -> "笔试练习"
+                            "dictation-session" -> "逐句精听"
+                            else -> "拾光英语"
+                        },
                         modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    if (!secondary) IconButton(onClick = { page = "profile" }) {
-                        Icon(Icons.Outlined.PersonOutline, contentDescription = "个人中心")
+                    IconButton(onClick = { page = "profile" }, enabled = page != "profile") {
+                        Icon(Icons.Outlined.MoreHoriz, contentDescription = "更多设置")
                     }
                 }
-            },
-            bottomBar = {
-                if (!wide) NavigationBar(containerColor = Color.White) {
-                    mainTabs.forEachIndexed { index, route ->
-                        NavigationBarItem(
-                            selected = page == route,
-                            onClick = { page = route },
-                            icon = { NavIcon(index) },
-                            label = { Text(tabLabels[index]) }
-                        )
-                    }
-                }
+                HorizontalDivider(thickness = 0.5.dp, color = PaperStroke)
             }
-        ) { insets ->
-            Row(Modifier.padding(insets).fillMaxSize()) {
-                if (wide) NavigationRail(containerColor = Color.White) {
-                    mainTabs.forEachIndexed { index, route ->
-                        NavigationRailItem(
-                            selected = page == route,
-                            onClick = { page = route },
-                            icon = { NavIcon(index) },
-                            label = { Text(tabLabels[index]) }
-                        )
-                    }
+
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                val screenKey = when (page) {
+                    "word-session" -> "word-session:" + bookId
+                    "university" -> "university:" + catalogModule + ":" + catalogLevel
+                    "university-paper" -> "paper:" + paperLevel + "/" + paperId + "/" + paperModule
+                    else -> page
                 }
-                Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
-                    val screenKey = when (page) {
-                        "word-session" -> "word-session:" + bookId
-                        "university-paper" -> "university-paper:" + paperLevel + "/" + paperId + "/" + paperModule
-                        else -> page
-                    }
-                    saveableScreens.SaveableStateProvider(screenKey) {
+                screenStates.SaveableStateProvider(screenKey) {
                     when (page) {
-                        "home" -> HomeScreen(progress, onGo = { page = it })
-                        "stats" -> StatsScreen(progress)
-                        "listening", "university" -> UniversityCatalogScreen(university, onOpen = { paper, module ->
-                            paperId = paper.id
-                            paperLevel = paper.level
-                            paperModule = module
-                            page = "university-paper"
-                        })
+                        "home" -> ReplicaHomeScreen(
+                            progress = progress,
+                            exams = university.exams,
+                            onCatalog = { mode, level -> openCatalog(mode, level) },
+                            onExam = { exam, module -> openPaper(exam, module) },
+                            onProfile = { page = "profile" },
+                            onWords = { page = "words" }
+                        )
+                        "stats" -> ReplicaStatsScreen(progress)
+                        "listening", "university" -> UniversityCatalogScreen(
+                            university,
+                            initialLevel = catalogLevel,
+                            initialModule = catalogModule,
+                            onOpen = { exam, module -> openPaper(exam, module) }
+                        )
                         "university-paper" -> {
-                            val paper = university.exams.firstOrNull { it.level == paperLevel && it.id == paperId }
+                            val paper = university.exams.firstOrNull {
+                                it.level == paperLevel && it.id == paperId
+                            }
                             if (paper != null) UniversityPaperScreen(university, paper, paperModule)
-                            else Text("试卷不存在，请从原版目录重新选择")
+                            else Text("未找到这套试卷，请返回目录重新选择")
                         }
                         "words" -> BooksScreen(onChoose = { bookId = it; page = "word-session" })
-                        "profile" -> ProfileScreen(progress, onReset = { scope.launch { repository.clear() } })
-                        "written" -> WrittenCatalog(onStart = { page = "written-session" })
-                        "written-session" -> WrittenSession(
-                            onAnswered = { ok -> scope.launch { repository.recordAnswer(ok) } },
-                            onExit = { page = "written" }
-                        )
                         "word-session" -> WordSession(
                             bookId, progress,
-                            onMark = { id, known -> scope.launch { repository.markWord(id, known) } },
+                            onMark = { id, known ->
+                                scope.launch { localRepository.markWord(id, known) }
+                            },
                             onExit = { page = "words" }
                         )
+                        "profile" -> ProfileScreen(
+                            progress, onReset = { scope.launch { localRepository.clear() } }
+                        )
+                        "written" -> WrittenCatalog(onStart = { page = "written-session" })
+                        "written-session" -> WrittenSession(
+                            onAnswered = { correct -> scope.launch { localRepository.recordAnswer(correct) } },
+                            onExit = { page = "written" }
+                        )
                         "dictation-session" -> DictationSession()
-                        else -> HomeScreen(progress, onGo = { page = it })
-                    }
+                        else -> ReplicaHomeScreen(progress, university.exams,
+                            onCatalog = { mode, level -> openCatalog(mode, level) },
+                            onExam = { exam, module -> openPaper(exam, module) },
+                            onProfile = { page = "profile" },
+                            onWords = { page = "words" })
                     }
                 }
             }
+        }
+        if (showDock) {
+            ReplicaHomeDock(
+                active = page,
+                onSelect = { page = it },
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
+            )
         }
     }
 }

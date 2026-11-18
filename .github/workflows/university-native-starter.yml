@@ -1,0 +1,84 @@
+name: University Native Starter APK (4 verified papers)
+
+on:
+  push:
+    paths:
+      - 'native-android/**'
+      - '.github/workflows/university-native-starter.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-verified-papers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download source-paper examples and all their modules/audio
+        working-directory: native-android
+        run: |
+          python3 tools/package_university_assets.py \
+            --dest app/src/main/assets/university --probe --strict
+      - name: Verify downloaded JSON and MP3 before APK build
+        working-directory: native-android
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("app/src/main/assets/university")
+          report = json.loads((root/"content-index.json").read_text())
+          assert report["mode"] == "probe"
+          assert report["expected"] == report["complete"] == 4
+          assert not report["failures"]
+          for entry in report["entries"]:
+              assert entry["complete"], entry["id"]
+              for name,path in entry["modules"].items():
+                  data = json.loads((root/path).read_text(encoding="utf-8-sig"))
+                  assert data
+                  print("SOURCE_VERIFIED",entry["level"],entry["id"],name,
+                        "type="+type(data).__name__,
+                        "keys="+",".join(list(data.keys())[:12]) if isinstance(data,dict) else
+                        "items="+str(len(data)))
+              if entry["audio"]:
+                  audio = root / entry["audio"]
+                  assert audio.stat().st_size > 1024
+                  print("AUDIO_VERIFIED",entry["id"],audio.stat().st_size)
+          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+      - name: Install Android 35 SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Run tests and build real-content native preview APK
+        working-directory: native-android
+        run: |
+          for attempt in 1 2 3; do
+            if gradle --no-daemon --max-workers=2 --no-parallel \
+              :app:testDebugUnitTest :app:assembleDebug; then exit 0; fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep $((45 * attempt))
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shiguang-native-starter-4-original-papers
+          path: native-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: starter-content-verification
+          path: native-android/app/src/main/assets/university/content-index.json
+          if-no-files-found: ignore
