@@ -47,7 +47,7 @@ fun ReplicaSentencePlayer(
         }
     }
 
-    LaunchedEffect(sentenceIndex, initialized) {
+    LaunchedEffect(sentenceIndex) {
         if (initialized) {
             runCatching {
                 player.pause()

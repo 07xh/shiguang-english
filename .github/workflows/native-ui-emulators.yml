@@ -1,0 +1,62 @@
+name: Android Native UI Smoke (phone and tablet emulator)
+
+on:
+  push:
+    paths:
+      - 'native-android/app/src/**'
+      - 'native-android/app/build.gradle.kts'
+      - '.github/workflows/native-ui-emulators.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  devices:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: phone
+            profile: pixel_6
+          - name: tablet
+            profile: pixel_c
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+      - name: Install SDK 35 and emulator
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "emulator"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Run Compose UI tests and screenshot
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          script: |
+            cd native-android
+            gradle --no-daemon --max-workers=2 :app:connectedDebugAndroidTest
+            adb shell am start -n com.shiguang.english.nativeapp/.MainActivity
+            sleep 5
+            adb exec-out screencap -p > "$GITHUB_WORKSPACE/native-${{ matrix.name }}-home.png"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-ui-${{ matrix.name }}-emulator-report
+          path: |
+            native-android/app/build/outputs/androidTest-results/
+            native-${{ matrix.name }}-home.png
+          if-no-files-found: ignore

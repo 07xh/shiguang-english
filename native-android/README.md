@@ -56,3 +56,17 @@
 ### 手动触发离线包构建
 
 在 GitHub → Actions → `University English Full Offline APK` 中运行 workflow。工作流会先抽检 4 套，再下载 231 套。完成且通过检查后，在该次运行的 Artifacts 下载 `shiguang-university-231-offline-debug-apk`；若失败，查看 `university-content-verification` 报告和日志。
+
+## 原版 UI 原生复刻（2026-11-19 更新）
+
+- `ReplicaHome.kt`：原版自然风景头图（已复制相同仓库图片资源）、白色上浮面板、周历/月历、三段训练切换、课程模块小卡片、真实数据统计、首页/统计悬浮玻璃胶囊导航。
+- `UniversityScreens.kt`：模式/级别/年份筛选的网格考试大厅；原生 NO. 题目结构、分析卡、固定上一题/答题卡/下一题栏；平板阅读文本与题目双列；精听句内多空键盘。
+- `ReplicaExerciseElements.kt`：选项、题号、分析、精听操作岛与底部操作栏的独立 Compose 组件。
+- `ReplicaSentencePlayer.kt`：使用已打包 MP3，根据原版 JSON 中的 start/end 进行句段播放和结束控制；没有时间轴的只播放整段，不伪造逐句边界。
+- `docs/native-ui-parity.md`：源代码中的可核对交互矩阵和未完成项。
+- `.github/workflows/native-ui-emulators.yml`：手机/平板两种 Android **模拟器**的 Compose UI 烟雾测试及截图。模拟器不是实体设备验收。
+- `.github/workflows/university-native-starter.yml`：从有授权的原站资源下载四种大学英语类别各一份真实试卷 JSON、3 份对应 MP3，校验后才生成可离线刷题的原生预览 APK。
+
+提示：2026-11-19 首轮全量离线任务停在 105/231 份完整资源（总已下载 1.65 GB）；同时发现至少 10 份 MP3 候选路径未找到。不能据 231 个目录直接宣称已经打包全部资源。`University Native Starter APK` 是更小但确含真实资源的预览版，不是 231 套完整版。
+
+UI 结构按原版设计标记复刻，但还缺复杂考题交互、查词、云端排行榜等。只要 UI 编译通过并不等于视觉逐像素一致；需要浏览模拟器截图后继续对齐。
