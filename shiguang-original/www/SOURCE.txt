@@ -1,0 +1,4 @@
+应用: 英语精听与历年真题
+原始地址: https://www.bilibilitoy.com/toy/qDif2poHemIk0VJH/24227927458816-v53236/
+说明: 本目录为源应用公开静态资源的本地镜像，HTML/JS/CSS 保持原始内容，资源引用已改为本地相对路径。
+index.html 可直接用浏览器打开查看原页面结构。
