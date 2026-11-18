@@ -26,6 +26,13 @@ MASK = bytes([
     186, 7, 82, 230, 156, 56, 245, 77, 129, 202, 38, 115, 185, 14
 ])
 MAX_BYTES = 40 * 1024 * 1024
+BOOK_COVERS = {
+    "cet4": "coffee.webp", "cet6": "dinosaur.webp",
+    "zhuanshengben": "book.webp",
+    "kaoyan_core": "compass.webp", "kaoyan_2": "telescope.webp",
+    "ielts_core": "guitar.webp", "toefl_core": "globe.webp",
+    "tem4_core": "feather.webp", "tem8_core": "crown.webp"
+}
 
 def unwrap(data):
     if not isinstance(data, dict) or data.get("_v") != 1:
@@ -121,12 +128,31 @@ def main():
     destination = directory / "university-words.json"
     destination.write_text(json.dumps(payload, ensure_ascii=False,
                                       separators=(",", ":")), encoding="utf-8")
+    cover_dir = directory / "covers"
+    cover_dir.mkdir(parents=True, exist_ok=True)
+    cover_count = 0
+    for book_id, filename in BOOK_COVERS.items():
+        try:
+            url = "https://bilibilitoyassets.top/word_toy/word_images/" + filename
+            with urlopen(Request(url, headers={
+                "User-Agent": "ShiguangEnglish-AuthorizedNativePacker/1.0"
+            }), timeout=18) as response:
+                payload = response.read(3 * 1024 * 1024)
+            is_webp = payload[:4] == b"RIFF" and payload[8:12] == b"WEBP"
+            if not is_webp or len(payload) < 100:
+                raise ValueError("Not a valid WebP image")
+            (cover_dir / (book_id + ".webp")).write_bytes(payload)
+            cover_count += 1
+            print("COVER_VERIFIED", book_id, len(payload), flush=True)
+        except (HTTPError, URLError, ValueError, OSError, TimeoutError) as exc:
+            print("COVER_MISSING", book_id, str(exc)[:90], file=sys.stderr)
     report = {
         "status": "verified",
         "source": "authorized-original-word-toy",
         "books": {b["id"]: len(b["words"]) for b in payload["books"]},
         "wordCount": len(payload["words"]),
-        "bytes": destination.stat().st_size
+        "bytes": destination.stat().st_size,
+        "coverCount": cover_count
     }
     (directory / "vocab-verification.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

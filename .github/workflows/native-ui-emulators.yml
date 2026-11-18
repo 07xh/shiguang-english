@@ -46,15 +46,7 @@ jobs:
           profile: ${{ matrix.profile }}
           emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
           disable-animations: true
-          script: |
-            cd native-android
-            set +e
-            gradle --no-daemon --max-workers=2 :app:connectedDebugAndroidTest
-            TEST_RESULT=$?
-            adb shell am start -n com.shiguang.english.nativeapp/.MainActivity || true
-            sleep 4
-            adb exec-out screencap -p > "$GITHUB_WORKSPACE/native-${{ matrix.name }}-home.png" || true
-            exit $TEST_RESULT
+          script: bash native-android/tools/run_ui_smoke.sh ${{ matrix.name }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

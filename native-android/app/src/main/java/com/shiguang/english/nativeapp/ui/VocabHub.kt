@@ -146,11 +146,7 @@ private fun VocabTodayPage(
                 border = BorderStroke(1.dp, Color(0xFFE5EAF1))) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(13.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(60.dp).background(Color(0xFFEAF0F6),
-                            RoundedCornerShape(18.dp)), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Outlined.AutoStories, contentDescription = null,
-                                modifier = Modifier.size(29.dp), tint = WordInk)
-                        }
+                        VocabBookCover(book.id, 60.dp)
                         Spacer(Modifier.width(13.dp))
                         Column(Modifier.weight(1f)) {
                             Text("当前词书", color = WordDim, fontSize = 11.sp)
@@ -284,11 +280,7 @@ private fun VocabLibraryPage(
                 Column(Modifier.fillMaxWidth().padding(17.dp),
                     verticalArrangement = Arrangement.spacedBy(11.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Box(Modifier.size(51.dp).background(Color(0xFFE6EDF5),
-                            RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Outlined.AutoStories, contentDescription = null,
-                                tint = WordInk, modifier = Modifier.size(26.dp))
-                        }
+                        VocabBookCover(book.id, 51.dp)
                         if (current) Text("当前词书", fontSize = 11.sp, color = QuietBlue)
                     }
                     Text(book.title, fontSize = 15.sp, fontWeight = FontWeight.Bold,
