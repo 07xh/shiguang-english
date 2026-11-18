@@ -2,6 +2,13 @@
 
 手机 / 平板 / 网页三端可用的英语学习 App。参考 B 站「英语精听与历年真题」「背什么背」两个 Toy 应用的页面风格复刻，**全站功能免费，无付费墙**。
 
+## 两个版本的区别
+
+| 版本 | 目录 | APK | 说明 |
+|---|---|---|---|
+| **原版（100% 源码复刻）** | `shiguang-original/` | [shiguang-original.apk](https://github.com/07xh/shiguang-english/raw/main/shiguang-original.apk) | 原封不动使用源应用导出的 bundle.js（1.57MB）、bundle.css（1.16MB）、toy-sdk.js、真题清单与全部图片，**未重写一行源码**。功能 / 页面 / 交互与视频中的原应用一致（日历签到、学习复盘、练习构成、每日刷题、笔试/听力/逐句精听、听力真题列表等）。部分在线数据接口（用户数据、活跃统计）仍指向源站，离线时走本地兜底。 |
+| **重写版（参考截图实现）** | `shiguang-app/` | [app-debug.apk](https://github.com/07xh/shiguang-english/raw/main/app-debug.apk) | 参照两张截图独立重写的近似版，代码自主可控、全站免费、无外部 API 依赖。页面结构与原应用相似但非逐行复刻。 |
+
 ## 直接下载安装（无需编译）
 
 - **Android APK（v1.0）**：[点此下载 app-debug.apk](https://github.com/07xh/shiguang-english/raw/main/app-debug.apk)
