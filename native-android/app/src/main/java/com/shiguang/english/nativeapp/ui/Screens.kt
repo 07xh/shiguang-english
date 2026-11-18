@@ -20,18 +20,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shiguang.english.nativeapp.data.StudyProgress
+import com.shiguang.english.nativeapp.model.AnswerLedger
 import com.shiguang.english.nativeapp.model.DemoContent
 import java.util.Locale
 
 @Composable
 private fun Screen(content: LazyListScope.() -> Unit) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().widthIn(max = 980.dp),
+        modifier = Modifier.fillMaxSize().widthIn(max = 980.dp).imePadding(),
         contentPadding = PaddingValues(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 28.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
         content = content
@@ -146,36 +149,70 @@ fun WrittenCatalog(onStart: () -> Unit) {
 
 @Composable
 fun WrittenSession(onAnswered: (Boolean) -> Unit, onExit: () -> Unit) {
-    var index by rememberSaveable { mutableIntStateOf(0) }
-    var selected by rememberSaveable { mutableIntStateOf(-1) }
-    var correct by rememberSaveable { mutableIntStateOf(0) }
     val questions = DemoContent.questions
+    var index by rememberSaveable { mutableIntStateOf(0) }
+    var answerKeys by rememberSaveable { mutableStateOf(AnswerLedger.empty(questions.size)) }
+    var showJump by rememberSaveable { mutableStateOf(false) }
+    var finished by rememberSaveable { mutableStateOf(false) }
+    val answeredCount = AnswerLedger.answeredCount(answerKeys)
+    val correctCount = AnswerLedger.correctCount(answerKeys, questions)
+
+    if (showJump) {
+        PracticeJumpSheet(
+            title = "题目快速跳转",
+            total = questions.size,
+            selectedIndex = index,
+            answered = questions.indices.filter { AnswerLedger.selection(answerKeys, it) != null }.toSet(),
+            onChoose = { destination ->
+                index = destination
+                finished = false
+                showJump = false
+            },
+            onDismiss = { showJump = false }
+        )
+    }
 
     Screen {
-        if (index >= questions.size) {
+        if (finished) {
             item {
                 Panel {
                     Heading("本轮练习完成")
-                    Text("答对 " + correct + " / " + questions.size + " 题",
-                        style = MaterialTheme.typography.titleLarge, color = QuietBlue)
-                    Muted("本轮答题结果已保存至本机统计。")
+                    Text(
+                        "答对 " + correctCount + " / " + questions.size + " 题",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = QuietBlue
+                    )
+                    Muted("答题记录仅来自本轮的首次提交。")
+                    Button(onClick = { showJump = true }) { Text("回顾整卷") }
                     Button(onClick = onExit) { Text("返回练习入口") }
-                    OutlinedButton(onClick = { index = 0; selected = -1; correct = 0 }) {
-                        Text("重新练习")
-                    }
+                    OutlinedButton(onClick = {
+                        index = 0
+                        answerKeys = AnswerLedger.empty(questions.size)
+                        finished = false
+                    }) { Text("重新练习") }
                 }
             }
         } else {
-            val question = questions[index]
-            item { Muted("原创示例 · 第 " + (index + 1) + " / " + questions.size + " 题") }
+            val q = questions[index]
+            val selected = AnswerLedger.selection(answerKeys, index) ?: -1
             item {
-                Panel {
-                    Text(question.stem, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Muted("原创示例 · " + (index + 1) + " / " + questions.size + " · 已答 " + answeredCount)
+                    OutlinedButton(onClick = { showJump = true }) { Text("题目列表") }
                 }
             }
-            items(question.choices.indices.toList()) { option ->
-                val showRight = selected >= 0 && option == question.answer
-                val showWrong = selected == option && option != question.answer
+            item {
+                Panel {
+                    Text(q.stem, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+                }
+            }
+            items(q.choices.indices.toList()) { option ->
+                val showRight = selected >= 0 && option == q.answer
+                val showWrong = selected == option && option != q.answer
                 val background = when {
                     showRight -> Color(0xFFE4F4EA)
                     showWrong -> Color(0xFFFFEAE7)
@@ -184,17 +221,18 @@ fun WrittenSession(onAnswered: (Boolean) -> Unit, onExit: () -> Unit) {
                 Surface(
                     modifier = Modifier.fillMaxWidth().clickable {
                         if (selected == -1) {
-                            selected = option
-                            val ok = option == question.answer
-                            if (ok) correct += 1
-                            onAnswered(ok)
+                            val changed = AnswerLedger.markOnce(answerKeys, index, option, q.choices.size)
+                            if (changed != answerKeys) {
+                                answerKeys = changed
+                                onAnswered(option == q.answer)
+                            }
                         }
                     },
                     shape = RoundedCornerShape(17.dp),
                     color = background
                 ) {
                     Text(
-                        ('A' + option).toString() + ".  " + question.choices[option],
+                        ('A' + option).toString() + ".  " + q.choices[option],
                         modifier = Modifier.padding(19.dp),
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -203,14 +241,40 @@ fun WrittenSession(onAnswered: (Boolean) -> Unit, onExit: () -> Unit) {
             if (selected >= 0) {
                 item {
                     Panel {
-                        Text(if (selected == question.answer) "回答正确" else "正确答案：" + ('A' + question.answer),
-                            fontWeight = FontWeight.SemiBold)
-                        Muted(question.explanation)
-                        Button(onClick = { index += 1; selected = -1 }) {
-                            Text(if (index == questions.lastIndex) "查看本轮结果" else "下一题")
-                        }
+                        Text(
+                            if (selected == q.answer) "回答正确" else "正确答案：" + ('A' + q.answer),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Muted(q.explanation)
                     }
                 }
+            }
+            item {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        enabled = index > 0,
+                        onClick = { index -= 1 },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(Icons.Outlined.ChevronLeft, contentDescription = null)
+                        Text("上一题")
+                    }
+                    Button(
+                        onClick = {
+                            if (index == questions.lastIndex) {
+                                if (answeredCount == questions.size) finished = true
+                                else showJump = true
+                            } else index += 1
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(if (index == questions.lastIndex) "交卷 / 报告" else "下一题")
+                        Icon(Icons.Outlined.ChevronRight, contentDescription = null)
+                    }
+                }
+            }
+            if (index == questions.lastIndex && answeredCount < questions.size) {
+                item { Muted("还有 " + (questions.size - answeredCount) + " 道题未答，点击交卷可查看题目列表。") }
             }
         }
     }
@@ -318,24 +382,71 @@ fun WordSession(
 @Composable
 fun DictationSession() {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val systemKeyboard = LocalSoftwareKeyboardController.current
     var ready by remember { mutableStateOf(false) }
     val tts = remember(context) { TextToSpeech(context) { ready = it == TextToSpeech.SUCCESS } }
     DisposableEffect(tts) { onDispose { tts.stop(); tts.shutdown() } }
+
+    val sentences = DemoContent.dictation
+    val separator = "\u001f"
     var index by rememberSaveable { mutableIntStateOf(0) }
     var speedIndex by rememberSaveable { mutableIntStateOf(1) }
     var accent by rememberSaveable { mutableStateOf("US") }
-    var answer by rememberSaveable(index) { mutableStateOf("") }
-    var reveal by rememberSaveable(index) { mutableStateOf(false) }
-    var hint by rememberSaveable(index) { mutableStateOf(false) }
-    var checked by rememberSaveable(index) { mutableStateOf(false) }
+    var customKeyboard by rememberSaveable { mutableStateOf(true) }
+    var responseStore by rememberSaveable { mutableStateOf(List(sentences.size) { "" }.joinToString(separator)) }
+    var revealFlags by rememberSaveable { mutableStateOf("0".repeat(sentences.size)) }
+    var hintFlags by rememberSaveable { mutableStateOf("0".repeat(sentences.size)) }
+    var checkedFlags by rememberSaveable { mutableStateOf("0".repeat(sentences.size)) }
+    var completeFlags by rememberSaveable { mutableStateOf("0".repeat(sentences.size)) }
+    var showJump by rememberSaveable { mutableStateOf(false) }
     val speed = listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
-    val line = DemoContent.dictation[index]
+    val line = sentences[index]
+    val responses = responseStore.split(separator)
+    val answer = responses.getOrElse(index) { "" }
+    val reveal = revealFlags[index] == '1'
+    val hint = hintFlags[index] == '1'
+    val checked = checkedFlags[index] == '1'
+    val passed = completeFlags[index] == '1'
+
+    fun updateAnswer(text: String) {
+        val list = responses.toMutableList()
+        while (list.size < sentences.size) list.add("")
+        list[index] = text
+        responseStore = list.joinToString(separator)
+        checkedFlags = checkedFlags.replaceRange(index, index + 1, "0")
+    }
+
+    if (showJump) {
+        PracticeJumpSheet(
+            title = "精听句子索引",
+            total = sentences.size,
+            selectedIndex = index,
+            answered = sentences.indices.filter { completeFlags[it] == '1' }.toSet(),
+            onChoose = { next ->
+                tts.stop()
+                index = next
+                showJump = false
+            },
+            onDismiss = { showJump = false }
+        )
+    }
+
     Screen {
-        item { Muted("原创句子 · " + (index + 1) + " / " + DemoContent.dictation.size) }
+        item {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Muted("原创句子 · " + (index + 1) + " / " + sentences.size)
+                OutlinedButton(onClick = { showJump = true }) { Text("选句") }
+            }
+        }
         item {
             Panel {
                 Text("听句子，填写缺失单词", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                Muted("设备内置语音朗读示例，并非历年真题音频。")
+                Muted("Android 系统 TTS 朗读示例；不是历年真题原声。")
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Button(
                         enabled = ready,
@@ -346,7 +457,7 @@ fun DictationSession() {
                         }
                     ) {
                         Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                        Text("朗读")
+                        Text("朗读 / 重听")
                     }
                     OutlinedButton(onClick = { tts.stop() }) {
                         Icon(Icons.Outlined.Stop, contentDescription = null)
@@ -354,10 +465,22 @@ fun DictationSession() {
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = true, onClick = { speedIndex = (speedIndex + 1) % speed.size },
-                        label = { Text(speed[speedIndex].toString() + "x") })
-                    FilterChip(selected = true, onClick = { accent = if (accent == "US") "UK" else "US" },
-                        label = { Text(accent) })
+                    FilterChip(
+                        selected = true,
+                        onClick = {
+                            tts.stop()
+                            speedIndex = (speedIndex + 1) % speed.size
+                        },
+                        label = { Text(speed[speedIndex].toString() + "x") }
+                    )
+                    FilterChip(
+                        selected = true,
+                        onClick = {
+                            tts.stop()
+                            accent = if (accent == "US") "UK" else "US"
+                        },
+                        label = { Text(accent) }
+                    )
                 }
                 if (!ready) Muted("语音引擎尚未就绪，请检查系统 TTS 服务。")
             }
@@ -371,22 +494,47 @@ fun DictationSession() {
                 )
                 OutlinedTextField(
                     value = answer,
-                    onValueChange = { answer = it; checked = false },
+                    onValueChange = { updateAnswer(it) },
                     modifier = Modifier.fillMaxWidth(),
+                    readOnly = customKeyboard,
                     singleLine = true,
                     label = { Text("输入缺失的英文单词") },
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None)
                 )
+                OutlinedButton(onClick = {
+                    customKeyboard = !customKeyboard
+                    if (customKeyboard) {
+                        systemKeyboard?.hide()
+                        focusManager.clearFocus()
+                    }
+                }) {
+                    Text(if (customKeyboard) "切换系统键盘" else "切换自制键盘")
+                }
                 if (hint) Muted("提示：首字母 " + line.missingWord.first())
                 if (reveal) Muted("参考译文：" + line.chinese)
                 if (checked) Text(
-                    if (answer.trim().equals(line.missingWord, ignoreCase = true)) "填写正确" else "还不正确，可以重试",
-                    color = if (answer.trim().equals(line.missingWord, ignoreCase = true)) Color(0xFF278354) else Amber
+                    if (passed) "填写正确" else "还不正确，可以重试",
+                    color = if (passed) Color(0xFF278354) else Amber
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = { hint = true }) { Text("提示") }
-                    OutlinedButton(onClick = { reveal = true }) { Text("答案") }
-                    Button(onClick = { checked = true }) { Text("检查") }
+                    OutlinedButton(onClick = {
+                        hintFlags = hintFlags.replaceRange(index, index + 1, "1")
+                    }) { Text("提示") }
+                    OutlinedButton(onClick = {
+                        revealFlags = revealFlags.replaceRange(index, index + 1, "1")
+                    }) { Text("答案") }
+                    Button(onClick = {
+                        val ok = answer.trim().equals(line.missingWord, ignoreCase = true)
+                        completeFlags = completeFlags.replaceRange(index, index + 1, if (ok) "1" else "0")
+                        checkedFlags = checkedFlags.replaceRange(index, index + 1, "1")
+                    }) { Text("检查") }
+                }
+                if (customKeyboard) {
+                    NativeQwertyKeyboard(
+                        onLetter = { updateAnswer(answer + it) },
+                        onErase = { updateAnswer(answer.dropLast(1)) },
+                        onHide = { customKeyboard = false }
+                    )
                 }
             }
         }
@@ -399,7 +547,7 @@ fun DictationSession() {
                     Icon(Icons.Outlined.ChevronLeft, contentDescription = null)
                     Text("上一句")
                 }
-                Button(onClick = { tts.stop(); index = (index + 1) % DemoContent.dictation.size }) {
+                Button(onClick = { tts.stop(); index = (index + 1) % sentences.size }) {
                     Text("下一句")
                     Icon(Icons.Outlined.ChevronRight, contentDescription = null)
                 }

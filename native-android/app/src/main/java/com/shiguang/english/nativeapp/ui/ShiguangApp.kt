@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,7 @@ fun ShiguangApp() {
     val scope = rememberCoroutineScope()
     var page by rememberSaveable { mutableStateOf("home") }
     var bookId by rememberSaveable { mutableStateOf("cet4") }
+    val saveableScreens = rememberSaveableStateHolder()
     val secondary = page !in mainTabs
     val goBack = {
         page = when (page) {
@@ -99,6 +101,8 @@ fun ShiguangApp() {
                     }
                 }
                 Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
+                    val screenKey = if (page == "word-session") "word-session:" + bookId else page
+                    saveableScreens.SaveableStateProvider(screenKey) {
                     when (page) {
                         "home" -> HomeScreen(progress, onGo = { page = it })
                         "stats" -> StatsScreen(progress)
@@ -117,6 +121,7 @@ fun ShiguangApp() {
                         )
                         "dictation-session" -> DictationSession()
                         else -> HomeScreen(progress, onGo = { page = it })
+                    }
                     }
                 }
             }

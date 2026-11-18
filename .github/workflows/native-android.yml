@@ -30,9 +30,21 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - name: Unit tests and native debug build
+      - name: Unit tests and native debug build (retry dependency rate limits)
         working-directory: native-android
-        run: gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
+        timeout-minutes: 25
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            echo "Build attempt $attempt / 3"
+            if gradle --no-daemon --max-workers=2 --no-parallel :app:testDebugUnitTest :app:assembleDebug; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 55))
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: shiguang-native-debug
