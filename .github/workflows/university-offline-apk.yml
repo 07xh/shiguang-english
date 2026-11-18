@@ -1,0 +1,88 @@
+name: University English Full Offline APK
+
+on:
+  push:
+    paths:
+      - 'native-android/tools/package_university_assets.py'
+      - 'native-android/app/src/main/assets/university/catalog.json'
+      - '.github/workflows/university-offline-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check downloader syntax
+        run: python3 -m py_compile native-android/tools/package_university_assets.py
+      - name: Verify source content and MP3 accessibility
+        working-directory: native-android
+        run: |
+          python3 tools/package_university_assets.py \
+            --dest app/src/main/assets/university --probe --strict
+      - name: Download all 231 university papers and corresponding audio
+        working-directory: native-android
+        run: |
+          python3 tools/package_university_assets.py \
+            --dest app/src/main/assets/university --strict --max-mib 1550
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+      - name: Install Android 35 SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Verify complete content before building
+        working-directory: native-android
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("app/src/main/assets/university/content-index.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          assert data["mode"] == "full"
+          assert data["expected"] == 231
+          assert data["complete"] == 231, "Refusing misleading incomplete APK"
+          assert not data["failures"], data["failures"][:5]
+          for row in data["entries"]:
+              assert row["complete"]
+              for name in row["modules"].values():
+                  assert (p.parent / name).is_file()
+              if row["audio"]:
+                  assert (p.parent / row["audio"]).is_file()
+          print("All 231 papers verified; proceeding to native build")
+          PY
+      - name: Native Android test and complete offline APK
+        working-directory: native-android
+        run: |
+          for attempt in 1 2 3; do
+            if gradle --no-daemon --max-workers=2 --no-parallel \
+              :app:testDebugUnitTest :app:assembleDebug; then exit 0; fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep $((attempt * 45))
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shiguang-university-231-offline-debug-apk
+          path: native-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          compression-level: 0
+      - name: Publish content verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: university-content-verification
+          path: native-android/app/src/main/assets/university/content-index.json
+          if-no-files-found: ignore

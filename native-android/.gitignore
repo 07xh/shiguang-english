@@ -5,3 +5,8 @@ local.properties
 *.iml
 *.apk
 *.aab
+
+# Generated authorized offline university pack (produced only in CI)
+app/src/main/assets/university/exams/
+app/src/main/assets/university/audio/
+app/src/main/assets/university/content-index.json

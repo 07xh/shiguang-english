@@ -1,4 +1,4 @@
-# 拾光英语 Android 原生版（第一阶段）
+# 拾光英语 Android 原生版（原生开发工程）
 
 本目录是 **Kotlin + Jetpack Compose** 独立 Android 项目，非 Capacitor / WebView 套壳。与仓库既有 `www/`、`android/`、`shiguang-original/` 并存，未删除或改动原版参考资料。
 
@@ -36,3 +36,23 @@
 ## CI 失败处理
 
 2026-11-19 首轮 CI 失败于废弃 SDK `tools` 包安装，第二轮失败于 Maven Central HTTP 429（非 Kotlin 编译错误）。工作流现降低并发并有限次退避重试，最终状态以新 CI 为准。
+
+## 大学英语原版内容集成（新增）
+
+范围来自现有 `shiguang-original/.../exams_manifest.js`：四级 74、六级 51、雅思 72、考研 34，共 **231 套目录**；不收录高考。用户已确认拥有将原版题库及音频用于当前项目 APK 的许可。
+
+- `app/src/main/assets/university/catalog.json`：真实 231 个原版目录元数据，**不等于题目内容**
+- `tools/package_university_assets.py`：在 CI 从原站获取相应 JSON 切片、MP3；按考试 ID 打包，不放伪造题目；逐套记录校验结果
+- `UniversityRepository.kt`：从 APK assets 离线读取内容索引、试卷 JSON 和 MP3 路径
+- `UniversityScreens.kt`：级别 / 年份 / 试卷目录、题号跳转、选择题、TFNG、填空、主观题输入和保存、逐句多空输入、原声音频播放器
+- `.github/workflows/university-offline-apk.yml`：**严格完整性门禁**；只有 231 套 JSON 均验证且对应音频校验成功后才上传完整离线 APK
+
+**两个 APK 构建不可混淆：** `native-android.yml` 的 Debug APK 只是工程编译预览包；`university-offline-apk.yml` 的产物才可称为完整大学题库离线包。缺失资源、源站限流、资源总量超限时，完整版工作流会失败，不能宣称内容已经内置。
+
+题型解析是原生数据适配器，实际题型字段、整卷答案、听力精确句段时间轴仍须在完整数据成功下载后逐项核验。`MediaPlayer` 当前播放完整试卷 MP3，尚未逐句精准裁剪。**不可据此称已经 1:1 还原原站全部复杂交互。**
+
+目标仍是手机和平板真机验收；CI 的 Android 编译与单元测试不能等同于两台实体设备上的操作验收。
+
+### 手动触发离线包构建
+
+在 GitHub → Actions → `University English Full Offline APK` 中运行 workflow。工作流会先抽检 4 套，再下载 231 套。完成且通过检查后，在该次运行的 Artifacts 下载 `shiguang-university-231-offline-debug-apk`；若失败，查看 `university-content-verification` 报告和日志。

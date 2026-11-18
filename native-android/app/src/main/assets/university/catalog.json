@@ -1,0 +1,2335 @@
+{
+  "schema": 1,
+  "source": "Bilibili Toy source manifest; user-confirmed licensed integration",
+  "sourceManifestSha": "9134bdda173b842bb6ab410e0e25e016a6067a66",
+  "levels": [
+    {
+      "id": "cet4",
+      "name": "大学英语四级"
+    },
+    {
+      "id": "cet6",
+      "name": "大学英语六级"
+    },
+    {
+      "id": "ielts",
+      "name": "雅思"
+    },
+    {
+      "id": "kaoyan",
+      "name": "考研英语"
+    }
+  ],
+  "exams": [
+    {
+      "level": "cet4",
+      "id": "2026_06_cet4_set1",
+      "title": "2026年6月四级真题（第一套）",
+      "year": 2026,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 57,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2026_06_cet4_set2",
+      "title": "2026年6月四级真题（第二套）",
+      "year": 2026,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 56,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2026_06_cet4_set3",
+      "title": "2026年6月四级真题（第三套）",
+      "year": 2026,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2025_12_cet4_set1",
+      "title": "2025年12月四级真题（第一套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 56,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2025_12_cet4_set2",
+      "title": "2025年12月四级真题（第二套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 58,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2025_12_cet4_set3",
+      "title": "2025年12月四级真题（第三套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2025_06_cet4_set1",
+      "title": "2025年6月四级真题（第一套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 63,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2025_06_cet4_set2",
+      "title": "2025年6月四级真题（第二套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2025_06_cet4_set3",
+      "title": "2025年6月四级真题（第三套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2024_12_cet4_set1",
+      "title": "2024年12月四级真题（第一套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 66,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2024_12_cet4_set2",
+      "title": "2024年12月四级真题（第二套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2024_12_cet4_set3",
+      "title": "2024年12月四级真题（第三套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2024_06_cet4_set1",
+      "title": "2024年6月四级真题（第一套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2024_06_cet4_set2",
+      "title": "2024年6月四级真题（第二套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 58,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2024_06_cet4_set3",
+      "title": "2024年6月四级真题（第三套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2023_12_cet4_set1",
+      "title": "2023年12月四级真题（第一套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 58,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_12_cet4_set2",
+      "title": "2023年12月四级真题（第二套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 58,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_12_cet4_set3",
+      "title": "2023年12月四级真题（第三套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2023_06_cet4_set1",
+      "title": "2023年6月四级真题（第一套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 59,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_06_cet4_set2",
+      "title": "2023年6月四级真题（第二套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_06_cet4_set3",
+      "title": "2023年6月四级真题（第三套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2023_03_cet4_set1",
+      "title": "2023年3月四级真题（第一套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 59,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_03_cet4_set2",
+      "title": "2023年3月四级真题（第二套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2023_03_cet4_set3",
+      "title": "2023年3月四级真题（第三套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_12_cet4_set1",
+      "title": "2022年12月四级真题（第一套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 56,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_12_cet4_set2",
+      "title": "2022年12月四级真题（第二套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 59,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_12_cet4_set3",
+      "title": "2022年12月四级真题（第三套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2022_09_cet4_set1",
+      "title": "2022年9月四级真题（第一套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 68,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_09_cet4_set2",
+      "title": "2022年9月四级真题（第二套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_09_cet4_set3",
+      "title": "2022年9月四级真题（第三套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_06_cet4_set1",
+      "title": "2022年6月四级真题（第一套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 69,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_06_cet4_set2",
+      "title": "2022年6月四级真题（第二套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2022_06_cet4_set3",
+      "title": "2022年6月四级真题（第三套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 0,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2021_12_cet4_set1",
+      "title": "2021年12月四级真题（第一套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2021_12_cet4_set2",
+      "title": "2021年12月四级真题（第二套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 62,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2021_12_cet4_set3",
+      "title": "2021年12月四级真题（第三套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2021_06_cet4_set1",
+      "title": "2021年6月四级真题（第一套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2021_06_cet4_set2",
+      "title": "2021年6月四级真题（第二套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 57,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2021_06_cet4_set3",
+      "title": "2021年6月四级真题（第三套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2020_12_cet4_set1",
+      "title": "2020年12月四级真题（第一套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 56,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2020_12_cet4_set2",
+      "title": "2020年12月四级真题（第二套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 54,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2020_12_cet4_set3",
+      "title": "2020年12月四级真题（第三套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2020_09_cet4_set1",
+      "title": "2020年9月四级真题（第一套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2020_09_cet4_set2",
+      "title": "2020年9月四级真题（第二套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2019_12_cet4_set1",
+      "title": "2019年12月四级真题（第一套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 67,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2019_12_cet4_set2",
+      "title": "2019年12月四级真题（第二套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 64,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2019_12_cet4_set3",
+      "title": "2019年12月四级真题（第三套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2019_06_cet4_set1",
+      "title": "2019年6月四级真题（第一套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 65,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2019_06_cet4_set2",
+      "title": "2019年6月四级真题（第二套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2019_06_cet4_set3",
+      "title": "2019年6月四级真题（第三套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2018_12_cet4_set1",
+      "title": "2018年12月四级真题（第一套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 62,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2018_12_cet4_set2",
+      "title": "2018年12月四级真题（第二套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2018_12_cet4_set3",
+      "title": "2018年12月四级真题（第三套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2018_06_cet4_set1",
+      "title": "2018年6月四级真题（第一套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2018_06_cet4_set2",
+      "title": "2018年6月四级真题（第二套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 60,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2018_06_cet4_set3",
+      "title": "2018年6月四级真题（第三套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2017_12_cet4_set1",
+      "title": "2017年12月四级真题（第一套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2017_12_cet4_set2",
+      "title": "2017年12月四级真题（第二套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2017_12_cet4_set3",
+      "title": "2017年12月四级真题（第三套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2017_06_cet4_set1",
+      "title": "2017年6月四级真题（第一套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 61,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2017_06_cet4_set2",
+      "title": "2017年6月四级真题（第二套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 65,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2017_06_cet4_set3",
+      "title": "2017年6月四级真题（第三套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2016_12_cet4_set1",
+      "title": "2016年12月四级真题（第一套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 58,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2016_12_cet4_set2",
+      "title": "2016年12月四级真题（第二套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 57,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2016_12_cet4_set3",
+      "title": "2016年12月四级真题（第三套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 51,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2016_06_cet4_set1",
+      "title": "2016年6月四级真题（第一套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 65,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2016_06_cet4_set2",
+      "title": "2016年6月四级真题（第二套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 76,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2016_06_cet4_set3",
+      "title": "2016年6月四级真题（第三套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2015_12_cet4_set1",
+      "title": "2015年12月四级真题（第一套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 67,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2015_12_cet4_set2",
+      "title": "2015年12月四级真题（第二套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 71,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2015_12_cet4_set3",
+      "title": "2015年12月四级真题（第三套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "cet4",
+      "id": "2015_06_cet4_set1",
+      "title": "2015年6月四级真题（第一套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 75,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2015_06_cet4_set2",
+      "title": "2015年6月四级真题（第二套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 73,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet4",
+      "id": "2015_06_cet4_set3",
+      "title": "2015年6月四级真题（第三套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 72,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2026_06_cet6_set2",
+      "title": "2026年6月六级真题（第二套）",
+      "year": 2026,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 135,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2026_06_cet6_set1",
+      "title": "2026年6月六级真题（第一套）",
+      "year": 2026,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 131,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2025_12_cet6_set2",
+      "title": "2025年12月六级真题（第二套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 130,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2025_12_cet6_set1",
+      "title": "2025年12月六级真题（第一套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 136,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2025_06_cet6_set2",
+      "title": "2025年6月六级真题（第二套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 133,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2025_06_cet6_set1",
+      "title": "2025年6月六级真题（第一套）",
+      "year": 2025,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 115,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2024_12_cet6_set2",
+      "title": "2024年12月六级真题（第二套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 135,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2024_12_cet6_set1",
+      "title": "2024年12月六级真题（第一套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 132,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2024_06_cet6_set2",
+      "title": "2024年6月六级真题（第二套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 127,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2024_06_cet6_set1",
+      "title": "2024年6月六级真题（第一套）",
+      "year": 2024,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 133,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2023_12_cet6_set2",
+      "title": "2023年12月六级真题（第二套 ）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 129,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2023_12_cet6_set1",
+      "title": "2023年12月六级真题（第一套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 19,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2023_06_cet6_set2",
+      "title": "2023年6月六级真题（第二套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 132,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2023_06_cet6_set1",
+      "title": "2023年6月六级真题（第一套）",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 129,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2023_03_cet6_set1",
+      "title": "2023年3月六级真题",
+      "year": 2023,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 118,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2022_12_cet6_set2",
+      "title": "2022年12月六级真题（第二套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 125,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2022_12_cet6_set1",
+      "title": "2022年12月六级真题（第一套）",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 131,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2022_09_cet6_set1",
+      "title": "2022年09月六级真题",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 132,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2022_06_cet6_set1",
+      "title": "2022年06月六级真题",
+      "year": 2022,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 122,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2021_12_cet6_set2",
+      "title": "2021年12月六级真题（第二套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 136,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2021_12_cet6_set1",
+      "title": "2021年12月六级真题（第一套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 130,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2021_06_cet6_set2",
+      "title": "2021年6月六级真题（第二套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 138,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2021_06_cet6_set1",
+      "title": "2021年6月六级真题（第一套）",
+      "year": 2021,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 134,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2020_12_cet6_set2",
+      "title": "2020年12月六级真题（第二套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 136,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2020_12_cet6_set1",
+      "title": "2020年12月六级真题（第一套）",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 128,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2020_09_cet6_set1",
+      "title": "2020年9月六级真题",
+      "year": 2020,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 130,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_12_cet6_set3",
+      "title": "2019年12月六级真题（第三套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 121,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_12_cet6_set2",
+      "title": "2019年12月六级真题（第二套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 127,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_12_cet6_set1",
+      "title": "2019年12月六级真题（第一套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 128,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_06_cet6_set3",
+      "title": "2019年6月六级真题（第三套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 120,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_06_cet6_set2",
+      "title": "2019年6月六级真题（第二套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 130,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2019_06_cet6_set1",
+      "title": "2019年6月六级真题（第一套）",
+      "year": 2019,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 128,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2018_12_cet6_set2",
+      "title": "2018年12月六级真题（第二套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 125,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2018_12_cet6_set1",
+      "title": "2018年12月六级真题（第一套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 130,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2018_06_cet6_set2",
+      "title": "2018年6月六级真题（第二套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 132,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2018_06_cet6_set1",
+      "title": "2018年6月六级真题（第一套）",
+      "year": 2018,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 127,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2017_12_cet6_set2",
+      "title": "2017年12月六级真题（第二套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 129,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2017_12_cet6_set1",
+      "title": "2017年12月六级真题（第一套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 126,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2017_06_cet6_set2",
+      "title": "2017年6月六级真题（第二套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 126,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2017_06_cet6_set1",
+      "title": "2017年6月六级真题（第一套）",
+      "year": 2017,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 123,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2016_12_cet6_set3",
+      "title": "2016年12月六级真题（第三套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 117,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2016_12_cet6_set2",
+      "title": "2016年12月六级真题（第二套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 129,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2016_12_cet6_set1",
+      "title": "2016年12月六级真题（第一套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 123,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2016_06_cet6_set2",
+      "title": "2016年6月六级听力（第二套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 139,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2016_06_cet6_set1",
+      "title": "2016年6月六级听力（第一套）",
+      "year": 2016,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 129,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_12_cet6_set3",
+      "title": "2015年12月六级真题（第三套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 131,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_12_cet6_set2",
+      "title": "2015年12月六级真题（第二套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 118,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_12_cet6_set1",
+      "title": "2015年12月六级真题（第一套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 108,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_06_cet6_set3",
+      "title": "2015年6月六级真题（第三套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 121,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_06_cet6_set2",
+      "title": "2015年6月六级真题（第二套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 119,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "cet6",
+      "id": "2015_06_cet6_set1",
+      "title": "2015年6月六级真题（第一套）",
+      "year": 2015,
+      "paperStem": null,
+      "listeningCount": 25,
+      "dictationCount": 117,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_21_test1",
+      "title": "剑桥雅思真题21听力 Test 1",
+      "year": 21,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 84,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_21_test2",
+      "title": "剑桥雅思真题21听力 Test 2",
+      "year": 21,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_21_test3",
+      "title": "剑桥雅思真题21听力 Test 3",
+      "year": 21,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_21_test4",
+      "title": "剑桥雅思真题21听力 Test 4",
+      "year": 21,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 72,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_20_test1",
+      "title": "剑桥雅思真题20听力 Test 1",
+      "year": 20,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 96,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_20_test2",
+      "title": "剑桥雅思真题20听力 Test 2",
+      "year": 20,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 82,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_20_test3",
+      "title": "剑桥雅思真题20听力 Test 3",
+      "year": 20,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 88,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_20_test4",
+      "title": "剑桥雅思真题20听力 Test 4",
+      "year": 20,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 85,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_19_test1",
+      "title": "剑桥雅思真题19听力 Test 1",
+      "year": 19,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 80,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_19_test2",
+      "title": "剑桥雅思真题19听力 Test 2",
+      "year": 19,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 90,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_19_test3",
+      "title": "剑桥雅思真题19听力 Test 3",
+      "year": 19,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_19_test4",
+      "title": "剑桥雅思真题19听力 Test 4",
+      "year": 19,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 94,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_18_test1",
+      "title": "剑桥雅思真题18听力 Test 1",
+      "year": 18,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_18_test2",
+      "title": "剑桥雅思真题18听力 Test 2",
+      "year": 18,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 85,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_18_test3",
+      "title": "剑桥雅思真题18听力 Test 3",
+      "year": 18,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 85,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_18_test4",
+      "title": "剑桥雅思真题18听力 Test 4",
+      "year": 18,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 84,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_17_test1",
+      "title": "剑桥雅思真题17听力 Test 1",
+      "year": 17,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 80,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_17_test2",
+      "title": "剑桥雅思真题17听力 Test 2",
+      "year": 17,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 83,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_17_test3",
+      "title": "剑桥雅思真题17听力 Test 3",
+      "year": 17,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_17_test4",
+      "title": "剑桥雅思真题17听力 Test 4",
+      "year": 17,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 88,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_16_test1",
+      "title": "剑桥雅思真题16听力 Test 1",
+      "year": 16,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 82,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_16_test2",
+      "title": "剑桥雅思真题16听力 Test 2",
+      "year": 16,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_16_test3",
+      "title": "剑桥雅思真题16听力 Test 3",
+      "year": 16,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 90,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_16_test4",
+      "title": "剑桥雅思真题16听力 Test 4",
+      "year": 16,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 87,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_15_test1",
+      "title": "剑桥雅思真题15听力 Test 1",
+      "year": 15,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 88,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_15_test2",
+      "title": "剑桥雅思真题15听力 Test 2",
+      "year": 15,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_15_test3",
+      "title": "剑桥雅思真题15听力 Test 3",
+      "year": 15,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 84,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_15_test4",
+      "title": "剑桥雅思真题15听力 Test 4",
+      "year": 15,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 83,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_14_test1",
+      "title": "剑桥雅思真题14听力 Test 1",
+      "year": 14,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_14_test2",
+      "title": "剑桥雅思真题14听力 Test 2",
+      "year": 14,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_14_test3",
+      "title": "剑桥雅思真题14听力 Test 3",
+      "year": 14,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 82,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_14_test4",
+      "title": "剑桥雅思真题14听力 Test 4",
+      "year": 14,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 91,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_13_test1",
+      "title": "剑桥雅思真题13听力 Test 1",
+      "year": 13,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 70,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_13_test2",
+      "title": "剑桥雅思真题13听力 Test 2",
+      "year": 13,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 97,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_13_test3",
+      "title": "剑桥雅思真题13听力 Test 3",
+      "year": 13,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 79,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_13_test4",
+      "title": "剑桥雅思真题13听力 Test 4",
+      "year": 13,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 67,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_12_test1",
+      "title": "剑桥雅思真题12听力 Test 1",
+      "year": 12,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 81,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_12_test2",
+      "title": "剑桥雅思真题12听力 Test 2",
+      "year": 12,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_12_test3",
+      "title": "剑桥雅思真题12听力 Test 3",
+      "year": 12,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 97,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_12_test4",
+      "title": "剑桥雅思真题12听力 Test 4",
+      "year": 12,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 83,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_11_test1",
+      "title": "剑桥雅思真题11听力 Test 1",
+      "year": 11,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 92,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_11_test2",
+      "title": "剑桥雅思真题11听力 Test 2",
+      "year": 11,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 88,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_11_test3",
+      "title": "剑桥雅思真题11听力 Test 3",
+      "year": 11,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 82,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_11_test4",
+      "title": "剑桥雅思真题11听力 Test 4",
+      "year": 11,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 81,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_10_test1",
+      "title": "剑桥雅思真题10听力 Test 1",
+      "year": 10,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 70,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_10_test2",
+      "title": "剑桥雅思真题10听力 Test 2",
+      "year": 10,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 73,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_10_test3",
+      "title": "剑桥雅思真题10听力 Test 3",
+      "year": 10,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 80,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_10_test4",
+      "title": "剑桥雅思真题10听力 Test 4",
+      "year": 10,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 81,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_9_test1",
+      "title": "剑桥雅思真题9听力 Test 1",
+      "year": 9,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 78,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_9_test2",
+      "title": "剑桥雅思真题9听力 Test 2",
+      "year": 9,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 74,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_9_test3",
+      "title": "剑桥雅思真题9听力 Test 3",
+      "year": 9,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 84,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_9_test4",
+      "title": "剑桥雅思真题9听力 Test 4",
+      "year": 9,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 70,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_8_test1",
+      "title": "剑桥雅思真题8听力 Test 1",
+      "year": 8,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 76,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_8_test2",
+      "title": "剑桥雅思真题8听力 Test 2",
+      "year": 8,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 77,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_8_test3",
+      "title": "剑桥雅思真题8听力 Test 3",
+      "year": 8,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 77,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_8_test4",
+      "title": "剑桥雅思真题8听力 Test 4",
+      "year": 8,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 69,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_7_test1",
+      "title": "剑桥雅思真题7听力 Test 1",
+      "year": 7,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 90,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_7_test2",
+      "title": "剑桥雅思真题7听力 Test 2",
+      "year": 7,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 72,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_7_test3",
+      "title": "剑桥雅思真题7听力 Test 3",
+      "year": 7,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 76,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_7_test4",
+      "title": "剑桥雅思真题7听力 Test 4",
+      "year": 7,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 63,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_6_test1",
+      "title": "剑桥雅思真题6听力 Test 1",
+      "year": 6,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 65,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_6_test2",
+      "title": "剑桥雅思真题6听力 Test 2",
+      "year": 6,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 67,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_6_test3",
+      "title": "剑桥雅思真题6听力 Test 3",
+      "year": 6,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 76,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_6_test4",
+      "title": "剑桥雅思真题6听力 Test 4",
+      "year": 6,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 68,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_5_test1",
+      "title": "剑桥雅思真题5听力 Test 1",
+      "year": 5,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 70,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_5_test2",
+      "title": "剑桥雅思真题5听力 Test 2",
+      "year": 5,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 82,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_5_test3",
+      "title": "剑桥雅思真题5听力 Test 3",
+      "year": 5,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 86,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_5_test4",
+      "title": "剑桥雅思真题5听力 Test 4",
+      "year": 5,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 69,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_4_test1",
+      "title": "剑桥雅思真题4听力 Test 1",
+      "year": 4,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 74,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_4_test2",
+      "title": "剑桥雅思真题4听力 Test 2",
+      "year": 4,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 75,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_4_test3",
+      "title": "剑桥雅思真题4听力 Test 3",
+      "year": 4,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 75,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "ielts",
+      "id": "ielts_4_test4",
+      "title": "剑桥雅思真题4听力 Test 4",
+      "year": 4,
+      "paperStem": null,
+      "listeningCount": 0,
+      "dictationCount": 81,
+      "isWrittenOnly": false
+    },
+    {
+      "level": "kaoyan",
+      "id": "2026_kaoyan_eng1",
+      "title": "2026年全国硕士研究生招生考试英语（一）真题",
+      "year": 2026,
+      "paperStem": "2026年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2026_kaoyan_eng2",
+      "title": "2026年全国硕士研究生招生考试英语（二）真题",
+      "year": 2026,
+      "paperStem": "2026年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2025_kaoyan_eng1",
+      "title": "2025年全国硕士研究生招生考试英语（一）真题",
+      "year": 2025,
+      "paperStem": "2025年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2025_kaoyan_eng2",
+      "title": "2025年全国硕士研究生招生考试英语（二）真题",
+      "year": 2025,
+      "paperStem": "2025年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2024_kaoyan_eng1",
+      "title": "2024年全国硕士研究生招生考试英语（一）真题",
+      "year": 2024,
+      "paperStem": "2024年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2024_kaoyan_eng2",
+      "title": "2024年全国硕士研究生招生考试英语（二）真题",
+      "year": 2024,
+      "paperStem": "2024年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2023_kaoyan_eng1",
+      "title": "2023年全国硕士研究生招生考试英语（一）真题",
+      "year": 2023,
+      "paperStem": "2023年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2023_kaoyan_eng2",
+      "title": "2023年全国硕士研究生招生考试英语（二）真题",
+      "year": 2023,
+      "paperStem": "2023年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2022_kaoyan_eng1",
+      "title": "2022年全国硕士研究生招生考试英语（一）真题",
+      "year": 2022,
+      "paperStem": "2022年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2022_kaoyan_eng2",
+      "title": "2022年全国硕士研究生招生考试英语（二）真题",
+      "year": 2022,
+      "paperStem": "2022年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2021_kaoyan_eng1",
+      "title": "2021年全国硕士研究生招生考试英语（一）真题",
+      "year": 2021,
+      "paperStem": "2021年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2021_kaoyan_eng2",
+      "title": "2021年全国硕士研究生招生考试英语（二）真题",
+      "year": 2021,
+      "paperStem": "2021年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2020_kaoyan_eng1",
+      "title": "2020年全国硕士研究生招生考试英语（一）真题",
+      "year": 2020,
+      "paperStem": "2020年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2020_kaoyan_eng2",
+      "title": "2020年全国硕士研究生招生考试英语（二）真题",
+      "year": 2020,
+      "paperStem": "2020年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2019_kaoyan_eng1",
+      "title": "2019年全国硕士研究生招生考试英语（一）真题",
+      "year": 2019,
+      "paperStem": "2019年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2019_kaoyan_eng2",
+      "title": "2019年全国硕士研究生招生考试英语（二）真题",
+      "year": 2019,
+      "paperStem": "2019年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2018_kaoyan_eng1",
+      "title": "2018年全国硕士研究生招生考试英语（一）真题",
+      "year": 2018,
+      "paperStem": "2018年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2018_kaoyan_eng2",
+      "title": "2018年全国硕士研究生招生考试英语（二）真题",
+      "year": 2018,
+      "paperStem": "2018年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2017_kaoyan_eng1",
+      "title": "2017年全国硕士研究生招生考试英语（一）真题",
+      "year": 2017,
+      "paperStem": "2017年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2017_kaoyan_eng2",
+      "title": "2017年全国硕士研究生招生考试英语（二）真题",
+      "year": 2017,
+      "paperStem": "2017年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2016_kaoyan_eng1",
+      "title": "2016年全国硕士研究生招生考试英语（一）真题",
+      "year": 2016,
+      "paperStem": "2016年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2016_kaoyan_eng2",
+      "title": "2016年全国硕士研究生招生考试英语（二）真题",
+      "year": 2016,
+      "paperStem": "2016年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2015_kaoyan_eng1",
+      "title": "2015年全国硕士研究生招生考试英语（一）真题",
+      "year": 2015,
+      "paperStem": "2015年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2015_kaoyan_eng2",
+      "title": "2015年全国硕士研究生招生考试英语（二）真题",
+      "year": 2015,
+      "paperStem": "2015年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2014_kaoyan_eng1",
+      "title": "2014年全国硕士研究生招生考试英语（一）真题",
+      "year": 2014,
+      "paperStem": "2014年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2014_kaoyan_eng2",
+      "title": "2014年全国硕士研究生招生考试英语（二）真题",
+      "year": 2014,
+      "paperStem": "2014年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2013_kaoyan_eng1",
+      "title": "2013年全国硕士研究生招生考试英语（一）真题",
+      "year": 2013,
+      "paperStem": "2013年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2013_kaoyan_eng2",
+      "title": "2013年全国硕士研究生招生考试英语（二）真题",
+      "year": 2013,
+      "paperStem": "2013年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2012_kaoyan_eng1",
+      "title": "2012年全国硕士研究生招生考试英语（一）真题",
+      "year": 2012,
+      "paperStem": "2012年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2012_kaoyan_eng2",
+      "title": "2012年全国硕士研究生招生考试英语（二）真题",
+      "year": 2012,
+      "paperStem": "2012年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2011_kaoyan_eng1",
+      "title": "2011年全国硕士研究生招生考试英语（一）真题",
+      "year": 2011,
+      "paperStem": "2011年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2011_kaoyan_eng2",
+      "title": "2011年全国硕士研究生招生考试英语（二）真题",
+      "year": 2011,
+      "paperStem": "2011年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2010_kaoyan_eng1",
+      "title": "2010年全国硕士研究生招生考试英语（一）真题",
+      "year": 2010,
+      "paperStem": "2010年考研英语（一）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    },
+    {
+      "level": "kaoyan",
+      "id": "2010_kaoyan_eng2",
+      "title": "2010年全国硕士研究生招生考试英语（二）真题",
+      "year": 2010,
+      "paperStem": "2010年考研英语（二）真题",
+      "listeningCount": 0,
+      "dictationCount": 0,
+      "isWrittenOnly": true
+    }
+  ]
+}

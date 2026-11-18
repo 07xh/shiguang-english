@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.shiguang.english.nativeapp.data.LocalStudyRepository
 import com.shiguang.english.nativeapp.data.StudyProgress
+import com.shiguang.english.nativeapp.data.UniversityRepository
 import kotlinx.coroutines.launch
 
 private val mainTabs = listOf("home", "stats", "listening", "words", "profile")
@@ -38,10 +39,14 @@ private fun NavIcon(index: Int) {
 fun ShiguangApp() {
     val context = LocalContext.current
     val repository = remember(context) { LocalStudyRepository(context.applicationContext) }
+    val university = remember(context) { UniversityRepository(context.applicationContext) }
     val progress by repository.progress.collectAsState(initial = StudyProgress())
     val scope = rememberCoroutineScope()
     var page by rememberSaveable { mutableStateOf("home") }
     var bookId by rememberSaveable { mutableStateOf("cet4") }
+    var paperId by rememberSaveable { mutableStateOf("") }
+    var paperLevel by rememberSaveable { mutableStateOf("cet4") }
+    var paperModule by rememberSaveable { mutableStateOf("listening") }
     val saveableScreens = rememberSaveableStateHolder()
     val secondary = page !in mainTabs
     val goBack = {
@@ -49,6 +54,7 @@ fun ShiguangApp() {
             "word-session" -> "words"
             "written-session" -> "written"
             "dictation-session" -> "listening"
+            "university-paper" -> "listening"
             else -> "home"
         }
     }
@@ -101,12 +107,26 @@ fun ShiguangApp() {
                     }
                 }
                 Box(Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.TopCenter) {
-                    val screenKey = if (page == "word-session") "word-session:" + bookId else page
+                    val screenKey = when (page) {
+                        "word-session" -> "word-session:" + bookId
+                        "university-paper" -> "university-paper:" + paperLevel + "/" + paperId + "/" + paperModule
+                        else -> page
+                    }
                     saveableScreens.SaveableStateProvider(screenKey) {
                     when (page) {
                         "home" -> HomeScreen(progress, onGo = { page = it })
                         "stats" -> StatsScreen(progress)
-                        "listening" -> ListeningScreen(onPractice = { page = "dictation-session" })
+                        "listening", "university" -> UniversityCatalogScreen(university, onOpen = { paper, module ->
+                            paperId = paper.id
+                            paperLevel = paper.level
+                            paperModule = module
+                            page = "university-paper"
+                        })
+                        "university-paper" -> {
+                            val paper = university.exams.firstOrNull { it.level == paperLevel && it.id == paperId }
+                            if (paper != null) UniversityPaperScreen(university, paper, paperModule)
+                            else Text("试卷不存在，请从原版目录重新选择")
+                        }
                         "words" -> BooksScreen(onChoose = { bookId = it; page = "word-session" })
                         "profile" -> ProfileScreen(progress, onReset = { scope.launch { repository.clear() } })
                         "written" -> WrittenCatalog(onStart = { page = "written-session" })

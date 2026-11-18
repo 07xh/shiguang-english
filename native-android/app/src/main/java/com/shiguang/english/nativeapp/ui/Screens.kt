@@ -111,9 +111,9 @@ fun HomeScreen(progress: StudyProgress, onGo: (String) -> Unit) {
             }
         }
         item { Text("练习入口", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold) }
-        item { Feature("笔试特训", "题目 → 选项 → 解析 → 下一题", onClick = { onGo("written") }) }
-        item { Feature("听力特训", "听力入口与原生朗读练习", onClick = { onGo("listening") }) }
-        item { Feature("逐句精听", "重听、变速、提示、填空、答案与换句", onClick = { onGo("dictation-session") }) }
+        item { Feature("大学英语真题", "四级 / 六级 / 雅思 / 考研 · 原版 231 套目录", onClick = { onGo("listening") }) }
+        item { Feature("原版听力", "按级别、年份、试卷进入真实听力模块", onClick = { onGo("listening") }) }
+        item { Feature("原版多空精听", "同一试卷内练习不同句子与多个听写空格", onClick = { onGo("listening") }) }
         item { Feature("单词学习", "选择词书、认识 / 不认识、进度保存", onClick = { onGo("words") }) }
     }
 }
