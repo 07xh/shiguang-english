@@ -90,4 +90,8 @@ class UniversityAttemptStore(context: Context) {
     fun clearDictation(exam: UniversityExam) {
         preferences.edit().remove(draftKey("dictation", exam, "dictation")).apply()
     }
+
+    fun clearAll() {
+        preferences.edit().clear().apply()
+    }
 }
