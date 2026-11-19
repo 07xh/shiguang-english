@@ -10,6 +10,10 @@ on:
       - '.github/workflows/native-android.yml'
   workflow_dispatch:
 
+concurrency:
+  group: shiguang-native-apk-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
 permissions:
   contents: read
 
