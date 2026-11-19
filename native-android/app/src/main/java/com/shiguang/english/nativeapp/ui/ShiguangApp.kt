@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.shiguang.english.nativeapp.data.LocalStudyRepository
 import com.shiguang.english.nativeapp.data.StudyProgress
 import com.shiguang.english.nativeapp.data.UniversityRepository
+import com.shiguang.english.nativeapp.data.UniversityAttemptStore
 import com.shiguang.english.nativeapp.data.VocabRepository
 import com.shiguang.english.nativeapp.data.WordUserSettings
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ fun ShiguangApp() {
     var paperId by rememberSaveable { mutableStateOf("") }
     var paperLevel by rememberSaveable { mutableStateOf("cet4") }
     var paperModule by rememberSaveable { mutableStateOf("written") }
+    var resetGeneration by rememberSaveable { mutableIntStateOf(0) }
     val screenStates = rememberSaveableStateHolder()
     val showDock = page == "home" || page == "stats"
 
@@ -81,7 +83,7 @@ fun ShiguangApp() {
     // Android 15+ edge-to-edge: reserve system bars for both native modes.
     Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
     if (currentMode == "vocab") {
-        screenStates.SaveableStateProvider("mode:vocab") {
+        screenStates.SaveableStateProvider("mode:vocab:" + resetGeneration) {
             VocabRoot(repository = vocab, onModeSwitch = { changeMode(it) })
         }
     } else Box(Modifier.fillMaxSize().background(Color.White)) {
@@ -120,7 +122,7 @@ fun ShiguangApp() {
             }
 
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                val screenKey = when (page) {
+                val screenKey = resetGeneration.toString() + ":" + when (page) {
                     "word-session" -> "word-session:" + bookId
                     "university" -> "university:" + catalogModule + ":" + catalogLevel
                     "university-paper" -> "paper:" + paperLevel + "/" + paperId + "/" + paperModule
@@ -164,7 +166,14 @@ fun ShiguangApp() {
                             onExit = { page = "words" }
                         )
                         "profile" -> ProfileScreen(
-                            progress, onReset = { scope.launch { localRepository.clear() } }
+                            progress, onReset = {
+                                scope.launch {
+                                    localRepository.clear()
+                                    vocab.clearMemory()
+                                    UniversityAttemptStore(context.applicationContext).clearAll()
+                                    resetGeneration += 1
+                                }
+                            }
                         )
                         "written" -> WrittenCatalog(onStart = { page = "written-session" })
                         "written-session" -> WrittenSession(
