@@ -597,7 +597,7 @@ fun ProfileScreen(progress: StudyProgress, onReset: () -> Unit) {
         item {
             Panel {
                 Text("数据管理", fontWeight = FontWeight.SemiBold)
-                Muted("不需要登录；本阶段使用 DataStore 保存本机练习状态，不提供云端同步。")
+                Muted("本机保存答题草稿、听写答案、背词复习记录和练习统计；不提供云端同步。")
                 OutlinedButton(onClick = { confirming = true }) { Text("清空本机学习记录") }
             }
         }
@@ -605,7 +605,7 @@ fun ProfileScreen(progress: StudyProgress, onReset: () -> Unit) {
     if (confirming) AlertDialog(
         onDismissRequest = { confirming = false },
         title = { Text("确定清空学习记录？") },
-        text = { Text("将删除本机单词标记及练习统计，无法恢复。") },
+        text = { Text("将清空本机答题草稿、听写进度、单词复习记录及练习统计，无法恢复。已下载的学习资源仍保留。") },
         confirmButton = { Button(onClick = { onReset(); confirming = false }) { Text("确认清空") } },
         dismissButton = { OutlinedButton(onClick = { confirming = false }) { Text("取消") } }
     )
