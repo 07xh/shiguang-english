@@ -465,6 +465,19 @@ private fun UniversityQuestionScreen(
     }.toSet()
     val question = questions[index.coerceIn(0, questions.lastIndex)]
     val selected = answers.optString(index.toString(), "")
+    val usedElsewhere = remember(index, answersJson, questions) {
+        val sharedBank = question.type in setOf("matching", "banked_cloze", "seven_out_of_five")
+        if (!sharedBank) emptySet() else questions.indices.filter { other ->
+            if (other == index) return@filter false
+            val q = questions[other]
+            q.type == question.type && (
+                question.section.isNotBlank() && q.section == question.section ||
+                question.passage.isNotBlank() && q.passage == question.passage
+            )
+        }.mapNotNull { other ->
+            answers.optString(other.toString(), "").takeIf { it.isNotBlank() }
+        }.toSet()
+    }
     LaunchedEffect(exam.level, exam.id, module, fingerprint, index, answersJson, practiceMode, submitted) {
         draftStore.savePaper(
             exam, module, fingerprint,
@@ -610,6 +623,7 @@ private fun UniversityQuestionScreen(
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
+                                    usedElsewhere = usedElsewhere,
                                     modifier = Modifier.weight(0.98f)
                                 )
                             }
@@ -621,6 +635,7 @@ private fun UniversityQuestionScreen(
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
+                                    usedElsewhere = usedElsewhere,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -654,6 +669,7 @@ private fun ReplicaQuestionPanel(
     selected: String,
     practiceMode: Boolean,
     onAnswer: (String) -> Unit,
+    usedElsewhere: Set<String> = emptySet(),
     modifier: Modifier = Modifier
 ) {
     val isTF = question.type in setOf("tfng", "true_false_not_given", "yes_no_not_given")
@@ -673,11 +689,17 @@ private fun ReplicaQuestionPanel(
             color = Ink, fontWeight = FontWeight.Bold
         )
         if (objective) {
+            if (usedElsewhere.isNotEmpty()) {
+                Text("同一组其他题已使用的选项会显示提示；仍可重新选择。",
+                    color = MutedInk, fontSize = 12.sp)
+            }
             choices.forEach { (key, text) ->
                 val active = selected.equals(key, true) || selected.equals(text, true)
                 val show = practiceMode && selected.isNotBlank() && correctLabel != null
+                val alreadyUsed = key in usedElsewhere && !active
                 ReplicaOptionCard(
-                    key = key, label = text,
+                    key = key,
+                    label = if (alreadyUsed) text + "  ·  其他题已使用" else text,
                     isSelected = active,
                     isCorrect = if (!show) null else if (key == correctLabel) true
                         else if (active) false else null,
