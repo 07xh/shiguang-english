@@ -78,6 +78,8 @@ fun ShiguangApp() {
     }
     BackHandler(enabled = currentMode == "exam" && !showDock) { navigateBack() }
 
+    // Android 15+ edge-to-edge: reserve system bars for both native modes.
+    Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)) {
     if (currentMode == "vocab") {
         screenStates.SaveableStateProvider("mode:vocab") {
             VocabRoot(repository = vocab, onModeSwitch = { changeMode(it) })
@@ -191,5 +193,6 @@ fun ShiguangApp() {
                 modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp)
             )
         }
+    }
     }
 }
