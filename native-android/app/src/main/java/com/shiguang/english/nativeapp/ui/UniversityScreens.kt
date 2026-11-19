@@ -40,6 +40,9 @@ import androidx.compose.ui.unit.sp
 import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityQuestion
 import com.shiguang.english.nativeapp.data.UniversityRepository
+import com.shiguang.english.nativeapp.data.UniversityAttemptStore
+import com.shiguang.english.nativeapp.data.PaperDraft
+import com.shiguang.english.nativeapp.data.DictationDraft
 import com.shiguang.english.nativeapp.data.UniversitySentence
 import com.shiguang.english.nativeapp.data.ExamAudioSource
 import kotlinx.coroutines.launch
@@ -434,15 +437,40 @@ private fun UniversityQuestionScreen(
             modifier = Modifier.padding(24.dp), color = Amber)
         return
     }
-    var index by rememberSaveable(exam.id, module) { mutableIntStateOf(0) }
-    var answersJson by rememberSaveable(exam.id, module) { mutableStateOf("{}") }
-    var practiceMode by rememberSaveable(exam.id, module) { mutableStateOf(true) }
-    var submitted by rememberSaveable(exam.id, module) { mutableStateOf(false) }
+    val context = LocalContext.current
+    val draftStore = remember(context) { UniversityAttemptStore(context.applicationContext) }
+    val fingerprint = remember(questions) {
+        questions.joinToString("|") { it.id + ":" + it.type + ":" + it.prompt }.hashCode().toString()
+    }
+    val draft = remember(exam.level, exam.id, module, fingerprint) {
+        draftStore.loadPaper(exam, module, fingerprint)
+    }
+    var index by rememberSaveable(exam.id, module, fingerprint) {
+        mutableIntStateOf(draft.index.coerceIn(0, questions.lastIndex))
+    }
+    var answersJson by rememberSaveable(exam.id, module, fingerprint) {
+        mutableStateOf(draft.answersJson)
+    }
+    var practiceMode by rememberSaveable(exam.id, module, fingerprint) {
+        mutableStateOf(draft.practiceMode)
+    }
+    var submitted by rememberSaveable(exam.id, module, fingerprint) {
+        mutableStateOf(draft.submitted)
+    }
     var showJump by rememberSaveable(exam.id, module) { mutableStateOf(false) }
+    var showSubmit by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     val answers = remember(answersJson) { JSONObject(answersJson) }
-    val answered = questions.indices.filter { answers.has(it.toString()) }.toSet()
+    val answered = questions.indices.filter {
+        answers.optString(it.toString(), "").isNotBlank()
+    }.toSet()
     val question = questions[index.coerceIn(0, questions.lastIndex)]
     val selected = answers.optString(index.toString(), "")
+    LaunchedEffect(exam.level, exam.id, module, fingerprint, index, answersJson, practiceMode, submitted) {
+        draftStore.savePaper(
+            exam, module, fingerprint,
+            PaperDraft(index, answersJson, practiceMode, submitted)
+        )
+    }
     fun store(text: String) {
         val updated = JSONObject(answersJson)
         updated.put(index.toString(), text)
@@ -450,9 +478,28 @@ private fun UniversityQuestionScreen(
     }
     val goNext = {
         if (index < questions.lastIndex) index += 1
-        else if (answered.size == questions.size) submitted = true
-        else showJump = true
+        else showSubmit = true
     }
+    if (showSubmit) AlertDialog(
+        onDismissRequest = { showSubmit = false },
+        title = { Text("确认交卷？") },
+        text = {
+            Text(
+                "已作答 ${answered.size} / ${questions.size} 题。" +
+                    if (answered.size < questions.size)
+                        "还有 ${questions.size - answered.size} 题未完成，可返回答题卡继续作答。"
+                    else "交卷后仍可回顾整卷。"
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { showSubmit = false; submitted = true }) {
+                Text("确认交卷")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { showSubmit = false }) { Text("继续作答") }
+        }
+    )
     if (showJump) PracticeJumpSheet(
         title = "答题卡",
         total = questions.size,
@@ -488,8 +535,10 @@ private fun UniversityQuestionScreen(
                 item {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                        Text(exam.title, fontSize = 12.sp,
-                            color = MutedInk, modifier = Modifier.weight(1f))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(exam.title, fontSize = 13.sp, color = MutedInk)
+                            Text("答题进度自动保存到本机", fontSize = 12.sp, color = QuietBlue)
+                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("练习", fontSize = 11.sp, color = MutedInk)
                             Switch(
@@ -516,8 +565,16 @@ private fun UniversityQuestionScreen(
                                     color = MutedInk)
                                 Text("主观题与复杂题型不进行未经核验的自动评分。",
                                     color = MutedInk, fontSize = 13.sp)
-                                Button(onClick = { submitted = false; index = 0 }) {
-                                    Text("回顾整卷")
+                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                    Button(onClick = { submitted = false; index = 0 }) {
+                                        Text("回顾整卷")
+                                    }
+                                    OutlinedButton(onClick = {
+                                        draftStore.clearPaper(exam, module)
+                                        answersJson = "{}"
+                                        index = 0
+                                        submitted = false
+                                    }) { Text("重新作答") }
                                 }
                             }
                         }
@@ -667,10 +724,25 @@ private fun UniversityMultiBlankScreen(
         return
     }
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-    var index by rememberSaveable(exam.id) { mutableIntStateOf(0) }
-    var advanced by rememberSaveable(exam.id) { mutableStateOf(false) }
+    val context = LocalContext.current
+    val draftStore = remember(context) { UniversityAttemptStore(context.applicationContext) }
+    val fingerprint = remember(sentences) {
+        sentences.joinToString("|") { it.text + ":" + it.section }.hashCode().toString()
+    }
+    val draft = remember(exam.level, exam.id, fingerprint) {
+        draftStore.loadDictation(exam, fingerprint)
+    }
+    var index by rememberSaveable(exam.id, fingerprint) {
+        mutableIntStateOf(draft.index.coerceIn(0, sentences.lastIndex))
+    }
+    var advanced by rememberSaveable(exam.id, fingerprint) { mutableStateOf(draft.advanced) }
     var active by rememberSaveable(exam.id, index) { mutableIntStateOf(0) }
-    var answersJson by rememberSaveable(exam.id) { mutableStateOf("{}") }
+    var answersJson by rememberSaveable(exam.id, fingerprint) { mutableStateOf(draft.answersJson) }
+    LaunchedEffect(exam.level, exam.id, fingerprint, index, advanced, answersJson) {
+        draftStore.saveDictation(
+            exam, fingerprint, DictationDraft(index, answersJson, advanced)
+        )
+    }
     var answerVisible by rememberSaveable(exam.id, index) { mutableStateOf(false) }
     var hintVisible by rememberSaveable(exam.id, index) { mutableStateOf(false) }
     var jumpVisible by rememberSaveable(exam.id) { mutableStateOf(false) }
@@ -788,7 +860,7 @@ private fun UniversityMultiBlankScreen(
                     Row(Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
-                        Text("听写进度", fontSize = 11.sp, color = MutedInk)
+                        Text("听写进度 · 已自动保存", fontSize = 12.sp, color = MutedInk)
                         Text("已填 " + filledCount + " / " + totalBlanks +
                             " 空   ·   完成 " + completedIndices.size + " / " +
                             sentences.size + " 句", fontSize = 11.sp, color = MutedInk)
