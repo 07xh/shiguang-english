@@ -197,6 +197,6 @@ internal object OnDemandRange {
         val start = match.groupValues[1].toLongOrNull() ?: return false
         val end = match.groupValues[2].toLongOrNull() ?: return false
         val total = match.groupValues[3].toLongOrNull() ?: return false
-        return start == savedBytes && end >= start && total > end && total <= limitBytes
+        return start == savedBytes && end >= start && end + 1 == total && total <= limitBytes
     }
 }

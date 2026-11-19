@@ -7,12 +7,13 @@ import org.junit.Test
 
 class OnDemandRangeTest {
     @Test fun correctResumeWindow() {
-        assertTrue(OnDemandRange.valid("bytes 1024-2047/4096", 1024L, 8192L))
+        assertTrue(OnDemandRange.valid("bytes 1024-4095/4096", 1024L, 8192L))
     }
 
     @Test fun rejectsWrongStartOrOutOfRangeBytes() {
         assertFalse(OnDemandRange.valid("bytes 0-2047/4096", 1024L, 8192L))
         assertFalse(OnDemandRange.valid("bytes 1024-4096/4096", 1024L, 8192L))
+        assertFalse(OnDemandRange.valid("bytes 1024-2047/4096", 1024L, 8192L))
         assertFalse(OnDemandRange.valid("bytes 1024-2047/4096", 1024L, 2048L))
     }
 
