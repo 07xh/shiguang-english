@@ -162,6 +162,14 @@ class VocabRepository(private val context: Context) {
         revision.value = version.incrementAndGet()
     }
 
+    /** Clears local review ratings for all wordbooks; downloaded content stays cached. */
+    suspend fun clearMemory() {
+        withContext(Dispatchers.IO) {
+            db.writableDatabase.delete("word_reviews", null, null)
+        }
+        revision.value = version.incrementAndGet()
+    }
+
     private val bookIds = listOf(
         "cet4", "cet6", "zhuanshengben", "kaoyan_core", "kaoyan_2",
         "ielts_core", "toefl_core", "tem4_core", "tem8_core"
