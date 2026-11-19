@@ -45,8 +45,16 @@ private val WordCanvas = Color(0xFFF8FAFC)
 fun VocabRoot(repository: VocabRepository, onModeSwitch: (String) -> Unit) {
     val scope = rememberCoroutineScope()
     val settings by repository.settings.collectAsState(initial = WordUserSettings())
-    val loaded by produceState<Result<VocabCatalog>?>(null, repository) {
-        value = runCatching { repository.loadCatalog() }
+    var retry by remember { mutableIntStateOf(0) }
+    var downloadedBytes by remember { mutableLongStateOf(0L) }
+    var expectedBytes by remember { mutableLongStateOf(0L) }
+    val loaded by produceState<Result<VocabCatalog>?>(null, repository, retry) {
+        value = runCatching {
+            repository.ensureCatalog { done, total ->
+                downloadedBytes = done
+                expectedBytes = total
+            }
+        }
     }
     val catalog = loaded?.getOrNull()
     var selectedBook by rememberSaveable { mutableStateOf("cet4") }
@@ -79,10 +87,30 @@ fun VocabRoot(repository: VocabRepository, onModeSwitch: (String) -> Unit) {
             }
             if (catalog == null) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    if (loaded == null) CircularProgressIndicator()
-                    else Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("词库读取失败", fontWeight = FontWeight.Bold)
+                    if (loaded == null) {
+                        Column(Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            CircularProgressIndicator()
+                            Text("首次进入背单词，下载原版大学词库中…")
+                            Text("只获取一次共享词表，之后各词书离线复用。",
+                                color = WordDim, fontSize = 12.sp)
+                            if (downloadedBytes > 0L) {
+                                LinearProgressIndicator(progress = {
+                                    if (expectedBytes > 0L)
+                                        (downloadedBytes.toFloat() / expectedBytes).coerceIn(0f, 1f)
+                                    else 0f
+                                }, modifier = Modifier.fillMaxWidth())
+                                Text((downloadedBytes / 1024).toString() + " KB",
+                                    color = WordDim, fontSize = 12.sp)
+                            }
+                        }
+                    } else Column(Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text("词库下载失败", fontWeight = FontWeight.Bold)
                         Text(loaded?.exceptionOrNull()?.message.orEmpty(), color = WordDim)
+                        Button(onClick = { retry++ }) { Text("重试获取词库") }
                     }
                 }
             } else if (book != null) {

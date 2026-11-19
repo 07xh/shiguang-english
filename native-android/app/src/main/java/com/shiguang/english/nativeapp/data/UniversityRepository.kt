@@ -1,6 +1,11 @@
 package com.shiguang.english.nativeapp.data
 
 import android.content.Context
+import android.net.Uri
+import java.io.File
+import java.io.IOException
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -29,7 +34,15 @@ data class UniversitySentence(
     val startSeconds: Double?, val endSeconds: Double?
 )
 
+sealed interface ExamAudioSource {
+    data class Asset(val path: String) : ExamAudioSource
+    data class Downloaded(val file: File) : ExamAudioSource
+}
+
 class UniversityRepository(private val context: Context) {
+    private val store = OnDemandStore(context)
+    private val downloadMutex = Mutex()
+    private val origin = "https://bilibilitoyassets.top/"
     private val allowedLevels = setOf("cet4", "cet6", "ielts", "kaoyan")
 
     val exams: List<UniversityExam> by lazy {
@@ -61,28 +74,135 @@ class UniversityRepository(private val context: Context) {
         return null
     }
 
+    private fun cachedModule(exam: UniversityExam, name: String): File =
+        store.local("university", exam.level + "_" + exam.id, name + ".json")
+
+    private fun cachedAudio(exam: UniversityExam): File =
+        store.local("university", exam.level + "_" + exam.id, "audio.mp3")
+
     fun installedModules(exam: UniversityExam): Set<String> {
-        val modules = record(exam)?.optJSONObject("modules") ?: return emptySet()
-        return exam.modules.filter { modules.has(it) }.toSet()
+        val embedded = record(exam)?.optJSONObject("modules")
+        return exam.modules.filter { module ->
+            (embedded?.has(module) == true) || cachedModule(exam, module).isFile
+        }.toSet()
     }
 
-    fun audioAsset(exam: UniversityExam): String? {
-        val relative = record(exam)?.optString("audio") ?: return null
-        return if (relative.startsWith("audio/") && relative.endsWith(".mp3"))
-            "university/" + relative else null
+    private fun validModule(file: File, module: String): Boolean = runCatching {
+        val text = file.readText(Charsets.UTF_8).trimStart('\uFEFF', '\n', '\r', ' ')
+        val value: Any = if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
+        val selected = if (value is JSONObject) value.opt(module) ?: value else value
+        when (module) {
+            "dictation", "listening" ->
+                selected is JSONArray && selected.length() > 0 ||
+                    selected is JSONObject && selected.length() > 0
+            "written" ->
+                selected is JSONObject && listOf(
+                    "questions", "reading", "writing", "translation",
+                    "language_use", "paper_stem"
+                ).any { selected.has(it) } || selected is JSONArray && selected.length() > 0
+            else -> false
+        }
+    }.getOrDefault(false)
+
+    /** Downloads ONLY the paper's requested module, once the user opens it. */
+    suspend fun ensureModule(
+        exam: UniversityExam, name: String,
+        progress: (Long, Long) -> Unit = { _, _ -> }
+    ) {
+        require(name in exam.modules)
+        if (name in installedModules(exam)) return
+        downloadMutex.withLock {
+            if (name in installedModules(exam)) return@withLock
+            val file = cachedModule(exam, name)
+            val prefix = exam.level + "/jsons/" + exam.id
+            var last: Throwable? = null
+            for (suffix in listOf("/" + name + ".json", ".json")) {
+                try {
+                    store.download(origin + prefix + suffix, file, 16L * 1024 * 1024,
+                        validate = { validModule(it, name) }, progress = progress)
+                    return@withLock
+                } catch (error: IOException) {
+                    last = error
+                }
+            }
+            throw IOException("未找到该试卷的 " + name + " 题目文件：" +
+                (last?.message ?: "资源不可用"))
+        }
     }
 
+    fun audioSource(exam: UniversityExam): ExamAudioSource? {
+        val bundled = record(exam)?.optString("audio")
+        if (bundled != null && bundled.startsWith("audio/") && bundled.endsWith(".mp3"))
+            return ExamAudioSource.Asset("university/" + bundled)
+        val file = cachedAudio(exam)
+        return if (store.validMp3(file)) ExamAudioSource.Downloaded(file) else null
+    }
+
+    private fun audioNames(exam: UniversityExam): List<String> {
+        val title = exam.title
+        if (exam.level == "ielts")
+            return listOf(exam.id, title, title.replace(" ", "").replace("Test", "test"))
+                .distinct()
+        val stripped = title.replace("四级", "").replace("六级", "")
+        val set = Regex("""\s*[（(]第[一二三123]套\s*[）)]""")
+        val choices = mutableListOf(
+            title, title.replace(set, ""), stripped, stripped.replace(set, ""), exam.id
+        )
+        if (exam.level == "cet6") {
+            choices += stripped.replace("听力", "真题")
+            choices += stripped.replace("真题", "听力")
+        }
+        return choices.filter { it.isNotBlank() }.distinct()
+    }
+
+    /**
+     * Audio is downloaded only when Play is tapped. Some source exams have no
+     * accessible MP3; fail visibly instead of claiming all 231 have audio.
+     */
+    suspend fun ensureAudio(
+        exam: UniversityExam,
+        progress: (Long, Long) -> Unit = { _, _ -> }
+    ): ExamAudioSource {
+        audioSource(exam)?.let { return it }
+        downloadMutex.withLock {
+            audioSource(exam)?.let { return@withLock it }
+            val target = cachedAudio(exam)
+            var last: Throwable? = null
+            for (name in audioNames(exam)) {
+                try {
+                    store.download(
+                        origin + exam.level + "/audios/" + Uri.encode(name) + ".mp3",
+                        target, 85L * 1024 * 1024,
+                        validate = store::validMp3, progress = progress
+                    )
+                    return@withLock ExamAudioSource.Downloaded(target)
+                } catch (error: IOException) {
+                    last = error
+                }
+            }
+            throw IOException("原站暂未提供这套试卷可用的 MP3：" +
+                (last?.message ?: "资源缺失"))
+        }
+        return audioSource(exam)
+            ?: throw IOException("音频缓存校验未通过")
+    }
+
+    /** Cache files and previously verified bundled assets are both supported. */
     fun module(exam: UniversityExam, name: String): Any {
         require(name in exam.modules && name in installedModules(exam)) {
-            "试卷内容没有通过离线打包验证：" + exam.id + "/" + name
+            "该试卷尚未下载：" + exam.id + "/" + name
         }
-        val path = "university/exams/" + exam.level + "/" + exam.id + "/" + name + ".json"
-        val raw = read(path).trimStart('\uFEFF', '\n', '\r', ' ')
-        return if (raw.startsWith("[")) JSONArray(raw) else JSONObject(raw)
+        val local = cachedModule(exam, name)
+        val raw = if (local.isFile) local.readText(Charsets.UTF_8)
+            else read("university/exams/" + exam.level + "/" + exam.id + "/" + name + ".json")
+        val text = raw.trimStart('\uFEFF', '\n', '\r', ' ')
+        return if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
     }
 
     fun read(path: String): String =
         context.assets.open(path).bufferedReader(Charsets.UTF_8).use { it.readText() }
+
+    fun cachedBytes(): Long = store.totalBytes()
 
     fun questions(exam: UniversityExam, module: String): List<UniversityQuestion> {
         val payload = this.module(exam, module)

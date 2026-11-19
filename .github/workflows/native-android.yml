@@ -1,4 +1,4 @@
-name: Native Android (Compose)
+name: Native Android (On-Demand Content)
 on:
   push:
     paths:
@@ -30,6 +30,19 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      - name: Verify small install APK does not bundle the full resource archive
+        working-directory: native-android
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          assets = Path("app/src/main/assets")
+          media = list(assets.rglob("*.mp3")) + list(assets.rglob("*.wav"))
+          packed_vocab = assets/"vocabulary"/"university-words.json"
+          assert not media, "Unexpected bundled audio in on-demand build"
+          assert not packed_vocab.exists(), "Unexpected full word corpus in on-demand build"
+          assert (assets/"university"/"catalog.json").exists()
+          print("ON_DEMAND_SMALL_APK verified; catalog only")
+          PY
       - name: Unit tests and native debug build (retry dependency rate limits)
         working-directory: native-android
         timeout-minutes: 25
@@ -47,6 +60,6 @@ jobs:
           done
       - uses: actions/upload-artifact@v4
         with:
-          name: shiguang-native-debug
+          name: shiguang-native-on-demand-debug
           path: native-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error

@@ -1,10 +1,6 @@
 name: University Native Starter APK (4 verified papers)
 
 on:
-  push:
-    paths:
-      - 'native-android/**'
-      - '.github/workflows/university-native-starter.yml'
   workflow_dispatch:
 
 permissions:

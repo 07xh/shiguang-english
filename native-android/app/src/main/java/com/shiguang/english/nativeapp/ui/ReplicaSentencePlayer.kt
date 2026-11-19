@@ -4,24 +4,22 @@ import android.media.MediaPlayer
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.shiguang.english.nativeapp.data.ExamAudioSource
 import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityRepository
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-/**
- * Native audio segment player. Uses verified MP3 assets, not the source website or WebView.
- * Sentence start/end are sourced from the JSON; absent timings mean full-track playback.
- */
+/** Native sentence audio: download the MP3 on first playback, reuse it offline. */
 @Composable
 fun ReplicaSentencePlayer(
     repository: UniversityRepository,
@@ -31,10 +29,14 @@ fun ReplicaSentencePlayer(
     endSeconds: Double?
 ) {
     val context = LocalContext.current
-    val audioAsset = remember(exam.id) { repository.audioAsset(exam) }
+    val scope = rememberCoroutineScope()
+    var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
+    var loading by remember(exam.id) { mutableStateOf(false) }
+    var bytes by remember(exam.id) { mutableLongStateOf(0L) }
+    var totalBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var initialized by remember(exam.id) { mutableStateOf(false) }
     var playing by remember(exam.id) { mutableStateOf(false) }
-    var error by remember(exam.id) { mutableStateOf("") }
+    var failure by remember(exam.id) { mutableStateOf("") }
     var speedIndex by remember(exam.id) { mutableIntStateOf(1) }
     val rates = listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
     val player = remember(exam.id) { MediaPlayer() }
@@ -73,32 +75,45 @@ fun ReplicaSentencePlayer(
     }
 
     fun playback(replay: Boolean) {
-        if (audioAsset == null) {
-            error = "当前试卷没有已验证的离线 MP3"
-            return
-        }
-        try {
-            if (!initialized) {
-                context.assets.openFd(audioAsset).use {
-                    player.setDataSource(it.fileDescriptor, it.startOffset, it.length)
+        scope.launch {
+            try {
+                if (audio == null) {
+                    loading = true
+                    audio = repository.ensureAudio(exam) { done, total ->
+                        bytes = done
+                        totalBytes = total
+                    }
+                    loading = false
                 }
-                player.prepare()
-                initialized = true
-            }
-            if (replay || !playing) {
-                val startMs = ((startSeconds ?: 0.0) * 1000).toInt().coerceAtLeast(0)
-                if (replay || player.currentPosition < startMs) player.seekTo(startMs)
-                player.playbackParams = player.playbackParams.setSpeed(rates[speedIndex])
-                player.start()
-                playing = true
-            } else {
-                player.pause()
+                if (!initialized) {
+                    when (val source = audio) {
+                        is ExamAudioSource.Asset ->
+                            context.assets.openFd(source.path).use {
+                                player.setDataSource(it.fileDescriptor, it.startOffset, it.length)
+                            }
+                        is ExamAudioSource.Downloaded ->
+                            player.setDataSource(source.file.absolutePath)
+                        null -> throw IllegalStateException("音频尚不可用")
+                    }
+                    player.prepare()
+                    initialized = true
+                }
+                if (replay || !playing) {
+                    val startMs = ((startSeconds ?: 0.0) * 1000).toInt().coerceAtLeast(0)
+                    if (replay || player.currentPosition < startMs) player.seekTo(startMs)
+                    player.playbackParams = player.playbackParams.setSpeed(rates[speedIndex])
+                    player.start()
+                    playing = true
+                } else {
+                    player.pause()
+                    playing = false
+                }
+                failure = ""
+            } catch (exc: Exception) {
                 playing = false
+                loading = false
+                failure = exc.message ?: "音频不可用"
             }
-            error = ""
-        } catch (exc: Exception) {
-            playing = false
-            error = "无法播放本地 MP3：" + (exc.message ?: "播放器错误")
         }
     }
 
@@ -106,10 +121,11 @@ fun ReplicaSentencePlayer(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             ReplicaCanvasAction("↺ 重听", onClick = { playback(true) })
-            Button(onClick = { playback(false) }, enabled = audioAsset != null) {
+            Button(enabled = !loading, onClick = { playback(false) }) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = null,
                     modifier = Modifier.size(17.dp))
-                Text(if (playing) "暂停" else "播放")
+                Text(if (loading) "下载中" else if (playing) "暂停"
+                    else if (audio == null) "下载原声" else "播放")
             }
             ReplicaCanvasAction(rates[speedIndex].toString() + "X", onClick = {
                 speedIndex = (speedIndex + 1) % rates.size
@@ -121,11 +137,18 @@ fun ReplicaSentencePlayer(
                 }
             })
         }
-        if (audioAsset == null) {
-            Text("原版录音未验证入包，不能播放；没有用语音合成冒充原声。")
+        if (loading) {
+            LinearProgressIndicator(
+                progress = { if (totalBytes > 0)
+                    (bytes.toFloat() / totalBytes).coerceIn(0f, 1f) else 0f },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text("下载原声音频：" + (bytes / 1024) + " KB")
+        } else if (audio == null) {
+            Text("第一次点击播放才下载原声，下载后离线可用。")
         } else if (startSeconds == null || endSeconds == null) {
-            Text("此句缺少精确时间轴，播放整段原声")
+            Text("该句缺少精确时间轴，播放完整录音。")
         }
-        if (error.isNotBlank()) Text(error)
+        if (failure.isNotBlank()) Text("音频获取失败：" + failure)
     }
 }

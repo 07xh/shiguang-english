@@ -39,6 +39,8 @@ import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityQuestion
 import com.shiguang.english.nativeapp.data.UniversityRepository
 import com.shiguang.english.nativeapp.data.UniversitySentence
+import com.shiguang.english.nativeapp.data.ExamAudioSource
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 private val levelDisplay = mapOf(
@@ -177,7 +179,7 @@ fun UniversityCatalogScreen(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
                     Text("选择试卷", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                    Text("已内置 " + installed + " / " + available.size,
+                    Text("已下载 " + installed + " / " + available.size,
                         fontSize = 11.5.sp, color = if (installed == available.size)
                             CorrectGreen else MutedInk)
                 }
@@ -206,7 +208,7 @@ fun UniversityCatalogScreen(
                 shape = RoundedCornerShape(19.dp),
                 color = Color.White,
                 border = androidx.compose.foundation.BorderStroke(0.8.dp, PaperStroke),
-                onClick = { if (usable) onOpen(exam, module) }
+                onClick = { onOpen(exam, module) }
             ) {
                 Column(
                     Modifier.fillMaxSize().padding(16.dp),
@@ -234,7 +236,7 @@ fun UniversityCatalogScreen(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            if (usable) "开始练习" else "资源未打包",
+                            if (usable) "离线开始" else "下载并开始",
                             fontSize = 12.sp, color = if (usable) QuietBlue else MutedInk,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -257,31 +259,66 @@ fun UniversityPaperScreen(
     exam: UniversityExam,
     module: String
 ) {
-    val raw = remember(repository, exam.id, module) {
-        runCatching {
-            if (module == "dictation") Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
-            else Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
+    var attempt by remember(exam.id, module) { mutableIntStateOf(0) }
+    var bytes by remember(exam.id, module) { mutableLongStateOf(0L) }
+    var expected by remember(exam.id, module) { mutableLongStateOf(0L) }
+    var loaded by remember(exam.id, module) {
+        mutableStateOf<Result<Pair<List<UniversitySentence>, List<UniversityQuestion>>>?>(null)
+    }
+    LaunchedEffect(repository, exam.id, module, attempt) {
+        loaded = null
+        bytes = 0L
+        expected = 0L
+        loaded = runCatching {
+            repository.ensureModule(exam, module, progress = { done, total ->
+                bytes = done
+                expected = total
+            })
+            if (module == "dictation")
+                Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
+            else
+                Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
         }
     }
-    if (raw.isFailure) {
-        Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text("当前题目文件不可用", style = MaterialTheme.typography.titleLarge)
-            Text(raw.exceptionOrNull()?.message ?: "无法读取试卷", color = MutedInk)
+    val state = loaded
+    if (state == null) {
+        Column(Modifier.fillMaxWidth().padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            CircularProgressIndicator()
+            Text(if (bytes > 0) "下载试卷中：" + formatBytes(bytes) +
+                (if (expected > 0) " / " + formatBytes(expected) else "")
+                else "正在检查本地试卷 / 下载所需题目…")
+            Text("只下载当前练习模块；下载完成后可离线使用。", color = MutedInk)
         }
         return
     }
-    val (sentences, questions) = raw.getOrThrow()
-    if (module == "dictation") {
-        UniversityMultiBlankScreen(repository, exam, sentences)
-    } else {
-        UniversityQuestionScreen(repository, exam, questions, module)
+    if (state.isFailure) {
+        Column(Modifier.fillMaxWidth().padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            Text("这套试卷暂时无法打开", style = MaterialTheme.typography.titleLarge)
+            Text(state.exceptionOrNull()?.message ?: "网络或题目文件异常", color = MutedInk)
+            Text("已下载过的其他试卷不受影响。", color = MutedInk)
+            Button(onClick = { attempt++ }) { Text("重试下载") }
+        }
+        return
     }
+    val (sentences, questions) = state.getOrThrow()
+    if (module == "dictation") UniversityMultiBlankScreen(repository, exam, sentences)
+    else UniversityQuestionScreen(repository, exam, questions, module)
 }
+
+private fun formatBytes(n: Long): String =
+    if (n < 1024L * 1024) (n / 1024L).toString() + " KB"
+    else String.format(java.util.Locale.US, "%.1f MB", n / 1048576.0)
 
 @Composable
 private fun UniversityAudioControls(repository: UniversityRepository, exam: UniversityExam) {
     val context = LocalContext.current
-    val path = remember(exam.id) { repository.audioAsset(exam) }
+    val scope = rememberCoroutineScope()
+    var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
+    var downloading by remember(exam.id) { mutableStateOf(false) }
+    var downloadedBytes by remember(exam.id) { mutableLongStateOf(0L) }
+    var expectedBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var playing by remember(exam.id) { mutableStateOf(false) }
     var speed by rememberSaveable(exam.id) { mutableFloatStateOf(1f) }
     var error by remember(exam.id) { mutableStateOf("") }
@@ -289,48 +326,74 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
     var initialized by remember(exam.id) { mutableStateOf(false) }
     DisposableEffect(player) {
         player.setOnCompletionListener { playing = false }
-        onDispose { player.stopSafe(); player.release() }
+        onDispose { runCatching { player.stop() }; player.release() }
     }
-    if (path == null) {
-        Text("这套试卷没有通过离线音频校验", color = Amber, style = MaterialTheme.typography.bodySmall)
-        return
-    }
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Button(onClick = {
-            try {
-                if (!initialized) {
-                    context.assets.openFd(path).use {
-                        player.setDataSource(it.fileDescriptor, it.startOffset, it.length)
+    Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(enabled = !downloading, onClick = {
+                scope.launch {
+                    try {
+                        if (audio == null) {
+                            downloading = true
+                            audio = repository.ensureAudio(exam) { done, total ->
+                                downloadedBytes = done
+                                expectedBytes = total
+                            }
+                            downloading = false
+                        }
+                        if (!initialized) {
+                            when (val local = audio) {
+                                is ExamAudioSource.Asset -> {
+                                    context.assets.openFd(local.path).use {
+                                        player.setDataSource(it.fileDescriptor, it.startOffset, it.length)
+                                    }
+                                }
+                                is ExamAudioSource.Downloaded ->
+                                    player.setDataSource(local.file.absolutePath)
+                                null -> error("音频资源未下载")
+                            }
+                            player.prepare()
+                            player.playbackParams = player.playbackParams.setSpeed(speed)
+                            initialized = true
+                        }
+                        if (playing) player.pause() else player.start()
+                        playing = !playing
+                        error = ""
+                    } catch (exc: Exception) {
+                        downloading = false
+                        playing = false
+                        error = exc.message.orEmpty()
                     }
-                    player.prepare()
-                    player.playbackParams = player.playbackParams.setSpeed(speed)
-                    initialized = true
                 }
-                if (playing) player.pause() else player.start()
-                playing = !playing
-                error = ""
-            } catch (exc: Exception) {
-                playing = false
-                error = exc.message.orEmpty()
+            }) {
+                Icon(Icons.Outlined.GraphicEq, contentDescription = null)
+                Text(if (downloading) "下载中" else if (playing) "暂停原声"
+                    else if (audio == null) "下载原声并播放" else "播放原声")
             }
-        }) {
-            Icon(Icons.Outlined.GraphicEq, contentDescription = null)
-            Text(if (playing) "暂停原声" else "播放原声")
+            OutlinedButton(onClick = {
+                speed = when (speed) { 1f -> 1.25f; 1.25f -> 1.5f
+                    1.5f -> 0.75f; else -> 1f }
+                if (initialized) runCatching {
+                    player.playbackParams = player.playbackParams.setSpeed(speed)
+                }
+            }) { Text(speed.toString() + "×") }
         }
-        OutlinedButton(onClick = {
-            speed = when (speed) { 1f -> 1.25f; 1.25f -> 1.5f; 1.5f -> 0.75f; else -> 1f }
-            if (initialized) try { player.playbackParams = player.playbackParams.setSpeed(speed) }
-            catch (_: Exception) {}
-        }) { Text(speed.toString() + "×") }
+        if (downloading) {
+            LinearProgressIndicator(
+                progress = { if (expectedBytes > 0) (downloadedBytes.toFloat() /
+                    expectedBytes).coerceIn(0f,1f) else 0f },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text("原声下载：" + formatBytes(downloadedBytes) +
+                (if (expectedBytes > 0) " / " + formatBytes(expectedBytes) else ""))
+        }
+        if (audio == null && !downloading)
+            Text("原声音频按需下载；成功后永久缓存在本机。", color = MutedInk)
+        if (error.isNotBlank()) Text("音频获取失败：" + error, color = Amber)
     }
-    if (error.isNotBlank()) Text("音频播放失败：" + error, color = Amber)
-    Text("当前为完整试卷音频；逐句时间轴尚需根据源数据校准。",
-        style = MaterialTheme.typography.bodySmall, color = MutedInk)
 }
 
-private fun MediaPlayer.stopSafe() {
-    try { stop() } catch (_: Exception) {}
-}
 
 @Composable
 private fun UniversityQuestionScreen(

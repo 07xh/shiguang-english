@@ -1,10 +1,6 @@
 name: Native Dual Mode APK (verified university content)
 
 on:
-  push:
-    paths:
-      - 'native-android/**'
-      - '.github/workflows/native-dual-mode.yml'
   workflow_dispatch:
 
 permissions:
