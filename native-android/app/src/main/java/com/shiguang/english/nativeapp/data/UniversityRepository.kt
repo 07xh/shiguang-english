@@ -26,7 +26,8 @@ data class UniversityExam(
 
 data class UniversityQuestion(
     val id: String, val type: String, val prompt: String, val passage: String,
-    val choices: List<Pair<String, String>>, val answer: String, val analysis: String
+    val choices: List<Pair<String, String>>, val answer: String, val analysis: String,
+    val section: String = ""
 )
 
 data class UniversitySentence(
@@ -236,7 +237,8 @@ class UniversityRepository(private val context: Context) {
                         val key = kind + "|" + id + "|" + prompt
                         if (seen.add(key)) results.add(UniversityQuestion(id, kind, prompt, passage,
                             choices, node.getFirst("answer", "correct_answer", "word"),
-                            node.getFirst("analysis", "explanation")))
+                            node.getFirst("analysis", "explanation"),
+                            node.getFirst("section", "group")))
                         node.opt("questions")?.let { walk(it, passage, depth + 1) }
                     } else {
                         val keys = node.keys()
