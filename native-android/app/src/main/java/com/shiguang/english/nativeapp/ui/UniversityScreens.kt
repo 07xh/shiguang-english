@@ -351,7 +351,7 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                                 }
                                 is ExamAudioSource.Downloaded ->
                                     player.setDataSource(local.file.absolutePath)
-                                null -> error("音频资源未下载")
+                                null -> throw IllegalStateException("音频资源未下载")
                             }
                             player.prepare()
                             player.playbackParams = player.playbackParams.setSpeed(speed)
