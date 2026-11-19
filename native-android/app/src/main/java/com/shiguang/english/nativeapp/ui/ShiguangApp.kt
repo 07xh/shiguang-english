@@ -132,13 +132,14 @@ fun ShiguangApp() {
                             onCatalog = { mode, level -> openCatalog(mode, level) },
                             onExam = { exam, module -> openPaper(exam, module) },
                             onProfile = { page = "profile" },
-                            onWords = { page = "words" },
+                            onWords = { changeMode("vocab") },
+                            onModeSwitch = { changeMode(it) },
                             savedWallpaperUri = savedWallpaperUri,
                             onWallpaperChange = { uri ->
                                 scope.launch { localRepository.setWallpaperUri(uri) }
                             }
                         )
-                        "stats" -> ReplicaStatsScreen(progress)
+                        "stats" -> ReplicaStatsScreen(progress, onModeSwitch = { changeMode(it) })
                         "listening", "university" -> UniversityCatalogScreen(
                             university,
                             initialLevel = catalogLevel,
@@ -173,7 +174,8 @@ fun ShiguangApp() {
                             onCatalog = { mode, level -> openCatalog(mode, level) },
                             onExam = { exam, module -> openPaper(exam, module) },
                             onProfile = { page = "profile" },
-                            onWords = { page = "words" },
+                            onWords = { changeMode("vocab") },
+                            onModeSwitch = { changeMode(it) },
                             savedWallpaperUri = savedWallpaperUri,
                             onWallpaperChange = { uri ->
                                 scope.launch { localRepository.setWallpaperUri(uri) }
@@ -183,11 +185,6 @@ fun ShiguangApp() {
             }
         }
         if (showDock) {
-            StudyModeSwitch(
-                mode = "exam",
-                onSwitch = { changeMode(it) },
-                modifier = Modifier.align(Alignment.TopCenter).padding(top = 15.dp)
-            )
             ReplicaHomeDock(
                 active = page,
                 onSelect = { page = it },

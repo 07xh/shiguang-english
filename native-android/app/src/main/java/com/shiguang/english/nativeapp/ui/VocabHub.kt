@@ -19,6 +19,8 @@ import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.AutoStories
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -278,15 +280,28 @@ private fun VocabLibraryPage(
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("选择词书", fontSize = 25.sp, fontWeight = FontWeight.Bold)
-                Text("全部分类仅显示大学层面和出国考试相关内容",
+                Row(Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Text("选择词书", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(books.size.toString() + " 本", fontSize = 12.sp, color = WordDim)
+                }
+                Text("选择词书后可随时切换，学习记录独立保存",
                     color = WordDim, fontSize = 12.sp)
             }
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
             OutlinedTextField(value = search, onValueChange = { search = it },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true, label = { Text("搜索词书") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null,
+                    modifier = Modifier.size(19.dp)) },
+                trailingIcon = {
+                    if (search.isNotEmpty()) IconButton(onClick = { search = "" }) {
+                        Icon(Icons.Outlined.Close, contentDescription = "清空搜索")
+                    }
+                },
+                placeholder = { Text("搜索词书", fontSize = 13.sp) },
                 shape = RoundedCornerShape(16.dp))
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -295,6 +310,16 @@ private fun VocabLibraryPage(
                 categories.forEach { type ->
                     FilterChip(selected = category == type,
                         onClick = { category = type }, label = { Text(type) })
+                }
+            }
+        }
+        if (books.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
+            Column(Modifier.fillMaxWidth().padding(vertical = 35.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("没有找到匹配的词书", fontWeight = FontWeight.SemiBold)
+                TextButton(onClick = { search = ""; category = "全部" }) {
+                    Text("清除筛选")
                 }
             }
         }
@@ -313,8 +338,10 @@ private fun VocabLibraryPage(
                     }
                     Text(book.title, fontSize = 15.sp, fontWeight = FontWeight.Bold,
                         maxLines = 2, color = WordInk)
-                    Text(book.tag.ifBlank { book.wordIndexes.size.toString() + " 词" },
-                        fontSize = 11.5.sp, color = WordDim)
+                    Text(book.wordIndexes.size.toString() + " 词" +
+                        (if (book.tag.isNotBlank()) "  ·  " + book.tag else ""),
+                        fontSize = 11.5.sp, color = WordDim,
+                        maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                     if (current) Button(onClick = onStudy, modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = WordInk)) {
                         Text("继续学习")

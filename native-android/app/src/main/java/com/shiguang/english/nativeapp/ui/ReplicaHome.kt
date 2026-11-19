@@ -100,6 +100,7 @@ fun ReplicaHomeScreen(
     onExam: (UniversityExam, String) -> Unit,
     onProfile: () -> Unit,
     onWords: () -> Unit,
+    onModeSwitch: (String) -> Unit,
     savedWallpaperUri: String,
     onWallpaperChange: (String) -> Unit
 ) {
@@ -155,7 +156,7 @@ fun ReplicaHomeScreen(
     ) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 118.dp else 326.dp)
+                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 116.dp else 255.dp)
             ) {
                 if (chosenBitmap != null) {
                     Image(bitmap = chosenBitmap!!, contentDescription = "自定义首页壁纸",
@@ -181,12 +182,21 @@ fun ReplicaHomeScreen(
                         bottom = if (isLandscape) 18.dp else 61.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        HeroCircle("更换壁纸", Icons.Outlined.ImageIcon) { chooser.launch(arrayOf("image/*")) }
-                        Spacer(Modifier.width(9.dp))
-                        HeroCircle("分享学习记录", Icons.Outlined.Share, onClick = share)
-                        Spacer(Modifier.width(9.dp))
-                        HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        StudyModeSwitch(mode = "exam", onSwitch = onModeSwitch)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            HeroCircle("更换壁纸", Icons.Outlined.ImageIcon) {
+                                chooser.launch(arrayOf("image/*"))
+                            }
+                            Spacer(Modifier.width(5.dp))
+                            HeroCircle("分享学习记录", Icons.Outlined.Share, onClick = share)
+                            Spacer(Modifier.width(5.dp))
+                            HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
+                        }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("Welcome back 👋", fontSize = if (isLandscape) 11.sp else 14.sp,
@@ -206,7 +216,7 @@ fun ReplicaHomeScreen(
             ) {
                 Column(
                     Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = if (isLandscape) 10.dp else 12.dp, bottom = 34.dp),
-                    verticalArrangement = Arrangement.spacedBy(19.dp)
+                    verticalArrangement = Arrangement.spacedBy(13.dp)
                 ) {
                     Box(
                         Modifier.align(Alignment.CenterHorizontally)
@@ -341,21 +351,7 @@ fun ReplicaHomeScreen(
                                 tint = MutedInk)
                         }
                     }
-                    Surface(
-                        onClick = { onCatalog("written", "cet4") },
-                        color = Color(0xFFF5F8FC),
-                        shape = RoundedCornerShape(18.dp)
-                    ) {
-                        Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.MenuBook, contentDescription = null, tint = QuietBlue)
-                            Spacer(Modifier.width(10.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text("大学英语题库", fontWeight = FontWeight.SemiBold)
-                                Text("四级 · 六级 · 雅思 · 考研", color = MutedInk, fontSize = 12.sp)
-                            }
-                            Icon(Icons.Outlined.ChevronRight, null, tint = QuietBlue)
-                        }
-                    }
+
                 }
             }
         }
@@ -527,15 +523,21 @@ private fun ModuleTile(
 }
 
 @Composable
-fun ReplicaStatsScreen(progress: StudyProgress) {
+fun ReplicaStatsScreen(progress: StudyProgress, onModeSwitch: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize().widthIn(max = 900.dp),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 28.dp, bottom = 112.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         item {
-            Text("学习复盘", fontSize = 28.sp, fontWeight = FontWeight.ExtraBold)
-            Text("把每一点真实进步记录下来", color = MutedInk, fontSize = 13.sp)
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text("学习复盘", fontSize = 25.sp, fontWeight = FontWeight.ExtraBold)
+                    Text("本机学习记录", color = MutedInk, fontSize = 12.sp)
+                }
+                StudyModeSwitch(mode = "exam", onSwitch = onModeSwitch)
+            }
         }
         item { ReplicaProgressCard(progress) }
         item {

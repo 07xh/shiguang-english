@@ -2,6 +2,8 @@ package com.shiguang.english.nativeapp.ui
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -112,16 +114,23 @@ fun VocabStudyPage(
                     border = BorderStroke(1.dp, Color(0xFFE3EAF1)),
                     shadowElevation = 3.dp
                 ) {
-                    Column(
-                        Modifier.fillMaxSize().padding(24.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(if (reviewOnly) "REVIEW" else "VOCABULARY",
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                                .padding(24.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(if (reviewOnly) "REVIEW" else "VOCABULARY",
                             fontSize = 11.sp, letterSpacing = 2.sp,
                             fontWeight = FontWeight.Bold, color = StudyDim)
                         Spacer(Modifier.height(24.dp))
-                        Text(word.spelling, fontSize = if (wide) 43.sp else 34.sp,
+                        Text(word.spelling, fontSize = when {
+                            word.spelling.length >= 22 -> 24.sp
+                            word.spelling.length >= 15 -> 29.sp
+                            wide -> 43.sp
+                            else -> 34.sp
+                        },
                             fontWeight = FontWeight.ExtraBold,
                             textAlign = TextAlign.Center, color = StudyInk,
                             lineHeight = 48.sp)
@@ -157,8 +166,8 @@ fun VocabStudyPage(
                             if (word.exampleCn.isNotBlank())
                                 Text(word.exampleCn, fontSize = 12.sp,
                                     textAlign = TextAlign.Center, color = StudyDim)
-                        } else Text("轻触词卡，查看词义与例句",
-                            fontSize = 12.sp, color = StudyDim)
+                        } else Text("轻触词卡查看释义", fontSize = 12.sp, color = StudyDim)
+                        }
                     }
                 }
                 if (!revealed) {
@@ -169,7 +178,8 @@ fun VocabStudyPage(
                         colors = ButtonDefaults.buttonColors(containerColor = StudyInk)
                     ) { Text("显示释义") }
                 } else {
-                    Text("记忆程度", fontSize = 12.sp, color = StudyDim)
+                    Text("回忆程度 · 点击后保存并进入下一词",
+                        fontSize = 12.sp, color = StudyDim)
                     Row(
                         modifier = Modifier.fillMaxWidth().widthIn(max = 780.dp),
                         horizontalArrangement = Arrangement.spacedBy(7.dp)

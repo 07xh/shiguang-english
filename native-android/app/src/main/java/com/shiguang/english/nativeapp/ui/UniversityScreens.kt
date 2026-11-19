@@ -24,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.GraphicEq
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -58,6 +60,8 @@ fun UniversityCatalogScreen(
     var module by rememberSaveable(initialModule) { mutableStateOf(initialModule) }
     var level by rememberSaveable(initialLevel, initialModule) { mutableStateOf(initialLevel) }
     var yearRange by rememberSaveable(initialLevel, initialModule) { mutableStateOf("ALL") }
+    var search by rememberSaveable(initialLevel, initialModule) { mutableStateOf("") }
+    var downloadedOnly by rememberSaveable(initialLevel, initialModule) { mutableStateOf(false) }
     val validLevels = when (module) {
         "listening" -> listOf("cet4", "cet6")
         "dictation" -> listOf("cet4", "cet6", "ielts")
@@ -77,10 +81,17 @@ fun UniversityCatalogScreen(
             "2015-2020" to "2015–2020年", "0-2014" to "2014年以前")
     }
     val visible = available.filter { exam ->
-        if (yearRange == "ALL") true else {
+        val rangeMatches = if (yearRange == "ALL") true else {
             val halves = yearRange.split("-")
             exam.year in halves[0].toInt()..halves[1].toInt()
         }
+        val query = search.trim()
+        val searchMatches = query.isBlank() ||
+            exam.title.contains(query, ignoreCase = true) ||
+            exam.id.contains(query, ignoreCase = true) ||
+            exam.year.toString().contains(query)
+        val savedMatches = !downloadedOnly || module in repository.installedModules(exam)
+        rangeMatches && searchMatches && savedMatches
     }
     val installed = available.count { module in repository.installedModules(it) }
     val modes = listOf(
@@ -89,30 +100,23 @@ fun UniversityCatalogScreen(
         Triple("dictation", "🎙️", "逐句精听")
     )
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(226.dp),
+        columns = GridCells.Adaptive(245.dp),
         modifier = Modifier.fillMaxSize().widthIn(max = 1040.dp),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 34.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
-            Surface(
-                shape = RoundedCornerShape(19.dp),
-                color = Color.White,
-                border = androidx.compose.foundation.BorderStroke(1.dp, PaperStroke)
-            ) {
-                Column(Modifier.fillMaxWidth().padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                    Text(
-                        when (module) {
-                            "listening" -> "🎧 历年听力精刷"
-                            "dictation" -> "🎙️ 历年逐句精听"
-                            else -> "✍️ 历年笔试特训"
-                        },
-                        fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Ink
-                    )
-                    Text("选择考级与年份，再进入试卷", fontSize = 12.5.sp, color = MutedInk)
+            Row(Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text("历年真题", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("选中试卷后按需下载；已下载的可离线练习",
+                        color = MutedInk, fontSize = 11.5.sp)
                 }
+                Text(available.size.toString() + " 套",
+                    fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MutedInk)
             }
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -183,8 +187,29 @@ fun UniversityCatalogScreen(
                         fontSize = 11.5.sp, color = if (installed == available.size)
                             CorrectGreen else MutedInk)
                 }
+                OutlinedTextField(
+                    value = search,
+                    onValueChange = { search = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(14.dp),
+                    leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null,
+                        modifier = Modifier.size(19.dp)) },
+                    trailingIcon = {
+                        if (search.isNotEmpty()) IconButton(onClick = { search = "" }) {
+                            Icon(Icons.Outlined.Close, contentDescription = "清除搜索")
+                        }
+                    },
+                    placeholder = { Text("搜索年份、考试名称", fontSize = 13.sp) }
+                )
                 Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    FilterChip(
+                        selected = downloadedOnly,
+                        onClick = { downloadedOnly = !downloadedOnly },
+                        label = { Text("仅已下载", fontSize = 11.sp) }
+                    )
                     rangeLabels.forEach { (value, title) ->
                         val active = yearRange == value
                         Surface(
@@ -204,10 +229,11 @@ fun UniversityCatalogScreen(
         items(visible, key = { it.level + "/" + it.id }) { exam ->
             val usable = module in repository.installedModules(exam)
             Surface(
-                modifier = Modifier.fillMaxWidth().height(143.dp),
+                modifier = Modifier.fillMaxWidth().height(132.dp),
                 shape = RoundedCornerShape(19.dp),
-                color = Color.White,
-                border = androidx.compose.foundation.BorderStroke(0.8.dp, PaperStroke),
+                color = if (usable) Color(0xFFF8FBFF) else Color.White,
+                border = androidx.compose.foundation.BorderStroke(
+                    0.8.dp, if (usable) Color(0xFFD1E5FF) else PaperStroke),
                 onClick = { onOpen(exam, module) }
             ) {
                 Column(
@@ -236,7 +262,7 @@ fun UniversityCatalogScreen(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            if (usable) "离线开始" else "下载并开始",
+                            if (usable) "已缓存 · 离线开始" else "下载题目并开始",
                             fontSize = 12.sp, color = if (usable) QuietBlue else MutedInk,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -247,7 +273,8 @@ fun UniversityCatalogScreen(
             }
         }
         if (visible.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-            Text("该分类暂无试卷，尝试调整年份范围。",
+            Text(if (downloadedOnly) "当前筛选下没有已下载试卷，关闭「仅已下载」可查看全部。"
+                else "没有匹配的试卷，试试其他关键词或年份。",
                 color = MutedInk, modifier = Modifier.padding(vertical = 25.dp))
         }
     }
