@@ -78,8 +78,8 @@ fun ReplicaHomeDock(active: String, onSelect: (String) -> Unit, modifier: Modifi
                         .clip(RoundedCornerShape(100.dp))
                         .background(if (selected) Color(0xFFE9EEF5) else Color.Transparent)
                         .clickable { onSelect(page) }
-                        .height(40.dp)
-                        .padding(horizontal = if (selected) 16.dp else 13.dp),
+                        .height(48.dp)
+                        .padding(horizontal = if (selected) 17.dp else 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
@@ -255,7 +255,7 @@ fun ReplicaHomeScreen(
                             modeLabels.forEach { (key, label, symbol) ->
                                 val picked = mode == key
                                 Surface(
-                                    modifier = Modifier.weight(1f).height(43.dp),
+                                    modifier = Modifier.weight(1f).height(48.dp),
                                     onClick = { mode = key },
                                     shape = RoundedCornerShape(11.dp),
                                     color = if (picked) Color.White else Color.Transparent,
@@ -265,7 +265,7 @@ fun ReplicaHomeScreen(
                                         horizontalArrangement = Arrangement.Center) {
                                         Text(symbol, fontSize = 15.sp)
                                         Spacer(Modifier.width(3.dp))
-                                        Text(label, fontSize = 12.5.sp, fontWeight = if (picked)
+                                        Text(label, fontSize = 13.sp, fontWeight = if (picked)
                                             FontWeight.Bold else FontWeight.Medium,
                                             maxLines = 1, overflow = TextOverflow.Ellipsis,
                                             color = if (picked) Ink else MutedInk)
@@ -299,7 +299,7 @@ fun ReplicaHomeScreen(
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             Text("历年真题", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                             TextButton(onClick = { onCatalog(mode, eligible.first()) }) {
-                                Text("查看全部", fontSize = 12.sp)
+                                Text("查看全部", fontSize = 13.sp)
                                 Icon(Icons.Outlined.ChevronRight, null, Modifier.size(16.dp))
                             }
                         }
@@ -330,7 +330,7 @@ fun ReplicaHomeScreen(
                                     }
                                     Spacer(Modifier.width(12.dp))
                                     Column(Modifier.weight(1f)) {
-                                        Text(exam.title, fontSize = 13.5.sp,
+                                        Text(exam.title, fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold, maxLines = 2)
                                         Text(
                                             (when (exam.level) {
@@ -339,7 +339,7 @@ fun ReplicaHomeScreen(
                                                 "ielts" -> "IELTS"
                                                 else -> "考研英语"
                                             }) + "  ·  " + exam.year,
-                                            fontSize = 11.sp, color = MutedInk
+                                            fontSize = 12.sp, color = MutedInk
                                         )
                                     }
                                     Icon(Icons.Outlined.ChevronRight, null, tint = MutedSlate)
@@ -510,7 +510,7 @@ private fun ModuleTile(
         else -> Triple("POSTGRAD", "考研英语", "📖")
     }
     Surface(
-        modifier = modifier.height(125.dp),
+        modifier = modifier.height(130.dp),
         onClick = onClick,
         shape = RoundedCornerShape(18.dp),
         color = Color.White,
@@ -523,7 +523,7 @@ private fun ModuleTile(
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(display.third, fontSize = 29.sp)
-            Text(display.first, fontSize = 10.sp, color = QuietBlue,
+            Text(display.first, fontSize = 12.sp, color = QuietBlue,
                 fontWeight = FontWeight.Bold)
             Text(display.second, fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold, maxLines = 1)
@@ -533,7 +533,7 @@ private fun ModuleTile(
                     "listening" -> "LISTENING"
                     else -> "READING"
                 },
-                fontSize = 9.sp, fontWeight = FontWeight.Medium, color = MutedSlate
+                fontSize = 11.sp, fontWeight = FontWeight.Medium, color = MutedSlate
             )
         }
     }
