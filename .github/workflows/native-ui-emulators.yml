@@ -54,4 +54,5 @@ jobs:
           path: |
             native-android/app/build/outputs/androidTest-results/
             native-${{ matrix.name }}-home.png
+            native-${{ matrix.name }}-logcat.txt
           if-no-files-found: ignore

@@ -86,6 +86,7 @@ fun VocabGlassDock(
                 }
                 Row(
                     Modifier.clip(RoundedCornerShape(100.dp))
+                        .testTag("vocab-tab-" + key)
                         .background(if (selected) Color(0xFFE9EFF6) else Color.Transparent)
                         .clickable { onSelect(key) }
                         .height(40.dp).padding(horizontal = if (selected) 11.dp else 12.dp),
