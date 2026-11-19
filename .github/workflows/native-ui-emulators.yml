@@ -8,6 +8,10 @@ on:
       - '.github/workflows/native-ui-emulators.yml'
   workflow_dispatch:
 
+concurrency:
+  group: shiguang-native-ui-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
 permissions:
   contents: read
 
