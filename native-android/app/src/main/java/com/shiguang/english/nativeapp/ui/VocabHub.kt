@@ -401,6 +401,7 @@ private fun VocabSettingsPage(
                     fontSize = 12.sp, color = WordDim)
             }
         }
+        item { ContentCachePanel() }
         item {
             WordSection {
                 Text("数据来源", fontSize = 17.sp, fontWeight = FontWeight.Bold)

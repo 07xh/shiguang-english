@@ -593,6 +593,7 @@ fun ProfileScreen(progress: StudyProgress, onReset: () -> Unit) {
                 Muted("累计作答 " + progress.answered + " 道 · 标记单词 " + (progress.known.size + progress.needsReview.size) + " 个")
             }
         }
+        item { ContentCachePanel() }
         item {
             Panel {
                 Text("数据管理", fontWeight = FontWeight.SemiBold)
