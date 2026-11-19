@@ -1,89 +1,59 @@
-# 拾光英语 · 大学英语学习平台
+# 拾光英语
 
-手机 / 平板 / 网页三端可用的英语学习 App。参考 B 站「英语精听与历年真题」「背什么背」两个 Toy 应用的页面风格复刻，**全站功能免费，无付费墙**。
+面向手机和平板的大学英语练习 App。**当前开发主线是 Kotlin + Jetpack Compose 原生 Android 版**，不是早期的 Capacitor/WebView 安装包。
 
-## 两个版本的区别
+## 最新 Android 版：从构建记录获取
 
-| 版本 | 目录 | APK | 说明 |
-|---|---|---|---|
-| **原版（100% 源码复刻）** | `shiguang-original/` | [shiguang-original.apk](https://github.com/07xh/shiguang-english/raw/main/shiguang-original.apk) | 原封不动使用源应用导出的 bundle.js（1.57MB）、bundle.css（1.16MB）、toy-sdk.js、真题清单与全部图片，**未重写一行源码**。功能 / 页面 / 交互与视频中的原应用一致（日历签到、学习复盘、练习构成、每日刷题、笔试/听力/逐句精听、听力真题列表等）。部分在线数据接口（用户数据、活跃统计）仍指向源站，离线时走本地兜底。 |
-| **重写版（参考截图实现）** | `shiguang-app/` | [app-debug.apk](https://github.com/07xh/shiguang-english/raw/main/app-debug.apk) | 参照两张截图独立重写的近似版，代码自主可控、全站免费、无外部 API 依赖。页面结构与原应用相似但非逐行复刻。 |
+1. 打开 [Native Android (On-Demand Content) 构建记录](https://github.com/07xh/shiguang-english/actions/workflows/native-android.yml)。
+2. 选择最新一次**成功**的 `main` 分支运行，在 Artifacts 下载 `shiguang-native-on-demand-debug`。
+3. 解压 ZIP 后安装其中的 APK。调试包是开发预览，**不代表经过真机验收的正式发行版**。
 
-## 直接下载安装（无需编译）
+> 仓库根目录旧版 `app-debug.apk` 和 `shiguang-original.apk` **不是最新 Compose 原生版**，请勿混用。若 Actions 尚未成功完成，不要将旧安装包标为“最新版”。
 
-- **Android APK（v1.0）**：[点此下载 app-debug.apk](https://github.com/07xh/shiguang-english/raw/main/app-debug.apk)
-  - 手机 / 平板下载后直接安装（需允许「安装未知来源应用」）
-  - 最小支持 Android 5.1（API 22），目标 Android 14（API 34）
+## 目前实现情况（以原生版为准）
 
-## 功能
+| 模块 | 已实现 | 仍需验收 / 完善 |
+| --- | --- | --- |
+| 双模式 | 精听·笔试 / 背单词原生界面与切换 | 真机切换恢复、视觉细节 |
+| 真题目录 | CET-4、CET-6、雅思、考研共 231 套**目录** | 不是 231 套完整试卷；少量历史资源缺失 |
+| 笔试 | 基础题型、答题卡、解析、交卷确认、**本机自动保存草稿** | 原版复杂题型、完整计分与整卷回顾 |
+| 听力 | 原始 MP3 按需下载、播放与调速 | 部分源文件缺失，完整时间轴与后台播放 |
+| 逐句精听 | 多空输入、句子跳转、自制键盘、**本机自动保存草稿** | 键盘长按、精确分句与全部真题验收 |
+| 背单词 | 9 本大学及考试词书、4 档复习、离线保存学习状态 | 原版复习算法、更多视觉和交互细节 |
+| 下载缓存 | 题目/音频/词库按需下载，HTTP Range 续传、分类清理 | 真机弱网、断网和源站不可达验证 |
+| 布局 | 手机/平板适配及 Compose UI 模拟器测试代码 | 仍需实体设备逐屏验收 |
 
-| 模块 | 内容 |
-|---|---|
-| 首页 | 云层头图、欢迎语、一周日期条、今日排名 / 连续打卡 / 学习时长、笔试特训 / 听力特训 / 逐句精听分段、精听卡片 |
-| 学习复盘 | 周 / 月 / 全部切换、刷题总数、连续天数、学习天数 / 正确率 / 时长、每日刷题柱状图、练习构成 |
-| 听力真题 | CET-4 / CET-6 / 考研 / 雅思，共 231 套目录，按年份筛选 |
-| 逐句精听 | 播放 / 暂停、倍速、英美音切换、挖空显示原文、双语对照，Web Speech 朗读 |
-| 背单词 | 9 类词书、卡片翻释义、认识 / 不认识分组、朗读 |
-| 全真模考 | 10 题抽题、逐题解析、即时计分 |
-| 我的 | 昵称、口音、双语开关、签到、数据清空 |
+原版大学考试目录有 231 套；词书校验得到 9 本书共 15,343 条去重词条。这两项是**资源清单/校验数据**，并不意味着当前轻量 APK 已内置全部试卷、词条或音频。首次使用对应资源时需要联网获取；下载完成并通过校验的资源才可离线使用。某些资源可能因来源缺失或网络问题而无法下载。
 
-数据全部存本机 `localStorage`，无需账号、无后端、无网络依赖。
+本地草稿按试卷和练习类型独立保存，不会上传到题库来源站；卸载或清除应用数据会删除草稿。跨设备同步、在线排行榜尚未实现。
 
-## 目录结构
+## 仓库结构
 
-```
-shiguang-app/
-├── www/                     # Web 应用（同时用于 Capacitor 与 PWA）
-│   ├── index.html
-│   ├── manifest.webmanifest # PWA 安装配置
-│   ├── sw.js                # Service Worker（离线缓存）
-│   ├── css/style.css
-│   ├── js/{app,store,data-exams,data-books,data-words}.js
-│   └── icons/               # 各尺寸图标
-├── android/                 # Capacitor 生成的 Android 工程
-├── capacitor.config.json
-├── package.json
-└── README.md
+- `native-android/` — **正式开发主线**：Kotlin / Jetpack Compose Android App，使用独立的资源仓库与本地缓存
+- `docs/native-ui-parity.md` — 原生 UI、交互的已实现/待验收对照
+- `docs/native-interaction-contract.md` — 练习行为与功能验收约束
+- `shiguang-app/` — 旧 Capacitor / PWA 试验版本，仅保留供历史参考
+- `shiguang-original/`、`recovered-source/` — 历史参考资料；不等于当前原生 App 的完整代码或资源
+
+## 从源码构建
+
+要求 JDK 17、Android SDK Platform 35 和 Gradle 8.9。用 Android Studio 打开 `native-android/`，或在配置好 Gradle 的环境中运行：
+
+```bash
+cd native-android
+gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
 ```
 
-## 构建 Android APK
+生成的开发 APK 路径是 `native-android/app/build/outputs/apk/debug/app-debug.apk`。
 
-环境要求：JDK 17、Android SDK（platform 33+、build-tools）。
+### 构建检查
 
-```powershell
-cd shiguang-app
-npm install
-npx cap sync android
-cd android
-.\gradlew.bat assembleDebug
-```
+- [原生 Android 编译 + 单测](https://github.com/07xh/shiguang-english/actions/workflows/native-android.yml)
+- [手机/平板模拟器 UI 烟雾测试](https://github.com/07xh/shiguang-english/actions/workflows/native-ui-emulators.yml)
+- [大学英语内容集成](native-android/README.md)
 
-产物：`android/app/build/outputs/apk/debug/app-debug.apk`
+**CI 构建成功不等于所有功能、所有内容均可用。** 最终发布前必须在实体手机和平板上逐项验证。
 
-装到手机 / 平板：
+## 使用范围
 
-```powershell
-adb install -r android\app\build\outputs\apk\debug\app-debug.apk
-```
-
-## 作为 PWA 安装（无需 APK）
-
-把 `www/` 部署到任意静态服务器（或 GitHub Pages），手机 / 平板浏览器打开后：
-
-- Android Chrome：菜单 → 安装应用 / 添加到主屏幕
-- iOS Safari：分享 → 添加到主屏幕
-
-`manifest.webmanifest` + `sw.js` 已配好，安装后全屏运行、离线可用。
-
-## 本地开发
-
-直接双击 `www/index.html` 即可在桌面浏览器运行（数据存 localStorage）。
-如要调试 Android WebView，运行 `npx cap open android` 用 Android Studio 打开。
-
-## 数据来源
-
-真题目录与词书元数据来自两个公开 Toy 应用的清单结构，已归一为静态 JSON 放在 `www/js/data-*.js`。真题原文与完整词表未随公开清单提供，精听文本为内置示例。
-
-## 许可
-
-MIT
+本项目供个人英语学习和工程练习。第三方题目、音频、图片、词表的使用和再分发必须符合对应授权；本仓库的代码许可不自动覆盖第三方素材。
