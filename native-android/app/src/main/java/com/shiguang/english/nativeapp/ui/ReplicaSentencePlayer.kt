@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.shiguang.english.nativeapp.data.ExamAudioSource
 import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityRepository
+import com.shiguang.english.nativeapp.model.SentenceAudioRange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,38 +37,52 @@ fun ReplicaSentencePlayer(
     var totalBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var initialized by remember(exam.id) { mutableStateOf(false) }
     var playing by remember(exam.id) { mutableStateOf(false) }
+    var restartFromStart by remember(exam.id) { mutableStateOf(true) }
+    var playedMs by remember(exam.id, sentenceIndex) { mutableIntStateOf(0) }
+    val requestedRange = remember(startSeconds, endSeconds) {
+        SentenceAudioRange.fromSeconds(startSeconds, endSeconds)
+    }
+    var durationMs by remember(exam.id) { mutableIntStateOf(0) }
+    val range = requestedRange.bounded(durationMs)
     var failure by remember(exam.id) { mutableStateOf("") }
     var speedIndex by remember(exam.id) { mutableIntStateOf(1) }
     val rates = listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
     val player = remember(exam.id) { MediaPlayer() }
 
     DisposableEffect(player) {
-        player.setOnCompletionListener { playing = false }
+        player.setOnCompletionListener {
+            playing = false
+            restartFromStart = true
+        }
         onDispose {
             runCatching { player.stop() }
             player.release()
         }
     }
 
-    LaunchedEffect(sentenceIndex) {
+    // Switching sentences must never resume at the previous sentence's position.
+    LaunchedEffect(sentenceIndex, startSeconds, endSeconds) {
         if (initialized) {
             runCatching {
-                player.pause()
-                player.seekTo(((startSeconds ?: 0.0) * 1000).toInt().coerceAtLeast(0))
+                if (player.isPlaying) player.pause()
+                player.seekTo(requestedRange.bounded(player.duration).startMs)
             }
         }
+        restartFromStart = true
         playing = false
+        playedMs = 0
     }
 
-    LaunchedEffect(playing, endSeconds, sentenceIndex) {
-        if (playing && endSeconds != null && endSeconds > (startSeconds ?: 0.0)) {
-            val cutoff = (endSeconds * 1000).toLong()
+    LaunchedEffect(playing, range, sentenceIndex) {
+        if (playing) {
             while (playing) {
                 delay(65)
-                val current = runCatching { player.currentPosition.toLong() }.getOrNull()
-                if (current != null && current >= cutoff) {
+                val current = runCatching { player.currentPosition }.getOrNull() ?: break
+                playedMs = (current - range.startMs).coerceAtLeast(0)
+                if (range.endMs != null && current >= range.endMs) {
                     runCatching { player.pause() }
                     playing = false
+                    restartFromStart = true
                     break
                 }
             }
@@ -75,10 +90,11 @@ fun ReplicaSentencePlayer(
     }
 
     fun playback(replay: Boolean) {
+        if (loading) return
+        if (audio == null) loading = true
         scope.launch {
             try {
                 if (audio == null) {
-                    loading = true
                     audio = repository.ensureAudio(exam) { done, total ->
                         bytes = done
                         totalBytes = total
@@ -96,13 +112,19 @@ fun ReplicaSentencePlayer(
                         null -> throw IllegalStateException("音频尚不可用")
                     }
                     player.prepare()
+                    durationMs = player.duration.coerceAtLeast(0)
                     initialized = true
+                    restartFromStart = true
                 }
+                val playableRange = requestedRange.bounded(player.duration)
                 if (replay || !playing) {
-                    val startMs = ((startSeconds ?: 0.0) * 1000).toInt().coerceAtLeast(0)
-                    if (replay || player.currentPosition < startMs) player.seekTo(startMs)
+                    if (replay || restartFromStart ||
+                        playableRange.shouldRewind(player.currentPosition)) {
+                        player.seekTo(playableRange.startMs)
+                    }
                     player.playbackParams = player.playbackParams.setSpeed(rates[speedIndex])
                     player.start()
+                    restartFromStart = false
                     playing = true
                 } else {
                     player.pause()
@@ -146,8 +168,16 @@ fun ReplicaSentencePlayer(
             Text("下载原声音频：" + (bytes / 1024) + " KB")
         } else if (audio == null) {
             Text("第一次点击播放才下载原声，下载后离线可用。")
-        } else if (startSeconds == null || endSeconds == null) {
-            Text("该句缺少精确时间轴，播放完整录音。")
+        } else if (!range.hasExactRange) {
+            Text("该句缺少可用的精确时间轴；从头播放完整录音。")
+        } else {
+            val segmentSeconds = ((range.endMs!! - range.startMs) / 1000).coerceAtLeast(1)
+            LinearProgressIndicator(
+                progress = { (playedMs / (segmentSeconds * 1000f)).coerceIn(0f, 1f) },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text("本句片段 " + segmentSeconds + " 秒 · 已播放 " +
+                (playedMs / 1000).coerceAtMost(segmentSeconds) + " 秒")
         }
         if (failure.isNotBlank()) Text("音频获取失败：" + failure)
     }
