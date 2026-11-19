@@ -92,6 +92,49 @@ class OnDemandStore(context: Context) {
         }
     }
 
+    data class CacheStats(
+        val examBytes: Long,
+        val vocabBytes: Long,
+        val unfinishedBytes: Long,
+        val examFiles: Int,
+        val vocabFiles: Int
+    ) {
+        val completedBytes: Long get() = examBytes + vocabBytes
+    }
+
+    suspend fun stats(): CacheStats = withContext(Dispatchers.IO) {
+        fun count(section: String): Pair<Long, Int> {
+            val dir = File(root, section)
+            if (!dir.exists()) return 0L to 0
+            val files = dir.walkTopDown().filter {
+                it.isFile && !it.name.endsWith(".part")
+            }.toList()
+            return files.sumOf { it.length() } to files.size
+        }
+        val (examBytes, examFiles) = count("university")
+        val (vocabBytes, vocabFiles) = count("vocabulary")
+        val incomplete = if (!root.exists()) 0L else root.walkTopDown()
+            .filter { it.isFile && it.name.endsWith(".part") }.sumOf { it.length() }
+        CacheStats(examBytes, vocabBytes, incomplete, examFiles, vocabFiles)
+    }
+
+    /** Remove downloaded files only; do not touch the app's SQLite/DataStore records. */
+    suspend fun clearCategory(section: String): Long = withContext(Dispatchers.IO) {
+        require(section == "university" || section == "vocabulary")
+        val directory = File(root, section)
+        if (!directory.exists()) return@withContext 0L
+        var removed = 0L
+        directory.walkBottomUp().forEach { file ->
+            if (file.isFile && !file.name.endsWith(".part")) {
+                val bytes = file.length()
+                if (file.delete()) removed += bytes
+            } else if (file.isDirectory && file.listFiles()?.isEmpty() == true) {
+                file.delete()
+            }
+        }
+        removed
+    }
+
     fun totalBytes(): Long = root.walkTopDown()
         .filter { it.isFile && !it.name.endsWith(".part") }.sumOf { it.length() }
 }
