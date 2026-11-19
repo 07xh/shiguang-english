@@ -698,6 +698,8 @@ private fun UniversityMultiBlankScreen(
     }
     val completedIndices = sentences.indices.filter { done(it) }.toSet()
     val currentCompleted = done(index)
+    val filledCount = blanks.indices.count { input(it).trim().isNotEmpty() }
+    val totalBlanks = blanks.size
     if (jumpVisible) {
         PracticeJumpSheet(
             title = "逐句精听索引",
@@ -773,19 +775,37 @@ private fun UniversityMultiBlankScreen(
             contentPadding = PaddingValues(
                 start = 18.dp, end = 18.dp, top = 15.dp, bottom = 18.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(18.dp)
+            verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
             item {
-                ReplicaSequenceHeader(
-                    sequence = index + 1,
-                    total = sentences.size,
-                    section = sent.section.ifBlank { "逐句精听" },
-                    onJump = { jumpVisible = true }
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ReplicaSequenceHeader(
+                        sequence = index + 1,
+                        total = sentences.size,
+                        section = sent.section.ifBlank { "逐句精听" },
+                        onJump = { jumpVisible = true }
+                    )
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text("听写进度", fontSize = 11.sp, color = MutedInk)
+                        Text("已填 " + filledCount + " / " + totalBlanks +
+                            " 空   ·   完成 " + completedIndices.size + " / " +
+                            sentences.size + " 句", fontSize = 11.sp, color = MutedInk)
+                    }
+                    LinearProgressIndicator(
+                        progress = {
+                            if (totalBlanks == 0) 0f else
+                                (filledCount.toFloat() / totalBlanks).coerceIn(0f, 1f)
+                        },
+                        modifier = Modifier.fillMaxWidth().height(5.dp),
+                        color = QuietBlue, trackColor = Color(0xFFEAF0F6)
+                    )
+                }
             }
             item {
                 Column(Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     ReplicaSentencePlayer(
                         repository = repository,
                         exam = exam,
@@ -813,12 +833,12 @@ private fun UniversityMultiBlankScreen(
             }
             item {
                 Column(
-                    Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     if (blanks.isEmpty()) {
                         Text(sent.text, fontSize = 24.sp, lineHeight = 38.sp)
-                        Text("本句无符合条件的英文听写词。", color = MutedInk)
+                        Text("本句没有可填写的听写词，可直接切换下一句。", color = MutedInk)
                     } else {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),

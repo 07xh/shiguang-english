@@ -2,6 +2,11 @@ package com.shiguang.english.nativeapp.ui
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
@@ -43,6 +48,7 @@ fun VocabStudyPage(
     var completed by rememberSaveable(book.id, reviewOnly) { mutableIntStateOf(0) }
     var total by rememberSaveable(book.id, reviewOnly) { mutableIntStateOf(0) }
     var revealed by rememberSaveable(book.id, reviewOnly) { mutableStateOf(false) }
+    var saveError by remember { mutableStateOf("") }
     LaunchedEffect(book.id, reviewOnly) {
         if (!initialized) {
             val memory = repository.snapshot(book.id)
@@ -57,6 +63,7 @@ fun VocabStudyPage(
         }
     }
     val word = queue.firstOrNull()?.let { byId[it] }
+    var saving by remember(word?.id) { mutableStateOf(false) }
     var ready by remember { mutableStateOf(false) }
     val speaker = remember(context) {
         TextToSpeech(context) { ready = it == TextToSpeech.SUCCESS }
@@ -152,21 +159,30 @@ fun VocabStudyPage(
                             Text("发音")
                         }
                         Spacer(Modifier.height(22.dp))
-                        if (revealed) {
-                            Text(word.translation, fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold, color = StudyInk,
-                                textAlign = TextAlign.Center, lineHeight = 29.sp)
-                            if (word.partOfSpeech.isNotBlank())
-                                Text(word.partOfSpeech, color = StudyDim, fontSize = 12.sp)
-                            if (word.exampleEn.isNotBlank()) {
-                                Spacer(Modifier.height(12.dp))
-                                Text(word.exampleEn, fontSize = 14.sp, lineHeight = 22.sp,
-                                    textAlign = TextAlign.Center, color = StudyInk)
+                        AnimatedVisibility(
+                            visible = revealed,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(7.dp)) {
+                                Text(word.translation, fontSize = 20.sp,
+                                    fontWeight = FontWeight.SemiBold, color = StudyInk,
+                                    textAlign = TextAlign.Center, lineHeight = 29.sp)
+                                if (word.partOfSpeech.isNotBlank())
+                                    Text(word.partOfSpeech, color = StudyDim, fontSize = 12.sp)
+                                if (word.exampleEn.isNotBlank()) {
+                                    Spacer(Modifier.height(7.dp))
+                                    Text(word.exampleEn, fontSize = 14.sp, lineHeight = 22.sp,
+                                        textAlign = TextAlign.Center, color = StudyInk)
+                                }
+                                if (word.exampleCn.isNotBlank())
+                                    Text(word.exampleCn, fontSize = 12.sp,
+                                        textAlign = TextAlign.Center, color = StudyDim)
                             }
-                            if (word.exampleCn.isNotBlank())
-                                Text(word.exampleCn, fontSize = 12.sp,
-                                    textAlign = TextAlign.Center, color = StudyDim)
-                        } else Text("轻触词卡查看释义", fontSize = 12.sp, color = StudyDim)
+                        }
+                        if (!revealed) Text("轻触词卡查看释义",
+                            fontSize = 12.sp, color = StudyDim)
                         }
                     }
                 }
@@ -188,15 +204,28 @@ fun VocabStudyPage(
                             val tint = memoryColor(tier)
                             Surface(
                                 modifier = Modifier.weight(1f).height(54.dp),
+                                enabled = !saving,
                                 color = tint.copy(alpha = 0.10f),
                                 shape = RoundedCornerShape(15.dp),
                                 border = BorderStroke(1.dp, tint.copy(alpha = 0.35f)),
                                 onClick = {
-                                    val id = word.id
-                                    queue = queue.drop(1)
-                                    completed += 1
-                                    revealed = false
-                                    scope.launch { repository.rate(book.id, id, tier) }
+                                    if (!saving) {
+                                        saving = true
+                                        saveError = ""
+                                        val id = word.id
+                                        scope.launch {
+                                            try {
+                                                repository.rate(book.id, id, tier)
+                                                queue = queue.drop(1)
+                                                completed += 1
+                                                revealed = false
+                                            } catch (exc: Exception) {
+                                                saveError = exc.message ?: "保存失败，请重试"
+                                            } finally {
+                                                saving = false
+                                            }
+                                        }
+                                    }
                                 }
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
@@ -207,7 +236,11 @@ fun VocabStudyPage(
                         }
                     }
                 }
-                Spacer(Modifier.height(14.dp))
+                if (saveError.isNotEmpty()) {
+                    Text("学习记录未保存：" + saveError,
+                        color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
+                }
+                Spacer(Modifier.height(10.dp))
             }
         }
     }

@@ -149,6 +149,7 @@ fun ReplicaHomeScreen(
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
     val isLandscape = maxWidth > maxHeight && maxWidth >= 650.dp
+    val compactHeroActions = maxWidth < 600.dp && !isLandscape
     LazyColumn(
         modifier = Modifier.fillMaxSize().widthIn(max = 980.dp),
         contentPadding = PaddingValues(bottom = 102.dp),
@@ -156,7 +157,7 @@ fun ReplicaHomeScreen(
     ) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 116.dp else 255.dp)
+                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 116.dp else if (compactHeroActions) 272.dp else 255.dp)
             ) {
                 if (chosenBitmap != null) {
                     Image(bitmap = chosenBitmap!!, contentDescription = "自定义首页壁纸",
@@ -182,20 +183,36 @@ fun ReplicaHomeScreen(
                         bottom = if (isLandscape) 18.dp else 61.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        StudyModeSwitch(mode = "exam", onSwitch = onModeSwitch)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            HeroCircle("更换壁纸", Icons.Outlined.ImageIcon) {
-                                chooser.launch(arrayOf("image/*"))
+                    if (compactHeroActions) {
+                        Column(Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Row(Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically) {
+                                HeroCircle("更换壁纸", Icons.Outlined.ImageIcon) {
+                                    chooser.launch(arrayOf("image/*"))
+                                }
+                                Spacer(Modifier.width(7.dp))
+                                HeroCircle("分享学习记录", Icons.Outlined.Share, onClick = share)
+                                Spacer(Modifier.width(7.dp))
+                                HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
                             }
-                            Spacer(Modifier.width(5.dp))
-                            HeroCircle("分享学习记录", Icons.Outlined.Share, onClick = share)
-                            Spacer(Modifier.width(5.dp))
-                            HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
+                            StudyModeSwitch(mode = "exam", onSwitch = onModeSwitch)
+                        }
+                    } else {
+                        Row(Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically) {
+                            StudyModeSwitch(mode = "exam", onSwitch = onModeSwitch)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                HeroCircle("更换壁纸", Icons.Outlined.ImageIcon) {
+                                    chooser.launch(arrayOf("image/*"))
+                                }
+                                Spacer(Modifier.width(7.dp))
+                                HeroCircle("分享学习记录", Icons.Outlined.Share, onClick = share)
+                                Spacer(Modifier.width(7.dp))
+                                HeroCircle("个人设置", Icons.Outlined.PersonOutline, onClick = onProfile)
+                            }
                         }
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
