@@ -6,6 +6,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.coroutines.coroutineContext
@@ -28,6 +29,12 @@ class OnDemandStore(context: Context) {
         return File(File(File(root, section), id), filename)
     }
 
+    /**
+     * Download with best-effort resumability. A .part file is never exposed to
+     * the reader; it is kept after an interrupted network connection. HTTP 206
+     * must prove that its byte range starts precisely at the saved boundary.
+     * HTTP 200 while Range was requested means restart from byte zero.
+     */
     suspend fun download(
         url: String,
         dest: File,
@@ -39,44 +46,86 @@ class OnDemandStore(context: Context) {
         require(target.protocol == "https" && target.host in allowedHosts) {
             "下载地址不在已授权资源域名内"
         }
+        require(dest.canonicalPath.startsWith(root.canonicalPath + File.separator)) {
+            "无效缓存位置"
+        }
         dest.parentFile?.mkdirs()
         val partial = File(dest.parentFile, dest.name + ".part")
+        val origin = File(dest.parentFile, dest.name + ".part.url")
+        if (!origin.isFile || runCatching { origin.readText() }.getOrNull() != url) {
+            partial.delete()
+        }
+        origin.writeText(url)
+        val prior = partial.length().takeIf { it in 1 until limitBytes } ?: 0L
+        if (prior == 0L && partial.exists()) partial.delete()
+
         val connection = (target.openConnection() as HttpURLConnection).apply {
             connectTimeout = 12000
             readTimeout = 25000
             instanceFollowRedirects = false
             setRequestProperty("Accept", "*/*")
-            setRequestProperty("User-Agent", "ShiguangEnglish-AuthorizedNative/1.0")
+            setRequestProperty("Accept-Encoding", "identity")
+            setRequestProperty("User-Agent", "ShiguangEnglish-AuthorizedNative/1.1")
+            if (prior > 0) setRequestProperty("Range", "bytes=" + prior + "-")
         }
         try {
             val code = connection.responseCode
-            if (code !in 200..299) throw IOException("资源服务器返回 HTTP $code")
-            val length = connection.contentLengthLong
-            if (length > limitBytes) throw IOException("资源超过下载大小限制")
-            var done = 0L
+            val resume = code == HttpURLConnection.HTTP_PARTIAL
+            if (resume && (prior == 0L || !OnDemandRange.valid(
+                    connection.getHeaderField("Content-Range"), prior, limitBytes))) {
+                partial.delete()
+                origin.delete()
+                throw IOException("服务器返回了无效的断点范围，请重试")
+            }
+            if (code == 416) {
+                partial.delete()
+                origin.delete()
+                throw IOException("服务器上的音频已变化，已清理旧断点，请重试")
+            }
+            if (code != HttpURLConnection.HTTP_OK && !resume)
+                throw IOException("资源服务器返回 HTTP " + code)
+            val startAt = if (resume) prior else 0L
+            val remaining = connection.contentLengthLong
+            if (remaining > 0 && remaining + startAt > limitBytes) {
+                partial.delete()
+                origin.delete()
+                throw IOException("资源超过下载大小限制")
+            }
+            val total = if (remaining >= 0) startAt + remaining else 0L
+            var done = startAt
+            progress(done, total)
             connection.inputStream.use { input ->
-                partial.outputStream().buffered(32 * 1024).use { output ->
-                    val buffer = ByteArray(32 * 1024)
+                FileOutputStream(partial, resume).buffered(32768).use { output ->
+                    val buffer = ByteArray(32768)
                     while (true) {
                         coroutineContext.ensureActive()
                         val n = input.read(buffer)
                         if (n == -1) break
                         done += n
-                        if (done > limitBytes) throw IOException("资源超过下载大小限制")
+                        if (done > limitBytes) {
+                            partial.delete()
+                            origin.delete()
+                            throw IOException("资源超过下载大小限制")
+                        }
                         output.write(buffer, 0, n)
-                        progress(done, length.coerceAtLeast(0))
+                        progress(done, total)
                     }
                 }
             }
+            if (total > 0 && done != total)
+                throw IOException("网络中断，已保留 " + done + " 字节以便断点续传")
             if (done < 128 || !validate(partial)) {
-                throw IOException("下载内容不完整或文件格式有误")
+                partial.delete()
+                origin.delete()
+                throw IOException("下载内容不是完整、有效的 JSON 或 MP3")
             }
-            if (dest.exists()) dest.delete()
+            if (dest.exists() && !dest.delete())
+                throw IOException("无法替换旧缓存")
             if (!partial.renameTo(dest)) throw IOException("无法保存下载文件")
+            origin.delete()
             dest
         } finally {
             connection.disconnect()
-            if (partial.exists()) partial.delete()
         }
     }
 
@@ -107,7 +156,7 @@ class OnDemandStore(context: Context) {
             val dir = File(root, section)
             if (!dir.exists()) return 0L to 0
             val files = dir.walkTopDown().filter {
-                it.isFile && !it.name.endsWith(".part")
+                it.isFile && !it.name.contains(".part")
             }.toList()
             return files.sumOf { it.length() } to files.size
         }
@@ -137,4 +186,17 @@ class OnDemandStore(context: Context) {
 
     fun totalBytes(): Long = root.walkTopDown()
         .filter { it.isFile && !it.name.endsWith(".part") }.sumOf { it.length() }
+}
+
+
+/** Pure range check, also tested by JVM unit tests (no Android emulator needed). */
+internal object OnDemandRange {
+    private val pattern = Regex("""bytes (\d+)-(\d+)/(\d+)""")
+    fun valid(header: String?, savedBytes: Long, limitBytes: Long): Boolean {
+        val match = pattern.matchEntire(header.orEmpty()) ?: return false
+        val start = match.groupValues[1].toLongOrNull() ?: return false
+        val end = match.groupValues[2].toLongOrNull() ?: return false
+        val total = match.groupValues[3].toLongOrNull() ?: return false
+        return start == savedBytes && end >= start && total > end && total <= limitBytes
+    }
 }
