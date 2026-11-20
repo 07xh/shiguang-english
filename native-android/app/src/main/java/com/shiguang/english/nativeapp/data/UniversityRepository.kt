@@ -260,14 +260,20 @@ class UniversityRepository(private val context: Context) {
                         .ifBlank { inheritedPassage }
                     val kind = node.getFirst("type", "question_type")
                     val prompt = node.getFirst("question", "question_text", "stem",
-                        "statement", "prompt", "question_zh", "prompt_zh", "directions")
+                        "statement", "prompt", "question_zh", "question_text_zh", "prompt_zh", "directions")
                     val choices = parseChoices(node.opt("options") ?: node.opt("choices"))
                     val hasAnswer = node.has("answer") || node.has("correct_answer") || node.has("word")
                     val subjective = kind in setOf("writing", "translation", "translation_en_zh",
                         "proofread", "fill_in", "matching", "banked_cloze", "cloze",
                         "tfng", "true_false_not_given", "yes_no_not_given", "sentence_insertion")
-                    if ((prompt.isNotBlank() || kind in setOf("writing", "translation",
-                            "translation_en_zh")) &&
+                    // Original CET listening papers may contain only A-D choices:
+                    // the spoken stem is in the audio, so no text question exists.
+                    // These are still real answerable questions, not empty records.
+                    val listeningChoices = ListeningQuestionPolicy.isAnswerableWithoutStem(
+                        module, choices.size
+                    )
+                    if ((prompt.isNotBlank() || listeningChoices ||
+                            kind in setOf("writing", "translation", "translation_en_zh")) &&
                         (choices.isNotEmpty() || hasAnswer || subjective)) {
                         val id = node.getFirst("id", "question_id").ifBlank { results.size.toString() }
                         val key = kind + "|" + id + "|" + prompt
