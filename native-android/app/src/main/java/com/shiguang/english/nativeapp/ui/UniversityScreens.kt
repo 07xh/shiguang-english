@@ -625,8 +625,21 @@ private fun UniversityQuestionScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text("本卷练习已完成", fontWeight = FontWeight.Bold, fontSize = 23.sp)
-                                Text("共 " + questions.size + " 题 · 已作答 " + answered.size + " 题",
-                                    color = MutedInk)
+                                LinearProgressIndicator(
+                                    progress = { answered.size.toFloat() / questions.size },
+                                    modifier = Modifier.fillMaxWidth().height(7.dp)
+                                        .clip(RoundedCornerShape(50.dp)),
+                                    color = QuietBlue,
+                                    trackColor = Color(0xFFE1E7F0)
+                                )
+                                Row(Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween) {
+                                    Text("已作答 " + answered.size + " / " + questions.size,
+                                        color = Ink, fontWeight = FontWeight.SemiBold,
+                                        fontSize = 13.sp)
+                                    Text("未作答 " + (questions.size - answered.size),
+                                        color = MutedInk, fontSize = 13.sp)
+                                }
                                 Text("主观题与复杂题型不进行未经核验的自动评分。",
                                     color = MutedInk, fontSize = 13.sp)
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -653,11 +666,34 @@ private fun UniversityQuestionScreen(
                                 Modifier.fillMaxWidth().padding(14.dp),
                                 verticalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
-                                Text(
-                                    "第 " + (reviewIndex + 1) + " 题 · " +
-                                        itemQuestion.type.ifBlank { "题目" },
-                                    fontWeight = FontWeight.SemiBold, color = Ink
-                                )
+                                Row(
+                                    Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        "第 " + (reviewIndex + 1) + " 题 · " +
+                                            itemQuestion.type.ifBlank { "题目" },
+                                        modifier = Modifier.weight(1f),
+                                        fontWeight = FontWeight.SemiBold, color = Ink,
+                                        maxLines = 1
+                                    )
+                                    val missing = savedAnswer.isBlank()
+                                    Surface(
+                                        color = if (missing) Color(0xFFFFF4E6)
+                                            else Color(0xFFEAF5F0),
+                                        shape = RoundedCornerShape(50.dp)
+                                    ) {
+                                        Text(
+                                            if (missing) "未作答" else "已作答",
+                                            modifier = Modifier.padding(
+                                                horizontal = 9.dp, vertical = 4.dp),
+                                            fontSize = 11.sp,
+                                            color = if (missing) Color(0xFF9B672A)
+                                                else Color(0xFF207858)
+                                        )
+                                    }
+                                }
                                 Text(
                                     itemQuestion.prompt.ifBlank { "查看原文与题目" }.take(100),
                                     fontSize = 13.sp, color = MutedInk, maxLines = 2
