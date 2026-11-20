@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -463,6 +464,12 @@ private fun UniversityQuestionScreen(
     var showJump by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showSubmit by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showRestart by rememberSaveable(exam.id, module) { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    // A new question must start at its prompt, not at the previous question's
+    // scroll offset. The same applies when entering/leaving submitted review.
+    LaunchedEffect(index, submitted, reviewing) {
+        listState.scrollToItem(0)
+    }
     val answers = remember(answersJson) { JSONObject(answersJson) }
     val answered = questions.indices.filter {
         answers.optString(it.toString(), "").isNotBlank()
@@ -583,7 +590,8 @@ private fun UniversityQuestionScreen(
         ) {
             val tablet = maxWidth >= 750.dp
             LazyColumn(
-                modifier = Modifier.fillMaxSize().widthIn(max = 1080.dp),
+                state = listState,
+                modifier = Modifier.widthIn(max = 1080.dp).fillMaxSize(),
                 contentPadding = PaddingValues(18.dp),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
@@ -603,11 +611,10 @@ private fun UniversityQuestionScreen(
                                     Text("返回结果")
                                 }
                             } else if (!submitted) {
-                                Text("练习", fontSize = 11.sp, color = MutedInk)
+                                Text("练习模式", fontSize = 12.sp, color = MutedInk)
                                 Switch(
                                     checked = practiceMode,
-                                    onCheckedChange = { practiceMode = it },
-                                    modifier = Modifier.height(34.dp)
+                                    onCheckedChange = { practiceMode = it }
                                 )
                             }
                         }
