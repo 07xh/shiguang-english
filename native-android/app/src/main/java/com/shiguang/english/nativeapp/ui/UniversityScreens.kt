@@ -777,7 +777,11 @@ private fun UniversityQuestionScreen(
                                 verticalAlignment = Alignment.Top,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                ReplicaPassagePanel(question.passage, Modifier.weight(1.02f))
+                                ReplicaPassagePanel(
+                                    question.passage, Modifier.weight(1.02f),
+                                    title = if (question.type in setOf("translation", "translation_en_zh"))
+                                        "待译原文" else "阅读原文"
+                                )
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
@@ -788,7 +792,11 @@ private fun UniversityQuestionScreen(
                         } else {
                             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                                 if (question.passage.isNotBlank()) {
-                                    ReplicaPassagePanel(question.passage, Modifier.fillMaxWidth())
+                                    ReplicaPassagePanel(
+                                        question.passage, Modifier.fillMaxWidth(),
+                                        title = if (question.type in setOf("translation", "translation_en_zh"))
+                                            "待译原文" else "阅读原文"
+                                    )
                                 }
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
@@ -806,7 +814,9 @@ private fun UniversityQuestionScreen(
 }
 
 @Composable
-private fun ReplicaPassagePanel(text: String, modifier: Modifier) {
+private fun ReplicaPassagePanel(
+    text: String, modifier: Modifier, title: String = "阅读原文"
+) {
     Surface(
         modifier = modifier,
         color = CardSubtle,
@@ -815,14 +825,14 @@ private fun ReplicaPassagePanel(text: String, modifier: Modifier) {
     ) {
         Column(Modifier.fillMaxWidth().padding(19.dp),
             verticalArrangement = Arrangement.spacedBy(11.dp)) {
-            Text("阅读原文", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MutedInk)
+            Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MutedInk)
             Text(text, fontSize = 15.sp, lineHeight = 26.sp, color = Ink)
         }
     }
 }
 
 @Composable
-private fun ReplicaQuestionPanel(
+internal fun ReplicaQuestionPanel(
     question: UniversityQuestion,
     selected: String,
     practiceMode: Boolean,
@@ -838,6 +848,11 @@ private fun ReplicaQuestionPanel(
         words.map { it to it }
     } else question.choices
     val objective = choices.isNotEmpty()
+    val isTranslation = question.type in setOf("translation", "translation_en_zh")
+    val isWriting = question.type == "writing"
+    var referenceExpanded by rememberSaveable(question.id, question.type) {
+        mutableStateOf(false)
+    }
     val correctLabel = choices.firstOrNull { (label, text) ->
         label.equals(question.answer, true) || text.equals(question.answer, true)
     }?.first
@@ -890,9 +905,52 @@ private fun ReplicaQuestionPanel(
                 color = MutedInk, fontSize = 12.sp
             )
         }
-        if ((reviewOnly || (practiceMode && selected.isNotBlank())) &&
-            (question.answer.isNotBlank() || question.analysis.isNotBlank())) {
-            ReplicaAnalysisCard(question.answer, question.analysis)
+        if (!objective && (isTranslation || isWriting) && practiceMode && !reviewOnly) {
+            OutlinedButton(
+                onClick = { referenceExpanded = !referenceExpanded },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                    .testTag("subjective-reference-toggle")
+            ) {
+                Text(
+                    if (referenceExpanded) "收起参考答案与解析"
+                    else if (isTranslation) "查看参考译文与解析"
+                    else "查看参考范文与解析"
+                )
+            }
+        }
+        val showReference = reviewOnly || (practiceMode &&
+            (if (isTranslation || isWriting) referenceExpanded else selected.isNotBlank()))
+        if (showReference) {
+            if (question.answer.isNotBlank() || question.analysis.isNotBlank()) {
+                ReplicaAnalysisCard(
+                    question.answer, question.analysis,
+                    answerLabel = when {
+                        isTranslation -> "参考译文"
+                        isWriting -> "参考范文"
+                        else -> "参考答案"
+                    }
+                )
+            }
+            // Analysis alone is not a reference translation: still report the missing answer.
+            if ((isTranslation || isWriting) && question.answer.isBlank()) {
+                Text(
+                    if (isTranslation) "当前题库暂无参考译文，无法显示原站未提供的答案。"
+                    else "当前题库暂无参考范文，无法显示原站未提供的答案。",
+                    color = MutedInk, fontSize = 13.sp,
+                    modifier = Modifier.testTag("subjective-reference-missing")
+                )
+            }
+            if (isWriting && question.modelTranslation.isNotBlank()) {
+                Surface(color = CardSubtle, shape = RoundedCornerShape(17.dp)) {
+                    Column(
+                        Modifier.fillMaxWidth().padding(17.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text("范文中文译文", color = Ink, fontWeight = FontWeight.SemiBold)
+                        Text(question.modelTranslation, color = MutedInk, lineHeight = 24.sp)
+                    }
+                }
+            }
         }
     }
 }

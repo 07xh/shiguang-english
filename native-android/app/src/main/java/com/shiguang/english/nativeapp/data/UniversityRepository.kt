@@ -27,7 +27,7 @@ data class UniversityExam(
 data class UniversityQuestion(
     val id: String, val type: String, val prompt: String, val passage: String,
     val choices: List<Pair<String, String>>, val answer: String, val analysis: String,
-    val section: String = ""
+    val section: String = "", val modelTranslation: String = ""
 )
 
 data class UniversitySentence(
@@ -225,20 +225,22 @@ class UniversityRepository(private val context: Context) {
                         .ifBlank { inheritedPassage }
                     val kind = node.getFirst("type", "question_type")
                     val prompt = node.getFirst("question", "question_text", "stem",
-                        "statement", "prompt", "question_zh")
+                        "statement", "prompt", "question_zh", "prompt_zh", "directions")
                     val choices = parseChoices(node.opt("options") ?: node.opt("choices"))
                     val hasAnswer = node.has("answer") || node.has("correct_answer") || node.has("word")
                     val subjective = kind in setOf("writing", "translation", "translation_en_zh",
                         "proofread", "fill_in", "matching", "banked_cloze", "cloze",
                         "tfng", "true_false_not_given", "yes_no_not_given", "sentence_insertion")
-                    if ((prompt.isNotBlank() || kind in setOf("writing", "translation")) &&
+                    if ((prompt.isNotBlank() || kind in setOf("writing", "translation",
+                            "translation_en_zh")) &&
                         (choices.isNotEmpty() || hasAnswer || subjective)) {
                         val id = node.getFirst("id", "question_id").ifBlank { results.size.toString() }
                         val key = kind + "|" + id + "|" + prompt
                         if (seen.add(key)) results.add(UniversityQuestion(id, kind, prompt, passage,
-                            choices, node.getFirst("answer", "correct_answer", "word"),
+                            choices, UniversityReferenceMapping.answer(kind) { node.getFirst(it) },
                             node.getFirst("analysis", "explanation"),
-                            node.getFirst("section", "group")))
+                            node.getFirst("section", "group"),
+                            UniversityReferenceMapping.modelTranslation(kind) { node.getFirst(it) }))
                         node.opt("questions")?.let { walk(it, passage, depth + 1) }
                     } else {
                         val keys = node.keys()
