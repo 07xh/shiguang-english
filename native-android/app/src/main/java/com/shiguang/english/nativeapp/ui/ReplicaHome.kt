@@ -160,7 +160,7 @@ fun ReplicaHomeScreen(
     val isLandscape = maxWidth > maxHeight && maxWidth >= 650.dp
     val compactHeroActions = maxWidth < 600.dp && !isLandscape
     LazyColumn(
-        modifier = Modifier.widthIn(max = 920.dp).fillMaxHeight(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 102.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
@@ -188,10 +188,12 @@ fun ReplicaHomeScreen(
                         )
                     )
                 )
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 Column(
-                    Modifier.fillMaxSize().padding(start = 22.dp, end = 20.dp,
-                        top = if (isLandscape) 16.dp else 18.dp,
-                        bottom = if (isLandscape) 38.dp else 61.dp),
+                    Modifier.widthIn(max = 920.dp).fillMaxWidth().fillMaxHeight()
+                        .padding(start = 22.dp, end = 20.dp,
+                            top = if (isLandscape) 16.dp else 18.dp,
+                            bottom = if (isLandscape) 38.dp else 61.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     if (compactHeroActions) {
@@ -234,6 +236,7 @@ fun ReplicaHomeScreen(
                             fontWeight = FontWeight.ExtraBold, color = Color.White)
                     }
                 }
+                }
             }
         }
         item {
@@ -243,8 +246,11 @@ fun ReplicaHomeScreen(
                 shape = RoundedCornerShape(topStart = if (isLandscape) 20.dp else 28.dp,
                     topEnd = if (isLandscape) 20.dp else 28.dp)
             ) {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
                 Column(
-                    Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = if (isLandscape) 10.dp else 12.dp, bottom = 34.dp),
+                    Modifier.widthIn(max = 920.dp).fillMaxWidth()
+                        .padding(start = 18.dp, end = 18.dp,
+                            top = if (isLandscape) 10.dp else 12.dp, bottom = 34.dp),
                     verticalArrangement = Arrangement.spacedBy(13.dp)
                 ) {
                     Box(
@@ -381,6 +387,7 @@ fun ReplicaHomeScreen(
                         }
                     }
 
+                }
                 }
             }
         }
