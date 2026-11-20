@@ -462,6 +462,7 @@ private fun UniversityQuestionScreen(
     }
     var showJump by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showSubmit by rememberSaveable(exam.id, module) { mutableStateOf(false) }
+    var showRestart by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     val answers = remember(answersJson) { JSONObject(answersJson) }
     val answered = questions.indices.filter {
         answers.optString(it.toString(), "").isNotBlank()
@@ -518,6 +519,24 @@ private fun UniversityQuestionScreen(
         },
         dismissButton = {
             TextButton(onClick = { showSubmit = false }) { Text("继续作答") }
+        }
+    )
+    if (showRestart) AlertDialog(
+        onDismissRequest = { showRestart = false },
+        title = { Text("确定重新作答？") },
+        text = { Text("此操作会清空本卷已保存的答案和交卷状态，无法恢复。") },
+        confirmButton = {
+            TextButton(onClick = {
+                showRestart = false
+                draftStore.clearPaper(exam, module)
+                answersJson = "{}"
+                index = 0
+                submitted = false
+                reviewing = false
+            }) { Text("清空并重新作答") }
+        },
+        dismissButton = {
+            TextButton(onClick = { showRestart = false }) { Text("取消") }
         }
     )
     if (showJump) PracticeJumpSheet(
@@ -615,11 +634,7 @@ private fun UniversityQuestionScreen(
                                         Text("回顾整卷")
                                     }
                                     OutlinedButton(onClick = {
-                                        draftStore.clearPaper(exam, module)
-                                        answersJson = "{}"
-                                        index = 0
-                                        submitted = false
-                                        reviewing = false
+                                        showRestart = true
                                     }) { Text("重新作答") }
                                 }
                             }
