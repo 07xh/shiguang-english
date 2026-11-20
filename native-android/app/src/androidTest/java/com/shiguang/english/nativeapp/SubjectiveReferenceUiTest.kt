@@ -17,11 +17,11 @@ class SubjectiveReferenceUiTest {
     @get:Rule val rule = createComposeRule()
 
     private fun question(
-        type: String, answer: String = "", modelTranslation: String = ""
+        type: String, answer: String = "", modelTranslation: String = "", analysis: String = ""
     ) = UniversityQuestion(
         id = "subjective-1", type = type, prompt = "请翻译以下内容",
         passage = "", choices = emptyList(), answer = answer,
-        analysis = "", modelTranslation = modelTranslation
+        analysis = analysis, modelTranslation = modelTranslation
     )
 
     @Test fun submittedTranslationDisplaysSourceReference() {
@@ -59,6 +59,19 @@ class SubjectiveReferenceUiTest {
                 ReplicaQuestionPanel(
                     question = question("translation"), selected = "",
                     practiceMode = false, reviewOnly = true, onAnswer = {}
+                )
+            }
+        }
+        rule.onNodeWithTag("subjective-reference-missing").assertIsDisplayed()
+            .assertTextContains("暂无参考译文", substring = true)
+    }
+
+    @Test fun explanationDoesNotHideMissingReferenceWarning() {
+        rule.setContent {
+            ShiguangTheme {
+                ReplicaQuestionPanel(
+                    question = question("translation", analysis = "考点说明仅供参考"),
+                    selected = "", practiceMode = false, reviewOnly = true, onAnswer = {}
                 )
             }
         }
