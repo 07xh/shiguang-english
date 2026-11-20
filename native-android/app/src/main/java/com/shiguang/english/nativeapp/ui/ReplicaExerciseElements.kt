@@ -13,6 +13,10 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +64,8 @@ fun ReplicaOptionCard(
     label: String,
     isSelected: Boolean,
     isCorrect: Boolean?,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    enabled: Boolean = true
 ) {
     val background = when {
         isCorrect == true -> Color(0xFFF2FAF5)
@@ -76,7 +81,8 @@ fun ReplicaOptionCard(
     }
     Surface(
         onClick = onSelect,
-        modifier = Modifier.fillMaxWidth(),
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth().semantics { selected = isSelected },
         shape = RoundedCornerShape(15.dp),
         color = background,
         border = BorderStroke(1.dp, border)
@@ -139,37 +145,48 @@ fun ReplicaTransportBar(
         border = BorderStroke(0.75.dp, PaperStroke),
         shadowElevation = 9.dp
     ) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            OutlinedButton(
-                enabled = canPrev,
-                onClick = onPrev,
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 7.dp, vertical = 10.dp)
+        // Full-width surface, but a readable control group on landscape tablets.
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Row(
+                Modifier.widthIn(max = 760.dp).fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Outlined.ChevronLeft, contentDescription = null,
-                    modifier = Modifier.size(16.dp))
-                Text(previous, fontSize = 12.sp, maxLines = 1)
-            }
-            FilledTonalButton(
-                onClick = onCenter,
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
-            ) {
-                Icon(Icons.Outlined.GridView, contentDescription = null,
-                    modifier = Modifier.size(15.dp))
-                Spacer(Modifier.width(3.dp))
-                Text(center, fontSize = 11.5.sp, maxLines = 1)
-            }
-            Button(
-                enabled = canNext,
-                onClick = onNext,
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(horizontal = 7.dp, vertical = 10.dp)
-            ) {
-                Text(next, fontSize = 12.sp, maxLines = 1)
-                Icon(Icons.Outlined.ChevronRight, contentDescription = null,
-                    modifier = Modifier.size(16.dp))
+                OutlinedButton(
+                    enabled = canPrev,
+                    onClick = onPrev,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag("paper-previous"),
+                    contentPadding = PaddingValues(horizontal = 7.dp, vertical = 10.dp)
+                ) {
+                    Icon(Icons.Outlined.ChevronLeft, contentDescription = null,
+                        modifier = Modifier.size(16.dp))
+                    Text(previous, fontSize = 12.sp, maxLines = 1)
+                }
+                FilledTonalButton(
+                    onClick = onCenter,
+                    modifier = Modifier.heightIn(min = 48.dp)
+                        .testTag("paper-answer-sheet")
+                        .semantics { contentDescription = "打开答题卡，已答 $center" },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp)
+                ) {
+                    Icon(Icons.Outlined.GridView, contentDescription = null,
+                        modifier = Modifier.size(15.dp))
+                    Spacer(Modifier.width(3.dp))
+                    Text(center, fontSize = 11.5.sp, maxLines = 1)
+                }
+                Button(
+                    enabled = canNext,
+                    onClick = onNext,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag("paper-next"),
+                    contentPadding = PaddingValues(horizontal = 7.dp, vertical = 10.dp)
+                ) {
+                    Text(next, fontSize = 12.sp, maxLines = 1)
+                    Icon(Icons.Outlined.ChevronRight, contentDescription = null,
+                        modifier = Modifier.size(16.dp))
+                }
             }
         }
     }
