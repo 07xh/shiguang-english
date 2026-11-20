@@ -1,6 +1,7 @@
 package com.shiguang.english.nativeapp
 
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -18,8 +19,9 @@ class NativeReferenceUiTest {
 
     @Test fun homeHasOriginalTwoTabsAndThreeTrainingModes() {
         rule.onNodeWithTag("app-mode-exam").performClick()
-        rule.onNodeWithText("首页").assertExists()
-        rule.onNodeWithText("统计").assertExists()
+        rule.onNodeWithTag("exam-tab-home").assertIsDisplayed()
+        rule.onNodeWithTag("exam-tab-stats").assertIsDisplayed()
+        rule.onNodeWithTag("exam-home-title").assertIsDisplayed()
         rule.onNodeWithText("笔试特训").assertExists()
         rule.onNodeWithText("听力特训").assertExists()
         rule.onNodeWithText("逐句精听").assertExists()
@@ -27,10 +29,18 @@ class NativeReferenceUiTest {
 
     @Test fun dockSwitchesBetweenHomeAndStats() {
         rule.onNodeWithTag("app-mode-exam").performClick()
-        rule.onNodeWithText("统计").performClick()
+        rule.onNodeWithTag("exam-tab-stats").performClick()
         rule.onNodeWithText("学习复盘").assertExists()
-        rule.onNodeWithText("首页").performClick()
+        rule.onNodeWithTag("exam-tab-home").performClick()
         rule.onNodeWithText("Welcome back 👋").assertExists()
+    }
+
+    @Test fun changingTrainingModesKeepsCatalogEntriesReachable() {
+        rule.onNodeWithTag("app-mode-exam").performClick()
+        rule.onNodeWithText("逐句精听").performClick()
+        rule.onNodeWithText("雅思英语").assertExists()
+        rule.onNodeWithText("笔试特训").performClick()
+        rule.onNodeWithText("考研英语").assertExists()
     }
 
     @Test fun categoryNavigatesToRealNativeCatalog() {
@@ -42,10 +52,10 @@ class NativeReferenceUiTest {
 
     @Test fun switchToVocabAndBackRetainsNativeModeNavigation() {
         rule.onNodeWithTag("app-mode-vocab").performClick()
-        rule.onNodeWithText("今日").assertExists()
+        rule.onNodeWithTag("vocab-section-title").assertTextEquals("今日")
         rule.onNodeWithTag("vocab-tab-lib").performClick()
         rule.onNodeWithTag("vocab-section-title").assertTextEquals("词库")
         rule.onNodeWithTag("app-mode-exam").performClick()
-        rule.onNodeWithText("首页").assertExists()
+        rule.onNodeWithTag("exam-tab-home").assertExists()
     }
 }
