@@ -74,7 +74,8 @@ fun VocabRoot(repository: VocabRepository, onModeSwitch: (String) -> Unit) {
     val tab = page in setOf("today", "lib", "stats", "me")
     BackHandler(enabled = !tab) { page = "today" }
     Box(Modifier.fillMaxSize().background(WordCanvas)) {
-        Column(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Row(Modifier.fillMaxWidth().height(66.dp).padding(horizontal = 13.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
@@ -161,7 +162,7 @@ private fun VocabTodayPage(
     val due = words.count { memory[it.id]?.due == true }
     val today = todayReviewed(memory)
     val progress = if (words.isEmpty()) 0f else mastered.toFloat() / words.size
-    LazyColumn(modifier = Modifier.fillMaxSize().widthIn(max = 950.dp),
+    LazyColumn(modifier = Modifier.widthIn(max = 920.dp).fillMaxHeight(),
         contentPadding = PaddingValues(18.dp, 10.dp, 18.dp, 108.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
@@ -276,7 +277,7 @@ private fun VocabLibraryPage(
                 it.tag.contains(search, ignoreCase = true))
     }
     LazyVerticalGrid(columns = GridCells.Adaptive(215.dp),
-        modifier = Modifier.fillMaxSize().widthIn(max = 1100.dp),
+        modifier = Modifier.widthIn(max = 1000.dp).fillMaxHeight(),
         contentPadding = PaddingValues(18.dp, 10.dp, 18.dp, 110.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -363,7 +364,7 @@ private fun VocabStatsPage(
     val studied = catalog.items(book).count { it.id in memory }
     val total = book.wordIndexes.size
     val due = memory.values.count { it.due }
-    LazyColumn(modifier = Modifier.fillMaxSize().widthIn(max = 850.dp),
+    LazyColumn(modifier = Modifier.widthIn(max = 850.dp).fillMaxHeight(),
         contentPadding = PaddingValues(18.dp, 12.dp, 18.dp, 110.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)) {
         item {
@@ -408,7 +409,7 @@ private fun VocabSettingsPage(
     settings: WordUserSettings, original: Boolean,
     onGoal: (Int) -> Unit, onLibrary: () -> Unit
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize().widthIn(max = 850.dp),
+    LazyColumn(modifier = Modifier.widthIn(max = 850.dp).fillMaxHeight(),
         contentPadding = PaddingValues(18.dp, 12.dp, 18.dp, 110.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)) {
         item { Text("我的", fontSize = 26.sp, fontWeight = FontWeight.Bold) }
