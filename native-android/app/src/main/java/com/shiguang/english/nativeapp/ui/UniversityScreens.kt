@@ -579,13 +579,18 @@ private fun UniversityQuestionScreen(
                             )
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("练习", fontSize = 11.sp, color = MutedInk)
-                            Switch(
-                                checked = practiceMode,
-                                enabled = !submitted,
-                                onCheckedChange = { practiceMode = it },
-                                modifier = Modifier.height(34.dp)
-                            )
+                            if (submitted && reviewing) {
+                                TextButton(onClick = { reviewing = false }) {
+                                    Text("返回结果")
+                                }
+                            } else if (!submitted) {
+                                Text("练习", fontSize = 11.sp, color = MutedInk)
+                                Switch(
+                                    checked = practiceMode,
+                                    onCheckedChange = { practiceMode = it },
+                                    modifier = Modifier.height(34.dp)
+                                )
+                            }
                         }
                     }
                 }
