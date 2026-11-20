@@ -1,6 +1,7 @@
 package com.shiguang.english.nativeapp.ui
 
 import android.media.MediaPlayer
+import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -455,6 +456,15 @@ private fun UniversityQuestionScreen(
     }
     val context = LocalContext.current
     val draftStore = remember(context) { UniversityAttemptStore(context.applicationContext) }
+    // Same setting as the original CET listening quiz: hide only the spoken stem.
+    val listeningPrefs = remember(context) {
+        context.applicationContext.getSharedPreferences(
+            "shiguang_listening_display", Context.MODE_PRIVATE
+        )
+    }
+    var hideListeningQuestion by rememberSaveable(exam.level, exam.id, module) {
+        mutableStateOf(listeningPrefs.getBoolean("hide_listening_stem", false))
+    }
     val fingerprint = remember(questions) {
         questions.joinToString("|") { it.id + ":" + it.type + ":" + it.prompt }.hashCode().toString()
     }
@@ -646,6 +656,17 @@ private fun UniversityQuestionScreen(
                         }
                     }
                 }
+                if (module == "listening") {
+                    item {
+                        ListeningQuestionVisibilityToggle(
+                            hidden = hideListeningQuestion,
+                            onHiddenChange = { hide ->
+                                hideListeningQuestion = hide
+                                listeningPrefs.edit().putBoolean("hide_listening_stem", hide).apply()
+                            }
+                        )
+                    }
+                }
                 if (submitted && !reviewing) {
                     item {
                         Surface(
@@ -800,6 +821,8 @@ private fun UniversityQuestionScreen(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
                                     usedElsewhere = usedElsewhere, reviewOnly = submitted,
+                                    hidePrompt = module == "listening" && hideListeningQuestion,
+                                    questionNumber = if (module == "listening") index + 1 else null,
                                     modifier = Modifier.weight(0.98f)
                                 )
                             }
@@ -816,6 +839,8 @@ private fun UniversityQuestionScreen(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
                                     usedElsewhere = usedElsewhere, reviewOnly = submitted,
+                                    hidePrompt = module == "listening" && hideListeningQuestion,
+                                    questionNumber = if (module == "listening") index + 1 else null,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -823,6 +848,36 @@ private fun UniversityQuestionScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+/** Restore the original “隐藏题目” option without hiding the answer choices. */
+@Composable
+internal fun ListeningQuestionVisibilityToggle(
+    hidden: Boolean,
+    onHiddenChange: (Boolean) -> Unit
+) {
+    Surface(
+        color = CardSubtle,
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("隐藏题目：${if (hidden) "开" else "关"}",
+                    color = Ink, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                Text("仅隐藏听力题干，选项仍可查看和作答",
+                    color = MutedInk, fontSize = 11.sp)
+            }
+            Switch(
+                checked = hidden,
+                onCheckedChange = onHiddenChange,
+                modifier = Modifier.testTag("listening-hide-question-toggle")
+            )
         }
     }
 }
@@ -853,6 +908,8 @@ internal fun ReplicaQuestionPanel(
     onAnswer: (String) -> Unit,
     usedElsewhere: Set<String> = emptySet(),
     reviewOnly: Boolean = false,
+    hidePrompt: Boolean = false,
+    questionNumber: Int? = null,
     modifier: Modifier = Modifier
 ) {
     val isTF = question.type in setOf("tfng", "true_false_not_given", "yes_no_not_given")
@@ -871,11 +928,18 @@ internal fun ReplicaQuestionPanel(
         label.equals(question.answer, true) || text.equals(question.answer, true)
     }?.first
     Column(modifier, verticalArrangement = Arrangement.spacedBy(13.dp)) {
-        Text(
-            question.prompt.ifBlank { "根据原文与题目要求作答" },
-            fontSize = 19.sp, lineHeight = 30.sp,
-            color = Ink, fontWeight = FontWeight.Bold
-        )
+        if (!hidePrompt) {
+            Text(
+                question.prompt.ifBlank {
+                    // Some CET stems are spoken only; do not invent written content.
+                    if (questionNumber != null) "Question ${questionNumber}."
+                    else "根据原文与题目要求作答"
+                },
+                modifier = Modifier.testTag("university-question-prompt"),
+                fontSize = 19.sp, lineHeight = 30.sp,
+                color = Ink, fontWeight = FontWeight.Bold
+            )
+        }
         if (objective) {
             if (usedElsewhere.isNotEmpty()) {
                 Text("同一组其他题已使用的选项会显示提示；仍可重新选择。",
