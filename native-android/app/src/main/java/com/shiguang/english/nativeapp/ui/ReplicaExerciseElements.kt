@@ -108,7 +108,9 @@ fun ReplicaOptionCard(
 }
 
 @Composable
-fun ReplicaAnalysisCard(answer: String, explanation: String) {
+fun ReplicaAnalysisCard(
+    answer: String, explanation: String, answerLabel: String = "参考答案"
+) {
     Surface(
         color = Color(0xFFF7F9FC),
         shape = RoundedCornerShape(17.dp),
@@ -119,7 +121,7 @@ fun ReplicaAnalysisCard(answer: String, explanation: String) {
             Text("💡 考点精析与思路剖析",
                 fontSize = 14.5.sp, fontWeight = FontWeight.Bold)
             if (answer.isNotBlank()) {
-                Text("参考答案  " + answer, fontSize = 13.sp,
+                Text(answerLabel + "  " + answer, fontSize = 13.sp,
                     color = CorrectGreen, fontWeight = FontWeight.SemiBold)
             }
             Text(explanation.ifBlank { "该题尚无可显示的解析。" },
