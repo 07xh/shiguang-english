@@ -2,6 +2,8 @@ package com.shiguang.english.nativeapp.data
 
 import android.content.Context
 import android.net.Uri
+import android.media.MediaMetadataRetriever
+import com.shiguang.english.nativeapp.model.AudioCoverage
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.sync.Mutex
@@ -131,12 +133,45 @@ class UniversityRepository(private val context: Context) {
         }
     }
 
+    /**
+     * A download can have a correct MP3 magic header and still be only the
+     * beginning of a recording. Metadata duration is mandatory for cached audio;
+     * known dictation timestamps provide an additional completeness floor.
+     */
+    fun expectedAudioEndMs(exam: UniversityExam): Long? {
+        if ("dictation" !in installedModules(exam)) return null
+        return runCatching {
+            sentences(exam).mapNotNull { sentence ->
+                sentence.endSeconds?.takeIf { it.isFinite() && it > 0 }
+            }.maxOrNull()?.times(1000.0)?.toLong()
+        }.getOrNull()
+    }
+
+    private fun decodedDurationMs(file: File): Long? {
+        if (!store.validMp3(file)) return null
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(file.absolutePath)
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.toLongOrNull()
+        } catch (_: Exception) {
+            null
+        } finally {
+            retriever.release()
+        }
+    }
+
+    private fun validAudio(exam: UniversityExam, file: File): Boolean {
+        val duration = decodedDurationMs(file) ?: return false
+        return AudioCoverage.isPlausibleRecording(duration, expectedAudioEndMs(exam))
+    }
+
     fun audioSource(exam: UniversityExam): ExamAudioSource? {
         val bundled = record(exam)?.optString("audio")
         if (bundled != null && bundled.startsWith("audio/") && bundled.endsWith(".mp3"))
             return ExamAudioSource.Asset("university/" + bundled)
         val file = cachedAudio(exam)
-        return if (store.validMp3(file)) ExamAudioSource.Downloaded(file) else null
+        return if (validAudio(exam, file)) ExamAudioSource.Downloaded(file) else null
     }
 
     private fun audioNames(exam: UniversityExam): List<String> {
@@ -174,14 +209,14 @@ class UniversityRepository(private val context: Context) {
                     store.download(
                         origin + exam.level + "/audios/" + Uri.encode(name) + ".mp3",
                         target, 85L * 1024 * 1024,
-                        validate = store::validMp3, progress = progress
+                        validate = { validAudio(exam, it) }, progress = progress
                     )
                     return@withLock ExamAudioSource.Downloaded(target)
                 } catch (error: IOException) {
                     last = error
                 }
             }
-            throw IOException("原站暂未提供这套试卷可用的 MP3：" +
+            throw IOException("未找到时长校验通过的原声 MP3（可能缺失或不完整）：" +
                 (last?.message ?: "资源缺失"))
         }
         return audioSource(exam)

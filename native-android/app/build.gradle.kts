@@ -45,3 +45,38 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     testImplementation("junit:junit:4.13.2")
 }
+
+/**
+ * Reuse the existing Shiguang launcher artwork from the repository's original
+ * www/icons assets. Generate Android mipmap resources at build time instead of
+ * redrawing or downloading a replacement icon.
+ */
+val originalIconDirectory = rootProject.file("../www/icons")
+val generatedLauncherResources = layout.buildDirectory.dir("generated/original-launcher/res")
+// Fail at configuration time if an original icon disappeared; avoid task-action
+// closures that capture Gradle script objects and break configuration caching.
+listOf("icon-72.png", "icon-96.png", "icon-144.png", "icon-192.png").forEach { icon ->
+    require(originalIconDirectory.resolve(icon).isFile) {
+        "Original Shiguang launcher asset missing: $icon"
+    }
+}
+val prepareOriginalLauncherIcons by tasks.registering(Copy::class) {
+    val sizes = mapOf(
+        "mipmap-mdpi" to "icon-72.png",
+        "mipmap-hdpi" to "icon-72.png",
+        "mipmap-xhdpi" to "icon-96.png",
+        "mipmap-xxhdpi" to "icon-144.png",
+        "mipmap-xxxhdpi" to "icon-192.png"
+    )
+    sizes.forEach { (directory, filename) ->
+        from(originalIconDirectory.resolve(filename)) {
+            into(directory)
+            rename("icon-\\d+\\.png", "ic_launcher.png")
+        }
+    }
+    into(generatedLauncherResources)
+}
+android.sourceSets.getByName("main").res.srcDir(generatedLauncherResources)
+tasks.matching { it.name == "preBuild" }.configureEach {
+    dependsOn(prepareOriginalLauncherIcons)
+}

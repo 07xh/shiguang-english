@@ -9,7 +9,10 @@ data class SentenceAudioRange(val startMs: Int, val endMs: Int?) {
 
     /** Never seek beyond the real MP3 duration or claim impossible boundaries. */
     fun bounded(durationMs: Int): SentenceAudioRange {
-        if (endMs == null || durationMs <= 0 || startMs >= durationMs) {
+        // A 9-second sentence in a 5-second file is missing audio; never
+        // pretend the clipped 5-second segment is the complete sentence.
+        if (endMs == null || durationMs <= 0 || startMs >= durationMs ||
+            endMs.toLong() > durationMs.toLong() + AudioCoverage.TIMELINE_TOLERANCE_MS) {
             return FULL_RECORDING
         }
         val end = endMs.coerceAtMost(durationMs)

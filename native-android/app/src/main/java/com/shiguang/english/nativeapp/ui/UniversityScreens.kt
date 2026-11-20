@@ -47,6 +47,7 @@ import com.shiguang.english.nativeapp.data.PaperDraft
 import com.shiguang.english.nativeapp.data.DictationDraft
 import com.shiguang.english.nativeapp.data.UniversitySentence
 import com.shiguang.english.nativeapp.data.ExamAudioSource
+import com.shiguang.english.nativeapp.model.AudioCoverage
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -386,6 +387,12 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                                 null -> throw IllegalStateException("音频资源未下载")
                             }
                             player.prepare()
+                            if (!AudioCoverage.isPlausibleRecording(
+                                    player.duration.toLong(), repository.expectedAudioEndMs(exam))) {
+                                throw IllegalStateException(
+                                    "原声时长不足，或不能覆盖本卷已知时间轴；不将该录音标记为完整"
+                                )
+                            }
                             player.playbackParams = player.playbackParams.setSpeed(speed)
                             initialized = true
                         }
@@ -395,6 +402,7 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                     } catch (exc: Exception) {
                         downloading = false
                         playing = false
+                        if (!initialized) runCatching { player.reset() }
                         error = exc.message.orEmpty()
                     }
                 }
@@ -421,7 +429,13 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                 (if (expectedBytes > 0) " / " + formatBytes(expectedBytes) else ""))
         }
         if (audio == null && !downloading)
-            Text("原声音频按需下载；成功后永久缓存在本机。", color = MutedInk)
+            Text("原声按需下载，校验通过后保留在本机。缺少原站文件时会明确报错。",
+                color = MutedInk)
+        if (audio != null && !downloading && initialized &&
+            repository.expectedAudioEndMs(exam) == null) {
+            Text("当前试卷缺少完整录音时间轴，已核对播放时长，但无法确认覆盖全部题目。",
+                color = MutedInk, fontSize = 12.sp)
+        }
         if (error.isNotBlank()) Text("音频获取失败：" + error, color = Amber)
     }
 }
