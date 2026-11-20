@@ -48,6 +48,7 @@ fun StudyModeSwitch(
                         .testTag("app-mode-" + id)
                         .background(if (chosen) Slate else Color.Transparent)
                         .clickable { onSwitch(id) }
+                        .heightIn(min = 44.dp)
                         .padding(horizontal = 13.dp, vertical = 9.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -89,7 +90,8 @@ fun VocabGlassDock(
                         .testTag("vocab-tab-" + key)
                         .background(if (selected) Color(0xFFE9EFF6) else Color.Transparent)
                         .clickable { onSelect(key) }
-                        .height(40.dp).padding(horizontal = if (selected) 11.dp else 12.dp),
+                        .heightIn(min = 48.dp)
+                        .padding(horizontal = if (selected) 11.dp else 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {

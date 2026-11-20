@@ -6,6 +6,7 @@ on:
       - 'native-android/app/src/**'
       - 'native-android/app/build.gradle.kts'
       - '.github/workflows/native-ui-emulators.yml'
+      - 'native-android/tools/run_ui_smoke.sh'
   workflow_dispatch:
 
 concurrency:
@@ -41,14 +42,29 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+      # The emulator runner tests whether /dev/kvm is read/write accessible.
+      # Without this it silently falls back to -accel off, which emulator 37
+      # rejects before the AVD can even finish booting.
+      - name: Enable KVM for hardware-accelerated emulator
+        shell: bash
+        run: |
+          if [ ! -c /dev/kvm ]; then
+            echo "::error::GitHub runner does not expose /dev/kvm; cannot run x86_64 Android instrumentation here"
+            exit 1
+          fi
+          sudo chmod 0666 /dev/kvm
+          test -r /dev/kvm && test -w /dev/kvm
+          "$ANDROID_SDK_ROOT/emulator/emulator" -accel-check
       - name: Run Compose UI tests and screenshot
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          # Android 35 image stalled in system Settings/Phone before any UI assertion.
+          # Use Android 34 for stable baseline smoke, retain compileSdk/targetSdk 35.
+          api-level: 34
           target: default
           arch: x86_64
           profile: ${{ matrix.profile }}
-          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader -no-snapshot -memory 2048
           disable-animations: true
           emulator-boot-timeout: 900
           script: bash native-android/tools/run_ui_smoke.sh ${{ matrix.name }}
@@ -60,4 +76,5 @@ jobs:
             native-android/app/build/outputs/androidTest-results/
             native-${{ matrix.name }}-home.png
             native-${{ matrix.name }}-logcat.txt
+            native-${{ matrix.name }}-diagnostics.txt
           if-no-files-found: ignore
