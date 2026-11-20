@@ -121,7 +121,8 @@ fun ReplicaAnalysisCard(
             Text("💡 考点精析与思路剖析",
                 fontSize = 14.5.sp, fontWeight = FontWeight.Bold)
             if (answer.isNotBlank()) {
-                Text(answerLabel + "  " + answer, fontSize = 13.sp,
+                Text(answerLabel + "  " + answer, modifier = Modifier.testTag("reference-answer-text"),
+                    fontSize = 13.sp,
                     color = CorrectGreen, fontWeight = FontWeight.SemiBold)
             }
             Text(explanation.ifBlank { "该题尚无可显示的解析。" },
