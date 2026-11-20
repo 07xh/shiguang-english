@@ -54,7 +54,7 @@ jobs:
           fi
           sudo chmod 0666 /dev/kvm
           test -r /dev/kvm && test -w /dev/kvm
-          emulator -accel-check
+          "$ANDROID_SDK_ROOT/emulator/emulator" -accel-check
       - name: Run Compose UI tests and screenshot
         uses: reactivecircus/android-emulator-runner@v2
         with:
