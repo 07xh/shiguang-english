@@ -930,7 +930,9 @@ internal fun ReplicaQuestionPanel(
                         else -> "参考答案"
                     }
                 )
-            } else if (isTranslation || isWriting) {
+            }
+            // Analysis alone is not a reference translation: still report the missing answer.
+            if ((isTranslation || isWriting) && question.answer.isBlank()) {
                 Text(
                     if (isTranslation) "当前题库暂无参考译文，无法显示原站未提供的答案。"
                     else "当前题库暂无参考范文，无法显示原站未提供的答案。",
