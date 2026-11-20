@@ -166,7 +166,9 @@ fun ReplicaHomeScreen(
     ) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 196.dp else if (compactHeroActions) 272.dp else 255.dp)
+                modifier = Modifier.fillMaxWidth()
+                    .height(if (isLandscape) 196.dp else if (compactHeroActions) 272.dp else 255.dp)
+                    .testTag("exam-home-hero")
             ) {
                 if (chosenBitmap != null) {
                     Image(bitmap = chosenBitmap!!, contentDescription = "自定义首页壁纸",
@@ -227,7 +229,8 @@ fun ReplicaHomeScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text("Welcome back 👋", fontSize = if (isLandscape) 11.sp else 14.sp,
                             fontWeight = FontWeight.SemiBold, color = Color.White)
-                        Text("同学", fontSize = if (isLandscape) 19.sp else 30.sp,
+                        Text("同学", modifier = Modifier.testTag("exam-home-title"),
+                            fontSize = if (isLandscape) 23.sp else 30.sp,
                             fontWeight = FontWeight.ExtraBold, color = Color.White)
                     }
                 }
