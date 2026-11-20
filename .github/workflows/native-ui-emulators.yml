@@ -6,6 +6,7 @@ on:
       - 'native-android/app/src/**'
       - 'native-android/app/build.gradle.kts'
       - '.github/workflows/native-ui-emulators.yml'
+      - 'native-android/tools/run_ui_smoke.sh'
   workflow_dispatch:
 
 concurrency:
@@ -44,11 +45,13 @@ jobs:
       - name: Run Compose UI tests and screenshot
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 35
+          # Android 35 image stalled in system Settings/Phone before any UI assertion.
+          # Use Android 34 for stable baseline smoke, retain compileSdk/targetSdk 35.
+          api-level: 34
           target: default
           arch: x86_64
           profile: ${{ matrix.profile }}
-          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect -no-snapshot -memory 3072
           disable-animations: true
           emulator-boot-timeout: 900
           script: bash native-android/tools/run_ui_smoke.sh ${{ matrix.name }}
@@ -60,4 +63,5 @@ jobs:
             native-android/app/build/outputs/androidTest-results/
             native-${{ matrix.name }}-home.png
             native-${{ matrix.name }}-logcat.txt
+            native-${{ matrix.name }}-diagnostics.txt
           if-no-files-found: ignore
