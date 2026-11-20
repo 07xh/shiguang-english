@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -464,16 +465,26 @@ private fun UniversityQuestionScreen(
     var showJump by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showSubmit by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showRestart by rememberSaveable(exam.id, module) { mutableStateOf(false) }
+    var reviewFilter by rememberSaveable(exam.id, module, fingerprint) {
+        mutableStateOf("all")
+    }
     val listState = rememberLazyListState()
     // A new question must start at its prompt, not at the previous question's
     // scroll offset. The same applies when entering/leaving submitted review.
-    LaunchedEffect(index, submitted, reviewing) {
+    LaunchedEffect(index, submitted, reviewing, reviewFilter) {
         listState.scrollToItem(0)
     }
     val answers = remember(answersJson) { JSONObject(answersJson) }
     val answered = questions.indices.filter {
         answers.optString(it.toString(), "").isNotBlank()
     }.toSet()
+    val visibleReviewIndices = questions.indices.filter { questionIndex ->
+        when (reviewFilter) {
+            "answered" -> questionIndex in answered
+            "unanswered" -> questionIndex !in answered
+            else -> true
+        }
+    }
     val question = questions[index.coerceIn(0, questions.lastIndex)]
     val selected = answers.optString(index.toString(), "")
     val usedElsewhere = remember(index, answersJson, questions) {
@@ -540,6 +551,7 @@ private fun UniversityQuestionScreen(
                 index = 0
                 submitted = false
                 reviewing = false
+                reviewFilter = "all"
             }) { Text("清空并重新作答") }
         },
         dismissButton = {
@@ -649,18 +661,43 @@ private fun UniversityQuestionScreen(
                                 }
                                 Text("主观题与复杂题型不进行未经核验的自动评分。",
                                     color = MutedInk, fontSize = 13.sp)
-                                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    Button(onClick = { reviewing = true; index = 0 }) {
-                                        Text("回顾整卷")
-                                    }
-                                    OutlinedButton(onClick = {
-                                        showRestart = true
-                                    }) { Text("重新作答") }
+                                PaperResultActions(
+                                    onReview = { reviewing = true; index = 0 },
+                                    onRestart = { showRestart = true }
+                                )
+                            }
+                        }
+                    }
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("题目回顾", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                            Row(
+                                Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                listOf(
+                                    Triple("all", "全部", questions.size),
+                                    Triple("answered", "已作答", answered.size),
+                                    Triple("unanswered", "未作答", questions.size - answered.size)
+                                ).forEach { (key, title, count) ->
+                                    FilterChip(
+                                        selected = reviewFilter == key,
+                                        onClick = { reviewFilter = key },
+                                        modifier = Modifier.testTag("paper-filter-" + key),
+                                        label = { Text("$title $count") }
+                                    )
                                 }
                             }
                         }
                     }
-                    items(questions.size) { reviewIndex ->
+                    if (visibleReviewIndices.isEmpty()) {
+                        item {
+                            Text("当前筛选下没有题目", color = MutedInk,
+                                modifier = Modifier.fillMaxWidth().padding(18.dp))
+                        }
+                    }
+                    items(visibleReviewIndices.size) { position ->
+                        val reviewIndex = visibleReviewIndices[position]
                         val itemQuestion = questions[reviewIndex]
                         val savedAnswer = answers.optString(reviewIndex.toString(), "")
                         Surface(
