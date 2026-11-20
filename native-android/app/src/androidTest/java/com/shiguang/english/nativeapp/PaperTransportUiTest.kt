@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.shiguang.english.nativeapp.ui.PaperResultActions
 import com.shiguang.english.nativeapp.ui.ReplicaTransportBar
 import com.shiguang.english.nativeapp.ui.ShiguangTheme
 import org.junit.Assert.assertEquals
@@ -41,6 +42,26 @@ class PaperTransportUiTest {
             assertEquals(1, opened)
             assertEquals(1, advanced)
             assertEquals(0, wentBack)
+        }
+    }
+
+    @Test fun resultActionsRemainTappableOnPhoneAndTablet() {
+        var reviewTaps = 0
+        var restartTaps = 0
+        rule.setContent {
+            ShiguangTheme {
+                PaperResultActions(
+                    onReview = { reviewTaps++ },
+                    onRestart = { restartTaps++ }
+                )
+            }
+        }
+
+        rule.onNodeWithTag("paper-review-all").assertIsDisplayed().performClick()
+        rule.onNodeWithTag("paper-restart").assertIsDisplayed().performClick()
+        rule.runOnIdle {
+            assertEquals(1, reviewTaps)
+            assertEquals(1, restartTaps)
         }
     }
 }

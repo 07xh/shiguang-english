@@ -192,6 +192,50 @@ fun ReplicaTransportBar(
     }
 }
 
+/**
+ * Two primary result actions must remain full-size on narrow phones and avoid
+ * stretching across the entire tablet canvas.
+ */
+@Composable
+fun PaperResultActions(
+    onReview: () -> Unit,
+    onRestart: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        if (maxWidth < 420.dp) {
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onReview,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                        .testTag("paper-review-all")
+                ) { Text("回顾整卷") }
+                OutlinedButton(
+                    onClick = onRestart,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                        .testTag("paper-restart")
+                ) { Text("重新作答") }
+            }
+        } else {
+            Row(
+                Modifier.widthIn(max = 540.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Button(
+                    onClick = onReview,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag("paper-review-all")
+                ) { Text("回顾整卷") }
+                OutlinedButton(
+                    onClick = onRestart,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag("paper-restart")
+                ) { Text("重新作答") }
+            }
+        }
+    }
+}
+
 @Composable
 fun ReplicaCanvasAction(
     text: String, onClick: () -> Unit, modifier: Modifier = Modifier,
