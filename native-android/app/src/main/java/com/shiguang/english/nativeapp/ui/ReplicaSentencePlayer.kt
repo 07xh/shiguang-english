@@ -17,6 +17,7 @@ import com.shiguang.english.nativeapp.data.ExamAudioSource
 import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityRepository
 import com.shiguang.english.nativeapp.model.SentenceAudioRange
+import com.shiguang.english.nativeapp.model.AudioCoverage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,6 +72,12 @@ fun ReplicaSentencePlayer(
         restartFromStart = true
         playing = false
         playedMs = 0
+        if (initialized && AudioCoverage.missesKnownTimeline(
+                durationMs.toLong(), requestedRange.endMs?.toLong())) {
+            failure = "当前录音时长不足以覆盖本句时间轴，音频可能不完整"
+        } else {
+            failure = ""
+        }
     }
 
     LaunchedEffect(playing, range, sentenceIndex) {
@@ -115,6 +122,12 @@ fun ReplicaSentencePlayer(
                     durationMs = player.duration.coerceAtLeast(0)
                     initialized = true
                     restartFromStart = true
+                }
+                if (AudioCoverage.missesKnownTimeline(
+                        player.duration.toLong(), requestedRange.endMs?.toLong())) {
+                    throw IllegalStateException(
+                        "当前 MP3 时长短于本句时间轴，可能是残缺录音，已停止播放"
+                    )
                 }
                 val playableRange = requestedRange.bounded(player.duration)
                 if (replay || !playing) {
@@ -169,7 +182,12 @@ fun ReplicaSentencePlayer(
         } else if (audio == null) {
             Text("第一次点击播放才下载原声，下载后离线可用。")
         } else if (!range.hasExactRange) {
-            Text("该句缺少可用的精确时间轴；从头播放完整录音。")
+            Text(
+                if (initialized && AudioCoverage.missesKnownTimeline(
+                        durationMs.toLong(), requestedRange.endMs?.toLong()))
+                    "该句时间轴超出实际录音长度；可能缺少音频内容，未标记为完整片段。"
+                else "该句缺少可用的精确时间轴；从头播放完整录音。"
+            )
         } else {
             val segmentSeconds = ((range.endMs!! - range.startMs) / 1000).coerceAtLeast(1)
             LinearProgressIndicator(
