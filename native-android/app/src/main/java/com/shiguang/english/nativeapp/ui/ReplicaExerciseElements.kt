@@ -60,7 +60,8 @@ fun ReplicaOptionCard(
     label: String,
     isSelected: Boolean,
     isCorrect: Boolean?,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    enabled: Boolean = true
 ) {
     val background = when {
         isCorrect == true -> Color(0xFFF2FAF5)
@@ -76,6 +77,7 @@ fun ReplicaOptionCard(
     }
     Surface(
         onClick = onSelect,
+        enabled = enabled,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
         color = background,
