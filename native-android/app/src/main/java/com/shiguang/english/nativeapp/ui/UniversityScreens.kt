@@ -832,7 +832,7 @@ private fun ReplicaPassagePanel(
 }
 
 @Composable
-private fun ReplicaQuestionPanel(
+internal fun ReplicaQuestionPanel(
     question: UniversityQuestion,
     selected: String,
     practiceMode: Boolean,
