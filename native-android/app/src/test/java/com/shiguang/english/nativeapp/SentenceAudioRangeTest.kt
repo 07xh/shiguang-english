@@ -29,10 +29,14 @@ class SentenceAudioRangeTest {
         assertFalse(empty.hasExactRange)
     }
 
-    @Test fun clampsEndToActualMediaAndFallsBackIfStartIsBeyondEnd() {
+    @Test fun rejectsFarBeyondAudioEndButToleratesSmallMp3Padding() {
+        assertEquals(
+            SentenceAudioRange.FULL_RECORDING,
+            SentenceAudioRange.fromSeconds(1.0, 9.0).bounded(5000)
+        )
         assertEquals(
             SentenceAudioRange(1000, 5000),
-            SentenceAudioRange.fromSeconds(1.0, 9.0).bounded(5000)
+            SentenceAudioRange.fromSeconds(1.0, 6.0).bounded(5000)
         )
         assertEquals(
             SentenceAudioRange.FULL_RECORDING,
