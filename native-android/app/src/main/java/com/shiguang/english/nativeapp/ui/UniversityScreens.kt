@@ -457,6 +457,9 @@ private fun UniversityQuestionScreen(
     var submitted by rememberSaveable(exam.id, module, fingerprint) {
         mutableStateOf(draft.submitted)
     }
+    var reviewing by rememberSaveable(exam.id, module, fingerprint) {
+        mutableStateOf(false)
+    }
     var showJump by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     var showSubmit by rememberSaveable(exam.id, module) { mutableStateOf(false) }
     val answers = remember(answersJson) { JSONObject(answersJson) }
@@ -505,7 +508,11 @@ private fun UniversityQuestionScreen(
             )
         },
         confirmButton = {
-            TextButton(onClick = { showSubmit = false; submitted = true }) {
+            TextButton(onClick = {
+                showSubmit = false
+                submitted = true
+                reviewing = false
+            }) {
                 Text("确认交卷")
             }
         },
@@ -518,20 +525,36 @@ private fun UniversityQuestionScreen(
         total = questions.size,
         selectedIndex = index,
         answered = answered,
-        onChoose = { index = it; submitted = false; showJump = false },
+        onChoose = {
+            index = it
+            reviewing = submitted
+            showJump = false
+        },
         onDismiss = { showJump = false }
     )
     Scaffold(
         containerColor = Color.White,
         bottomBar = {
             ReplicaTransportBar(
-                previous = "上一题", next = if (index == questions.lastIndex) "交卷" else "下一题",
+                previous = "上一题",
+                next = when {
+                    submitted && !reviewing -> "查看第1题"
+                    submitted && index == questions.lastIndex -> "返回结果"
+                    !submitted && index == questions.lastIndex -> "交卷"
+                    else -> "下一题"
+                },
                 center = (answered.size.toString() + "/" + questions.size),
-                onPrev = { index = (index - 1).coerceAtLeast(0); submitted = false },
-                onNext = goNext,
+                onPrev = { index = (index - 1).coerceAtLeast(0) },
+                onNext = {
+                    when {
+                        submitted && !reviewing -> { index = 0; reviewing = true }
+                        submitted && index == questions.lastIndex -> reviewing = false
+                        else -> goNext()
+                    }
+                },
                 onCenter = { showJump = true },
-                canPrev = index > 0,
-                canNext = !submitted
+                canPrev = (!submitted || reviewing) && index > 0,
+                canNext = true
             )
         }
     ) { insets ->
@@ -550,19 +573,23 @@ private fun UniversityQuestionScreen(
                         verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(exam.title, fontSize = 13.sp, color = MutedInk)
-                            Text("答题进度自动保存到本机", fontSize = 12.sp, color = QuietBlue)
+                            Text(
+                                if (submitted) "已交卷 · 只读回顾" else "答题进度自动保存到本机",
+                                fontSize = 12.sp, color = QuietBlue
+                            )
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("练习", fontSize = 11.sp, color = MutedInk)
                             Switch(
                                 checked = practiceMode,
+                                enabled = !submitted,
                                 onCheckedChange = { practiceMode = it },
                                 modifier = Modifier.height(34.dp)
                             )
                         }
                     }
                 }
-                if (submitted) {
+                if (submitted && !reviewing) {
                     item {
                         Surface(
                             color = CardSubtle,
@@ -579,7 +606,7 @@ private fun UniversityQuestionScreen(
                                 Text("主观题与复杂题型不进行未经核验的自动评分。",
                                     color = MutedInk, fontSize = 13.sp)
                                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    Button(onClick = { submitted = false; index = 0 }) {
+                                    Button(onClick = { reviewing = true; index = 0 }) {
                                         Text("回顾整卷")
                                     }
                                     OutlinedButton(onClick = {
@@ -587,8 +614,39 @@ private fun UniversityQuestionScreen(
                                         answersJson = "{}"
                                         index = 0
                                         submitted = false
+                                        reviewing = false
                                     }) { Text("重新作答") }
                                 }
+                            }
+                        }
+                    }
+                    items(questions.size) { reviewIndex ->
+                        val itemQuestion = questions[reviewIndex]
+                        val savedAnswer = answers.optString(reviewIndex.toString(), "")
+                        Surface(
+                            onClick = { index = reviewIndex; reviewing = true },
+                            shape = RoundedCornerShape(14.dp),
+                            border = androidx.compose.foundation.BorderStroke(0.7.dp, PaperStroke),
+                            color = Color.White
+                        ) {
+                            Column(
+                                Modifier.fillMaxWidth().padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                Text(
+                                    "第 " + (reviewIndex + 1) + " 题 · " +
+                                        itemQuestion.type.ifBlank { "题目" },
+                                    fontWeight = FontWeight.SemiBold, color = Ink
+                                )
+                                Text(
+                                    itemQuestion.prompt.ifBlank { "查看原文与题目" }.take(100),
+                                    fontSize = 13.sp, color = MutedInk, maxLines = 2
+                                )
+                                Text(
+                                    if (savedAnswer.isBlank()) "我的答案：未作答"
+                                    else "我的答案：" + savedAnswer.take(120),
+                                    fontSize = 13.sp, color = QuietBlue, maxLines = 2
+                                )
                             }
                         }
                     }
@@ -623,7 +681,7 @@ private fun UniversityQuestionScreen(
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
-                                    usedElsewhere = usedElsewhere,
+                                    usedElsewhere = usedElsewhere, reviewOnly = submitted,
                                     modifier = Modifier.weight(0.98f)
                                 )
                             }
@@ -635,7 +693,7 @@ private fun UniversityQuestionScreen(
                                 ReplicaQuestionPanel(
                                     question = question, selected = selected,
                                     practiceMode = practiceMode, onAnswer = ::store,
-                                    usedElsewhere = usedElsewhere,
+                                    usedElsewhere = usedElsewhere, reviewOnly = submitted,
                                     modifier = Modifier.fillMaxWidth()
                                 )
                             }
@@ -670,6 +728,7 @@ private fun ReplicaQuestionPanel(
     practiceMode: Boolean,
     onAnswer: (String) -> Unit,
     usedElsewhere: Set<String> = emptySet(),
+    reviewOnly: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val isTF = question.type in setOf("tfng", "true_false_not_given", "yes_no_not_given")
@@ -695,12 +754,13 @@ private fun ReplicaQuestionPanel(
             }
             choices.forEach { (key, text) ->
                 val active = selected.equals(key, true) || selected.equals(text, true)
-                val show = practiceMode && selected.isNotBlank() && correctLabel != null
+                val show = (practiceMode || reviewOnly) && correctLabel != null
                 val alreadyUsed = key in usedElsewhere && !active
                 ReplicaOptionCard(
                     key = key,
                     label = if (alreadyUsed) text + "  ·  其他题已使用" else text,
                     isSelected = active,
+                    enabled = !reviewOnly,
                     isCorrect = if (!show) null else if (key == correctLabel) true
                         else if (active) false else null,
                     onSelect = { onAnswer(key) }
@@ -710,6 +770,7 @@ private fun ReplicaQuestionPanel(
             OutlinedTextField(
                 value = selected,
                 onValueChange = onAnswer,
+                readOnly = reviewOnly,
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3, maxLines = 16,
                 label = {
@@ -723,10 +784,13 @@ private fun ReplicaQuestionPanel(
                     )
                 }
             )
-            Text("答案会随输入保留；主观题不自动虚报分数。",
-                color = MutedInk, fontSize = 12.sp)
+            Text(
+                if (reviewOnly) "交卷后只能查看答案；主观题不进行未经核验的自动评分。"
+                else "答案会随输入保留；主观题不自动虚报分数。",
+                color = MutedInk, fontSize = 12.sp
+            )
         }
-        if (practiceMode && selected.isNotBlank() &&
+        if ((reviewOnly || (practiceMode && selected.isNotBlank())) &&
             (question.answer.isNotBlank() || question.analysis.isNotBlank())) {
             ReplicaAnalysisCard(question.answer, question.analysis)
         }
