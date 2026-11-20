@@ -77,4 +77,6 @@ val prepareOriginalLauncherIcons by tasks.registering(Copy::class) {
     }
 }
 android.sourceSets.getByName("main").res.srcDir(generatedLauncherResources)
-tasks.named("preBuild") { dependsOn(prepareOriginalLauncherIcons) }
+tasks.matching { it.name == "preBuild" }.configureEach {
+    dependsOn(prepareOriginalLauncherIcons)
+}
