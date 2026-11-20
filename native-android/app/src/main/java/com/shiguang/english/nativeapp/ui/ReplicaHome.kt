@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -77,15 +78,20 @@ fun ReplicaHomeDock(active: String, onSelect: (String) -> Unit, modifier: Modifi
                     modifier = Modifier
                         .clip(RoundedCornerShape(100.dp))
                         .background(if (selected) Color(0xFFE9EEF5) else Color.Transparent)
+                        .testTag("exam-tab-" + page)
                         .clickable { onSelect(page) }
-                        .height(48.dp)
-                        .padding(horizontal = if (selected) 17.dp else 14.dp),
+                        .heightIn(min = 48.dp)
+                        .padding(horizontal = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(7.dp)
                 ) {
                     Icon(icon, title, modifier = Modifier.size(20.dp),
                         tint = if (selected) Ink else MutedInk)
-                    if (selected) Text(title, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        title, fontSize = 12.5.sp,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                        color = if (selected) Ink else MutedInk
+                    )
                 }
             }
         }
@@ -147,17 +153,20 @@ fun ReplicaHomeScreen(
         context.startActivity(Intent.createChooser(intent, "分享学习记录"))
     }
 
-    BoxWithConstraints(Modifier.fillMaxSize()) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
     val isLandscape = maxWidth > maxHeight && maxWidth >= 650.dp
     val compactHeroActions = maxWidth < 600.dp && !isLandscape
     LazyColumn(
-        modifier = Modifier.fillMaxSize().widthIn(max = 980.dp),
+        modifier = Modifier.widthIn(max = 920.dp).fillMaxHeight(),
         contentPadding = PaddingValues(bottom = 102.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         item {
             Box(
-                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 116.dp else if (compactHeroActions) 272.dp else 255.dp)
+                modifier = Modifier.fillMaxWidth().height(if (isLandscape) 196.dp else if (compactHeroActions) 272.dp else 255.dp)
             ) {
                 if (chosenBitmap != null) {
                     Image(bitmap = chosenBitmap!!, contentDescription = "自定义首页壁纸",
@@ -179,8 +188,8 @@ fun ReplicaHomeScreen(
                 )
                 Column(
                     Modifier.fillMaxSize().padding(start = 22.dp, end = 20.dp,
-                        top = if (isLandscape) 7.dp else 18.dp,
-                        bottom = if (isLandscape) 18.dp else 61.dp),
+                        top = if (isLandscape) 16.dp else 18.dp,
+                        bottom = if (isLandscape) 38.dp else 61.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     if (compactHeroActions) {
@@ -384,13 +393,13 @@ private fun HeroCircle(
 ) {
     Surface(
         onClick = onClick,
-        modifier = Modifier.size(38.dp),
+        modifier = Modifier.size(46.dp),
         color = Color(0x6E111820),
         shape = CircleShape,
         border = androidx.compose.foundation.BorderStroke(0.5.dp, Color.White.copy(alpha = 0.2f))
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Icon(icon, label, tint = Color.White, modifier = Modifier.size(19.dp))
+            Icon(icon, label, tint = Color.White, modifier = Modifier.size(21.dp))
         }
     }
 }
