@@ -144,8 +144,10 @@ fun ReplicaSentencePlayer(
                         playableRange.shouldRewind(player.currentPosition)) {
                         player.seekTo(playableRange.startMs)
                     }
-                    player.playbackParams = player.playbackParams.setSpeed(rates[speedIndex])
+                    // setPlaybackParams(nonzero) itself can start MediaPlayer.
+                    // Seek first, then explicitly start playback before changing speed.
                     player.start()
+                    player.playbackParams = player.playbackParams.setSpeed(rates[speedIndex])
                     restartFromStart = false
                     playing = true
                 } else {
