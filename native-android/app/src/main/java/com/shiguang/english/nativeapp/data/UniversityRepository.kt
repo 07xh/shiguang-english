@@ -336,6 +336,16 @@ private fun JSONObject.getNumber(vararg keys: String): Double? {
 }
 
 /**
+ * The legacy word-toy format also uses "label" for visible option text.
+ * Treat a single capital letter as an option identifier; otherwise use it
+ * as fallback text so existing paper data continues to display correctly.
+ */
+private fun JSONObject.visibleOptionText(): String =
+    getFirst("text", "content", "value", "title", "option_text").ifBlank {
+        getFirst("label").takeUnless { it.matches(Regex("[A-Z]")) }.orEmpty()
+    }
+
+/**
  * Option payloads may be plain strings, objects keyed A-D, or arrays with
  * explicit A-D labels. Never show raw serialized JSON as a choice's text.
  */
@@ -349,7 +359,7 @@ private fun parseChoices(raw: Any?): List<Pair<String, String>> = when (raw) {
                     .takeIf { it.matches(Regex("[A-Z]")) } ?: fallbackLabel
             } else fallbackLabel
             val text = if (item is JSONObject) {
-                item.getFirst("text", "content", "value", "title", "option_text")
+                item.visibleOptionText()
             } else if (item != null && item != JSONObject.NULL) {
                 item.toString().trim()
             } else ""
@@ -362,7 +372,7 @@ private fun parseChoices(raw: Any?): List<Pair<String, String>> = when (raw) {
             val key = keys.next()
             val value = raw.opt(key)
             val text = when (value) {
-                is JSONObject -> value.getFirst("text", "content", "value", "title", "option_text")
+                is JSONObject -> value.visibleOptionText()
                 null, JSONObject.NULL -> ""
                 else -> value.toString().trim()
             }
