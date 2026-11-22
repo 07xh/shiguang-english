@@ -18,6 +18,8 @@ import com.shiguang.english.nativeapp.data.UniversityExam
 import com.shiguang.english.nativeapp.data.UniversityRepository
 import com.shiguang.english.nativeapp.model.SentenceAudioRange
 import com.shiguang.english.nativeapp.model.AudioCoverage
+import com.shiguang.english.nativeapp.model.PlaybackRequestGate
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -34,6 +36,9 @@ fun ReplicaSentencePlayer(
     val scope = rememberCoroutineScope()
     var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
     var loading by remember(exam.id) { mutableStateOf(false) }
+    var busy by remember(exam.id) { mutableStateOf(false) }
+    val playbackGate = remember(exam.id) { PlaybackRequestGate() }
+    val latestSentence = rememberUpdatedState(Triple(sentenceIndex, startSeconds, endSeconds))
     var bytes by remember(exam.id) { mutableLongStateOf(0L) }
     var totalBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var initialized by remember(exam.id) { mutableStateOf(false) }
@@ -97,7 +102,9 @@ fun ReplicaSentencePlayer(
     }
 
     fun playback(replay: Boolean) {
-        if (loading) return
+        if (!playbackGate.tryEnter()) return
+        busy = true
+        val requestedSentence = Triple(sentenceIndex, startSeconds, endSeconds)
         if (audio == null) loading = true
         scope.launch {
             try {
@@ -108,6 +115,8 @@ fun ReplicaSentencePlayer(
                     }
                     loading = false
                 }
+                // Do not start the previous sentence after an asynchronous download.
+                if (requestedSentence != latestSentence.value) return@launch
                 if (!initialized) {
                     when (val source = audio) {
                         is ExamAudioSource.Asset ->
@@ -144,10 +153,15 @@ fun ReplicaSentencePlayer(
                     playing = false
                 }
                 failure = ""
+            } catch (cancelled: CancellationException) {
+                throw cancelled
             } catch (exc: Exception) {
                 playing = false
-                loading = false
                 failure = exc.message ?: "音频不可用"
+            } finally {
+                loading = false
+                busy = false
+                playbackGate.leave()
             }
         }
     }
@@ -156,13 +170,14 @@ fun ReplicaSentencePlayer(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             ReplicaCanvasAction("↺ 重听", onClick = { playback(true) })
-            Button(enabled = !loading, onClick = { playback(false) }) {
+            Button(enabled = !busy, onClick = { playback(false) }) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = null,
                     modifier = Modifier.size(17.dp))
                 Text(if (loading) "下载中" else if (playing) "暂停"
                     else if (audio == null) "下载原声" else "播放")
             }
             ReplicaCanvasAction(rates[speedIndex].toString() + "X", onClick = {
+                if (busy) return@ReplicaCanvasAction
                 speedIndex = (speedIndex + 1) % rates.size
                 if (initialized && playing) {
                     runCatching {

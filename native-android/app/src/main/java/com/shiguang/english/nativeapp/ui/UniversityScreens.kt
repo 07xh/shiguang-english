@@ -49,6 +49,8 @@ import com.shiguang.english.nativeapp.data.DictationDraft
 import com.shiguang.english.nativeapp.data.UniversitySentence
 import com.shiguang.english.nativeapp.data.ExamAudioSource
 import com.shiguang.english.nativeapp.model.AudioCoverage
+import com.shiguang.english.nativeapp.model.PlaybackRequestGate
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -351,6 +353,8 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
     val scope = rememberCoroutineScope()
     var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
     var downloading by remember(exam.id) { mutableStateOf(false) }
+    var busy by remember(exam.id) { mutableStateOf(false) }
+    val playbackGate = remember(exam.id) { PlaybackRequestGate() }
     var downloadedBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var expectedBytes by remember(exam.id) { mutableLongStateOf(0L) }
     var playing by remember(exam.id) { mutableStateOf(false) }
@@ -365,8 +369,10 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
     Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(enabled = !downloading, onClick = {
-                scope.launch {
+            Button(enabled = !busy, onClick = {
+                if (playbackGate.tryEnter()) {
+                    busy = true
+                    scope.launch {
                     try {
                         if (audio == null) {
                             downloading = true
@@ -400,11 +406,17 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                         if (playing) player.pause() else player.start()
                         playing = !playing
                         error = ""
+                    } catch (cancelled: CancellationException) {
+                        throw cancelled
                     } catch (exc: Exception) {
-                        downloading = false
                         playing = false
                         if (!initialized) runCatching { player.reset() }
                         error = exc.message.orEmpty()
+                    } finally {
+                        downloading = false
+                        busy = false
+                        playbackGate.leave()
+                    }
                     }
                 }
             }) {
@@ -412,7 +424,7 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                 Text(if (downloading) "下载中" else if (playing) "暂停原声"
                     else if (audio == null) "下载原声并播放" else "播放原声")
             }
-            OutlinedButton(onClick = {
+            OutlinedButton(enabled = !busy, onClick = {
                 speed = when (speed) { 1f -> 1.25f; 1.25f -> 1.5f
                     1.5f -> 0.75f; else -> 1f }
                 if (initialized) runCatching {
