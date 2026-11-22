@@ -147,6 +147,8 @@ class UniversityRepository(private val context: Context) {
                 try {
                     store.download(origin + prefix + suffix, file, 16L * 1024 * 1024,
                         validate = { validModule(it, name) }, progress = progress)
+                    // A validated replacement supersedes the previous cache verdict.
+                    moduleChecks.remove(file.absolutePath)
                     return@withLock
                 } catch (error: IOException) {
                     last = error
