@@ -50,13 +50,18 @@ class UniversityChoiceParsingTest {
                     "id": "legacy-array", "type": "choice", "question": "Legacy array label text",
                     "options": [{"label": "first legacy"}, {"label": "second legacy"}],
                     "answer": "B"
+                  },
+                  {
+                    "id": "unordered-options", "type": "choice", "question": "Ordered options",
+                    "options": {"D": "delta", "B": "beta", "A": "alpha", "C": "gamma"},
+                    "answer": "C"
                   }
                 ]
                 """.trimIndent()
             )
             val questions = UniversityRepository(context)
                 .questions(exam, "listening").associateBy { it.id }
-            assertEquals(5, questions.size)
+            assertEquals(6, questions.size)
             assertEquals("alpha", questions.getValue("object-map").choices.first { it.first == "A" }.second)
             assertEquals("beta", questions.getValue("object-map").choices.first { it.first == "B" }.second)
             assertEquals("gamma", questions.getValue("array-labels").choices.first { it.first == "C" }.second)
@@ -67,6 +72,8 @@ class UniversityChoiceParsingTest {
                 questions.getValue("legacy-label").choices)
             assertEquals(listOf("A" to "first legacy", "B" to "second legacy"),
                 questions.getValue("legacy-array").choices)
+            assertEquals(listOf("A", "B", "C", "D"),
+                questions.getValue("unordered-options").choices.map { it.first })
             assertFalse(questions.values.flatMap { it.choices }.any { it.second.startsWith("{") })
         } finally {
             if (backup != null) file.writeBytes(backup) else file.delete()
