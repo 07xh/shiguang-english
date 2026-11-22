@@ -83,10 +83,34 @@ class UniversityRepository(private val context: Context) {
     private fun cachedAudio(exam: UniversityExam): File =
         store.local("university", exam.level + "_" + exam.id, "audio.mp3")
 
+    // A downloaded file existing on disk does not mean its JSON is usable.
+    // Cache validation results by file identity so scrolling the exam catalog
+    // does not repeatedly parse the same large paper files on the UI thread.
+    private data class ModuleCheck(val bytes: Long, val modifiedAt: Long, val valid: Boolean)
+    private val moduleChecks =
+        java.util.concurrent.ConcurrentHashMap<String, ModuleCheck>()
+
+    private fun cachedModuleIsValid(exam: UniversityExam, name: String): Boolean {
+        val file = cachedModule(exam, name)
+        if (!file.isFile) {
+            moduleChecks.remove(file.absolutePath)
+            return false
+        }
+        val bytes = file.length()
+        val modifiedAt = file.lastModified()
+        val previous = moduleChecks[file.absolutePath]
+        if (previous != null && previous.bytes == bytes && previous.modifiedAt == modifiedAt) {
+            return previous.valid
+        }
+        val valid = validModule(file, name)
+        moduleChecks[file.absolutePath] = ModuleCheck(bytes, modifiedAt, valid)
+        return valid
+    }
+
     fun installedModules(exam: UniversityExam): Set<String> {
         val embedded = record(exam)?.optJSONObject("modules")
         return exam.modules.filter { module ->
-            (embedded?.has(module) == true) || cachedModule(exam, module).isFile
+            (embedded?.has(module) == true) || cachedModuleIsValid(exam, module)
         }.toSet()
     }
 
@@ -123,6 +147,8 @@ class UniversityRepository(private val context: Context) {
                 try {
                     store.download(origin + prefix + suffix, file, 16L * 1024 * 1024,
                         validate = { validModule(it, name) }, progress = progress)
+                    // A validated replacement supersedes the previous cache verdict.
+                    moduleChecks.remove(file.absolutePath)
                     return@withLock
                 } catch (error: IOException) {
                     last = error
@@ -229,7 +255,9 @@ class UniversityRepository(private val context: Context) {
             "该试卷尚未下载：" + exam.id + "/" + name
         }
         val local = cachedModule(exam, name)
-        val raw = if (local.isFile) local.readText(Charsets.UTF_8)
+        // A damaged downloaded copy must not take precedence over a verified
+        // bundled module in builds that include offline exam assets.
+        val raw = if (cachedModuleIsValid(exam, name)) local.readText(Charsets.UTF_8)
             else read("university/exams/" + exam.level + "/" + exam.id + "/" + name + ".json")
         val text = raw.trimStart('\uFEFF', '\n', '\r', ' ')
         return if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
