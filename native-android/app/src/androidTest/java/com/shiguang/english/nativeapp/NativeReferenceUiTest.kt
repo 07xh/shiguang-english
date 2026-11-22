@@ -3,6 +3,7 @@ package com.shiguang.english.nativeapp
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -48,6 +49,18 @@ class NativeReferenceUiTest {
         rule.onNodeWithText("四级英语").performScrollTo().performClick()
         rule.onNodeWithText("选择试卷").assertExists()
         rule.onNodeWithText("📕 六级").assertExists()
+    }
+
+    @Test fun catalogCompletesBackgroundCacheInventory() {
+        rule.onNodeWithTag("app-mode-exam").performClick()
+        rule.onNodeWithText("四级英语").performScrollTo().performClick()
+        rule.onNodeWithText("选择试卷").assertExists()
+        // The directory must finish its background scan instead of keeping
+        // the downloaded-paper count in the temporary loading state.
+        rule.waitUntil(timeoutMillis = 20000) {
+            rule.onAllNodesWithText("已下载 ", substring = true)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     @Test fun switchToVocabAndBackRetainsNativeModeNavigation() {

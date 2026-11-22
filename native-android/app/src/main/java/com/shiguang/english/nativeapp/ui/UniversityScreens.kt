@@ -52,7 +52,9 @@ import com.shiguang.english.nativeapp.model.AudioCoverage
 import com.shiguang.english.nativeapp.model.ExamContentCoverage
 import com.shiguang.english.nativeapp.model.PlaybackRequestGate
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 private val levelDisplay = mapOf(
@@ -81,8 +83,21 @@ fun UniversityCatalogScreen(
         if (level !in validLevels) level = validLevels.first()
         yearRange = "ALL"
     }
-    val available = remember(level, module) {
+    val available = remember(repository, level, module) {
         repository.exams.filter { it.level == level && module in it.modules }
+    }
+    // Validate downloaded papers once off the UI thread. Reusing a single
+    // inventory avoids a full disk/JSON scan on every search or list recompose.
+    var installedStatus by remember(repository, level, module) {
+        mutableStateOf<Map<String, Boolean>?>(null)
+    }
+    LaunchedEffect(repository, level, module) {
+        installedStatus = withContext(Dispatchers.IO) {
+            available.associate { exam ->
+                (exam.level + "/" + exam.id) to
+                    (module in repository.installedModules(exam))
+            }
+        }
     }
     val rangeLabels = if (level == "ielts") {
         listOf("ALL" to "全部册数", "15-99" to "第15–21册", "0-14" to "第4–14册")
@@ -100,10 +115,11 @@ fun UniversityCatalogScreen(
             exam.title.contains(query, ignoreCase = true) ||
             exam.id.contains(query, ignoreCase = true) ||
             exam.year.toString().contains(query)
-        val savedMatches = !downloadedOnly || module in repository.installedModules(exam)
+        val savedMatches = !downloadedOnly ||
+            installedStatus?.get(exam.level + "/" + exam.id) == true
         rangeMatches && searchMatches && savedMatches
     }
-    val installed = available.count { module in repository.installedModules(it) }
+    val installed = installedStatus?.values?.count { it } ?: 0
     val modes = listOf(
         Triple("written", "✍️", "笔试特训"),
         Triple("listening", "🎧", "听力特训"),
@@ -193,9 +209,13 @@ fun UniversityCatalogScreen(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically) {
                     Text("选择试卷", fontWeight = FontWeight.Bold, fontSize = 17.sp)
-                    Text("已下载 " + installed + " / " + available.size,
-                        fontSize = 11.5.sp, color = if (installed == available.size)
-                            CorrectGreen else MutedInk)
+                    Text(
+                        if (installedStatus == null) "正在核对本地下载…"
+                        else "已下载 " + installed + " / " + available.size,
+                        fontSize = 11.5.sp,
+                        color = if (installedStatus != null && installed == available.size)
+                            CorrectGreen else MutedInk
+                    )
                 }
                 OutlinedTextField(
                     value = search,
@@ -237,7 +257,7 @@ fun UniversityCatalogScreen(
             }
         }
         items(visible, key = { it.level + "/" + it.id }) { exam ->
-            val usable = module in repository.installedModules(exam)
+            val usable = installedStatus?.get(exam.level + "/" + exam.id) == true
             Surface(
                 modifier = Modifier.fillMaxWidth().height(132.dp),
                 shape = RoundedCornerShape(19.dp),
@@ -272,7 +292,11 @@ fun UniversityCatalogScreen(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            if (usable) "已缓存 · 离线开始" else "下载题目并开始",
+                            when {
+                                installedStatus == null -> "正在检查本地缓存…"
+                                usable -> "已缓存 · 离线开始"
+                                else -> "下载题目并开始"
+                            },
                             fontSize = 12.sp, color = if (usable) QuietBlue else MutedInk,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -283,9 +307,12 @@ fun UniversityCatalogScreen(
             }
         }
         if (visible.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-            Text(if (downloadedOnly) "当前筛选下没有已下载试卷，关闭「仅已下载」可查看全部。"
+            Text(
+                if (downloadedOnly && installedStatus == null) "正在检查本地下载状态…"
+                else if (downloadedOnly) "当前筛选下没有已下载试卷，关闭「仅已下载」可查看全部。"
                 else "没有匹配的试卷，试试其他关键词或年份。",
-                color = MutedInk, modifier = Modifier.padding(vertical = 25.dp))
+                color = MutedInk, modifier = Modifier.padding(vertical = 25.dp)
+            )
         }
     }
 }
@@ -296,25 +323,34 @@ fun UniversityPaperScreen(
     exam: UniversityExam,
     module: String
 ) {
-    var attempt by remember(exam.id, module) { mutableIntStateOf(0) }
-    var bytes by remember(exam.id, module) { mutableLongStateOf(0L) }
-    var expected by remember(exam.id, module) { mutableLongStateOf(0L) }
-    var loaded by remember(exam.id, module) {
+    var attempt by remember(exam.level, exam.id, module) { mutableIntStateOf(0) }
+    var bytes by remember(exam.level, exam.id, module) { mutableLongStateOf(0L) }
+    var expected by remember(exam.level, exam.id, module) { mutableLongStateOf(0L) }
+    var loaded by remember(exam.level, exam.id, module) {
         mutableStateOf<Result<Pair<List<UniversitySentence>, List<UniversityQuestion>>>?>(null)
     }
-    LaunchedEffect(repository, exam.id, module, attempt) {
+    LaunchedEffect(repository, exam.level, exam.id, module, attempt) {
         loaded = null
         bytes = 0L
         expected = 0L
-        loaded = runCatching {
-            repository.ensureModule(exam, module, progress = { done, total ->
-                bytes = done
-                expected = total
+        // Large paper JSON parsing, disk reads and validation must not block
+        // Compose's main thread. Cancellation must not become an error screen
+        // when a student navigates away or switches papers.
+        loaded = try {
+            Result.success(withContext(Dispatchers.IO) {
+                repository.ensureModule(exam, module, progress = { done, total ->
+                    bytes = done
+                    expected = total
+                })
+                if (module == "dictation")
+                    Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
+                else
+                    Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
             })
-            if (module == "dictation")
-                Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
-            else
-                Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
     val state = loaded
