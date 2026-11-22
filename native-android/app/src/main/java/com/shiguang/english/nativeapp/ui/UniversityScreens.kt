@@ -400,11 +400,18 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                                     "原声时长不足，或不能覆盖本卷已知时间轴；不将该录音标记为完整"
                                 )
                             }
-                            player.playbackParams = player.playbackParams.setSpeed(speed)
                             initialized = true
                         }
-                        if (playing) player.pause() else player.start()
-                        playing = !playing
+                        if (playing) {
+                            player.pause()
+                            playing = false
+                        } else {
+                            // On Android, setPlaybackParams(nonzero) starts a prepared
+                            // or paused player. Apply speed only AFTER explicit Play.
+                            player.start()
+                            player.playbackParams = player.playbackParams.setSpeed(speed)
+                            playing = true
+                        }
                         error = ""
                     } catch (cancelled: CancellationException) {
                         throw cancelled
@@ -427,7 +434,9 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
             OutlinedButton(enabled = !busy, onClick = {
                 speed = when (speed) { 1f -> 1.25f; 1.25f -> 1.5f
                     1.5f -> 0.75f; else -> 1f }
-                if (initialized) runCatching {
+                // Save the selected speed while paused; applying it here would
+                // unexpectedly resume MediaPlayer playback.
+                if (initialized && playing) runCatching {
                     player.playbackParams = player.playbackParams.setSpeed(speed)
                 }
             }) { Text(speed.toString() + "×") }
