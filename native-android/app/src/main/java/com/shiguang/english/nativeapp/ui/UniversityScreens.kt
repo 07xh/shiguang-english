@@ -52,7 +52,9 @@ import com.shiguang.english.nativeapp.model.AudioCoverage
 import com.shiguang.english.nativeapp.model.ExamContentCoverage
 import com.shiguang.english.nativeapp.model.PlaybackRequestGate
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 private val levelDisplay = mapOf(
@@ -296,25 +298,34 @@ fun UniversityPaperScreen(
     exam: UniversityExam,
     module: String
 ) {
-    var attempt by remember(exam.id, module) { mutableIntStateOf(0) }
-    var bytes by remember(exam.id, module) { mutableLongStateOf(0L) }
-    var expected by remember(exam.id, module) { mutableLongStateOf(0L) }
-    var loaded by remember(exam.id, module) {
+    var attempt by remember(exam.level, exam.id, module) { mutableIntStateOf(0) }
+    var bytes by remember(exam.level, exam.id, module) { mutableLongStateOf(0L) }
+    var expected by remember(exam.level, exam.id, module) { mutableLongStateOf(0L) }
+    var loaded by remember(exam.level, exam.id, module) {
         mutableStateOf<Result<Pair<List<UniversitySentence>, List<UniversityQuestion>>>?>(null)
     }
-    LaunchedEffect(repository, exam.id, module, attempt) {
+    LaunchedEffect(repository, exam.level, exam.id, module, attempt) {
         loaded = null
         bytes = 0L
         expected = 0L
-        loaded = runCatching {
-            repository.ensureModule(exam, module, progress = { done, total ->
-                bytes = done
-                expected = total
+        // Large paper JSON parsing, disk reads and validation must not block
+        // Compose's main thread. Cancellation must not become an error screen
+        // when a student navigates away or switches papers.
+        loaded = try {
+            Result.success(withContext(Dispatchers.IO) {
+                repository.ensureModule(exam, module, progress = { done, total ->
+                    bytes = done
+                    expected = total
+                })
+                if (module == "dictation")
+                    Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
+                else
+                    Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
             })
-            if (module == "dictation")
-                Pair(repository.sentences(exam), emptyList<UniversityQuestion>())
-            else
-                Pair(emptyList<UniversitySentence>(), repository.questions(exam, module))
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (error: Exception) {
+            Result.failure(error)
         }
     }
     val state = loaded
