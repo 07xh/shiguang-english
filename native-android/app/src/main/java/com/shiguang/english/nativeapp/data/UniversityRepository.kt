@@ -83,10 +83,34 @@ class UniversityRepository(private val context: Context) {
     private fun cachedAudio(exam: UniversityExam): File =
         store.local("university", exam.level + "_" + exam.id, "audio.mp3")
 
+    // A downloaded file existing on disk does not mean its JSON is usable.
+    // Cache validation results by file identity so scrolling the exam catalog
+    // does not repeatedly parse the same large paper files on the UI thread.
+    private data class ModuleCheck(val bytes: Long, val modifiedAt: Long, val valid: Boolean)
+    private val moduleChecks =
+        java.util.concurrent.ConcurrentHashMap<String, ModuleCheck>()
+
+    private fun cachedModuleIsValid(exam: UniversityExam, name: String): Boolean {
+        val file = cachedModule(exam, name)
+        if (!file.isFile) {
+            moduleChecks.remove(file.absolutePath)
+            return false
+        }
+        val bytes = file.length()
+        val modifiedAt = file.lastModified()
+        val previous = moduleChecks[file.absolutePath]
+        if (previous != null && previous.bytes == bytes && previous.modifiedAt == modifiedAt) {
+            return previous.valid
+        }
+        val valid = validModule(file, name)
+        moduleChecks[file.absolutePath] = ModuleCheck(bytes, modifiedAt, valid)
+        return valid
+    }
+
     fun installedModules(exam: UniversityExam): Set<String> {
         val embedded = record(exam)?.optJSONObject("modules")
         return exam.modules.filter { module ->
-            (embedded?.has(module) == true) || cachedModule(exam, module).isFile
+            (embedded?.has(module) == true) || cachedModuleIsValid(exam, module)
         }.toSet()
     }
 
