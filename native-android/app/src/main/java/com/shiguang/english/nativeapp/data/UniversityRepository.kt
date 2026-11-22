@@ -114,19 +114,17 @@ class UniversityRepository(private val context: Context) {
         }.toSet()
     }
 
+    /**
+     * Structural JSON alone is insufficient: a non-empty metadata object can
+     * still yield zero real exercises. Validate with the same parser used by
+     * the study screen, so failed downloads can be retried rather than cached.
+     */
     private fun validModule(file: File, module: String): Boolean = runCatching {
         val text = file.readText(Charsets.UTF_8).trimStart('\uFEFF', '\n', '\r', ' ')
-        val value: Any = if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
-        val selected = if (value is JSONObject) value.opt(module) ?: value else value
+        val payload: Any = if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
         when (module) {
-            "dictation", "listening" ->
-                selected is JSONArray && selected.length() > 0 ||
-                    selected is JSONObject && selected.length() > 0
-            "written" ->
-                selected is JSONObject && listOf(
-                    "questions", "reading", "writing", "translation",
-                    "language_use", "paper_stem"
-                ).any { selected.has(it) } || selected is JSONArray && selected.length() > 0
+            "dictation" -> parseSentences(payload).isNotEmpty()
+            "listening", "written" -> parseQuestions(payload, module).isNotEmpty()
             else -> false
         }
     }.getOrDefault(false)
@@ -268,8 +266,10 @@ class UniversityRepository(private val context: Context) {
 
     fun cachedBytes(): Long = store.totalBytes()
 
-    fun questions(exam: UniversityExam, module: String): List<UniversityQuestion> {
-        val payload = this.module(exam, module)
+    fun questions(exam: UniversityExam, module: String): List<UniversityQuestion> =
+        parseQuestions(module(exam, module), module)
+
+    private fun parseQuestions(payload: Any, module: String): List<UniversityQuestion> {
         val root: Any = if (payload is JSONObject) {
             when (module) {
                 "listening" -> payload.opt("listening") ?: payload
@@ -326,8 +326,10 @@ class UniversityRepository(private val context: Context) {
         return results
     }
 
-    fun sentences(exam: UniversityExam): List<UniversitySentence> {
-        val raw = module(exam, "dictation")
+    fun sentences(exam: UniversityExam): List<UniversitySentence> =
+        parseSentences(module(exam, "dictation"))
+
+    private fun parseSentences(raw: Any): List<UniversitySentence> {
         val rows = if (raw is JSONObject) raw.optJSONArray("dictation") else raw as? JSONArray
         if (rows == null) return emptyList()
         return buildList {
