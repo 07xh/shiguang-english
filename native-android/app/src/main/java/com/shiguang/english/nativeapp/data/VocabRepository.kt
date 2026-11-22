@@ -205,14 +205,29 @@ class VocabRepository(private val context: Context) {
 
     suspend fun loadCatalog(): VocabCatalog = withContext(Dispatchers.IO) {
         val file = packedFile()
-        val raw = if (file.isFile) {
-            file.readText(Charsets.UTF_8)
-        } else {
-            // Backward compatibility for already installed offline builds.
+        if (file.isFile) {
+            // A truncated or obsolete normalized cache must not strand the
+            // vocabulary screen. Try the bundled corpus before redownloading.
+            try {
+                return@withContext parsePack(file.readText(Charsets.UTF_8))
+            } catch (_: Exception) {
+                // The cache can be repaired by ensureCatalog(). Keep the
+                // original files until a validated replacement is available.
+            }
+        }
+
+        // Backward compatibility for already installed offline builds.
+        val bundled = try {
             context.assets.open("vocabulary/university-words.json")
                 .bufferedReader(Charsets.UTF_8).use { it.readText() }
+        } catch (error: IOException) {
+            throw IOException("词库缓存不可用，重新下载即可恢复", error)
         }
-        parsePack(raw)
+        try {
+            parsePack(bundled)
+        } catch (error: Exception) {
+            throw IOException("离线词库校验失败，重新下载即可恢复", error)
+        }
     }
 
     /**
