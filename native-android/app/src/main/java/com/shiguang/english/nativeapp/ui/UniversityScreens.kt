@@ -49,6 +49,7 @@ import com.shiguang.english.nativeapp.data.DictationDraft
 import com.shiguang.english.nativeapp.data.UniversitySentence
 import com.shiguang.english.nativeapp.data.ExamAudioSource
 import com.shiguang.english.nativeapp.model.AudioCoverage
+import com.shiguang.english.nativeapp.model.ExamContentCoverage
 import com.shiguang.english.nativeapp.model.PlaybackRequestGate
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -339,8 +340,16 @@ fun UniversityPaperScreen(
         return
     }
     val (sentences, questions) = state.getOrThrow()
-    if (module == "dictation") UniversityMultiBlankScreen(repository, exam, sentences)
-    else UniversityQuestionScreen(repository, exam, questions, module)
+    val shortfall = when (module) {
+        "dictation" -> ExamContentCoverage.warning(module, exam.dictationCount, sentences.size)
+        "listening" -> ExamContentCoverage.warning(module, exam.listeningCount, questions.size)
+        else -> null
+    }
+    if (module == "dictation") {
+        UniversityMultiBlankScreen(repository, exam, sentences, shortfall)
+    } else {
+        UniversityQuestionScreen(repository, exam, questions, module, shortfall)
+    }
 }
 
 private fun formatBytes(n: Long): String =
@@ -459,7 +468,8 @@ private fun UniversityQuestionScreen(
     repository: UniversityRepository,
     exam: UniversityExam,
     questions: List<UniversityQuestion>,
-    module: String
+    module: String,
+    coverageWarning: String?
 ) {
     if (questions.isEmpty()) {
         Text("试卷 JSON 已加载，但还没有解析出可作答题目。不能将它标记为完整试卷。",
@@ -643,6 +653,10 @@ private fun UniversityQuestionScreen(
                 contentPadding = PaddingValues(18.dp),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
+                if (coverageWarning != null) item {
+                    Text(coverageWarning, color = Amber, fontSize = 12.sp,
+                        modifier = Modifier.fillMaxWidth().testTag("exam-content-shortfall"))
+                }
                 item {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
@@ -1050,7 +1064,8 @@ internal fun ReplicaQuestionPanel(
 private fun UniversityMultiBlankScreen(
     repository: UniversityRepository,
     exam: UniversityExam,
-    sentences: List<UniversitySentence>
+    sentences: List<UniversitySentence>,
+    coverageWarning: String?
 ) {
     if (sentences.isEmpty()) {
         Text("精听资源已打包，但没有解析出有效句子。",
@@ -1183,6 +1198,10 @@ private fun UniversityMultiBlankScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(13.dp)
         ) {
+            if (coverageWarning != null) item {
+                Text(coverageWarning, color = Amber, fontSize = 12.sp,
+                    modifier = Modifier.fillMaxWidth().testTag("exam-content-shortfall"))
+            }
             item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     ReplicaSequenceHeader(
