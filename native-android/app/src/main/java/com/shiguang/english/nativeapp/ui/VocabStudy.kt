@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.shiguang.english.nativeapp.data.VocabRepository
 import com.shiguang.english.nativeapp.data.VocabCatalog
 import com.shiguang.english.nativeapp.data.VocabBook
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -49,17 +50,35 @@ fun VocabStudyPage(
     var total by rememberSaveable(book.id, reviewOnly) { mutableIntStateOf(0) }
     var revealed by rememberSaveable(book.id, reviewOnly) { mutableStateOf(false) }
     var saveError by remember { mutableStateOf("") }
-    LaunchedEffect(book.id, reviewOnly) {
+    var loadError by remember(book.id, reviewOnly) { mutableStateOf("") }
+    var loadAttempt by remember(book.id, reviewOnly) { mutableIntStateOf(0) }
+    LaunchedEffect(book.id, reviewOnly, loadAttempt) {
         if (!initialized) {
-            val memory = repository.snapshot(book.id)
-            val due = allWords.filter { memory[it.id]?.due == true }
-            val selected = if (reviewOnly) due else {
-                val fresh = allWords.filter { !memory.containsKey(it.id) }
-                (due + fresh).distinctBy { it.id }
+            loadError = ""
+            try {
+                val memory = repository.snapshot(book.id)
+                val due = allWords.filter { memory[it.id]?.due == true }
+                val selected = if (reviewOnly) due else {
+                    val fresh = allWords.filter { !memory.containsKey(it.id) }
+                    (due + fresh).distinctBy { it.id }
+                }
+                queue = selected.take(dailyGoal.coerceIn(5, 200)).map { it.id }
+                total = queue.size
+                initialized = true
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                loadError = error.message ?: "学习记录读取失败"
             }
-            queue = selected.take(dailyGoal.coerceIn(5, 200)).map { it.id }
-            total = queue.size
-            initialized = true
+        }
+    }
+    // A restored Compose session may reference words removed by a newer corpus.
+    // Skip those identifiers without changing any persisted review ratings.
+    LaunchedEffect(initialized, queue, byId) {
+        if (initialized && queue.any { it !in byId }) {
+            val remaining = queue.filter { it in byId }
+            total = (total - (queue.size - remaining.size)).coerceAtLeast(completed)
+            queue = remaining
         }
     }
     val word = queue.firstOrNull()?.let { byId[it] }
@@ -83,7 +102,16 @@ fun VocabStudyPage(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             if (!initialized) {
-                CircularProgressIndicator(Modifier.padding(top = 55.dp))
+                if (loadError.isBlank()) {
+                    CircularProgressIndicator(Modifier.padding(top = 55.dp))
+                } else {
+                    Spacer(Modifier.height(50.dp))
+                    Text("学习记录读取失败", color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold)
+                    Text(loadError, color = StudyDim, fontSize = 13.sp,
+                        textAlign = TextAlign.Center)
+                    Button(onClick = { loadAttempt += 1 }) { Text("重试读取") }
+                }
             } else if (word == null) {
                 Spacer(Modifier.height(70.dp))
                 Text(if (total == 0) "当前没有到期复习或未学习单词" else "这组完成了",
