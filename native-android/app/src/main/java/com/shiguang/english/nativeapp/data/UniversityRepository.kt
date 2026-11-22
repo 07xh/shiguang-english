@@ -367,9 +367,15 @@ private fun parseChoices(raw: Any?): List<Pair<String, String>> = when (raw) {
         }
     }
     is JSONObject -> buildList {
-        val keys = raw.keys()
-        while (keys.hasNext()) {
-            val key = keys.next()
+        val iterator = raw.keys()
+        val keys = mutableListOf<String>()
+        while (iterator.hasNext()) keys.add(iterator.next())
+        // JSONObject does not promise insertion order. Real A-D options
+        // must appear in question order, regardless of JSON map iteration.
+        val orderedKeys = if (keys.all { it.length == 1 && it[0] in 'A'..'Z' }) {
+            keys.sorted()
+        } else keys
+        for (key in orderedKeys) {
             val value = raw.opt(key)
             val text = when (value) {
                 is JSONObject -> value.visibleOptionText()
