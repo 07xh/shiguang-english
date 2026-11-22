@@ -335,21 +335,38 @@ private fun JSONObject.getNumber(vararg keys: String): Double? {
     return null
 }
 
+/**
+ * Option payloads may be plain strings, objects keyed A-D, or arrays with
+ * explicit A-D labels. Never show raw serialized JSON as a choice's text.
+ */
 private fun parseChoices(raw: Any?): List<Pair<String, String>> = when (raw) {
     is JSONArray -> buildList {
         for (i in 0 until raw.length()) {
             val item = raw.opt(i)
-            val name = ('A' + i).toString()
-            add(name to if (item is JSONObject) item.getFirst("text", "content", "label")
-                else item?.toString().orEmpty())
+            val fallbackLabel = ('A' + i).toString()
+            val label = if (item is JSONObject) {
+                item.getFirst("key", "label", "id")
+                    .takeIf { it.matches(Regex("[A-Z]")) } ?: fallbackLabel
+            } else fallbackLabel
+            val text = if (item is JSONObject) {
+                item.getFirst("text", "content", "value", "title", "option_text")
+            } else if (item != null && item != JSONObject.NULL) {
+                item.toString().trim()
+            } else ""
+            if (text.isNotBlank()) add(label to text)
         }
     }
     is JSONObject -> buildList {
         val keys = raw.keys()
         while (keys.hasNext()) {
             val key = keys.next()
-            val v = raw.opt(key)
-            if (v != null && v != JSONObject.NULL) add(key to v.toString())
+            val value = raw.opt(key)
+            val text = when (value) {
+                is JSONObject -> value.getFirst("text", "content", "value", "title", "option_text")
+                null, JSONObject.NULL -> ""
+                else -> value.toString().trim()
+            }
+            if (text.isNotBlank()) add(key to text)
         }
     }
     else -> emptyList()
