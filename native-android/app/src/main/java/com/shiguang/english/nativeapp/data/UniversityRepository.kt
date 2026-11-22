@@ -255,7 +255,9 @@ class UniversityRepository(private val context: Context) {
             "该试卷尚未下载：" + exam.id + "/" + name
         }
         val local = cachedModule(exam, name)
-        val raw = if (local.isFile) local.readText(Charsets.UTF_8)
+        // A damaged downloaded copy must not take precedence over a verified
+        // bundled module in builds that include offline exam assets.
+        val raw = if (cachedModuleIsValid(exam, name)) local.readText(Charsets.UTF_8)
             else read("university/exams/" + exam.level + "/" + exam.id + "/" + name + ".json")
         val text = raw.trimStart('\uFEFF', '\n', '\r', ' ')
         return if (text.startsWith("[")) JSONArray(text) else JSONObject(text)
