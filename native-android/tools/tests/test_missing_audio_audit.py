@@ -30,6 +30,14 @@ class MissingAudioAuditTests(unittest.TestCase):
         self.assertEqual(fetch.call_args.args[0].get_header("Range"), "bytes=0-1023")
         self.assertFalse("complete" in result)
 
+    def test_mp4_ftyp_header_is_detected_but_not_marked_complete(self):
+        mp4 = bytes.fromhex("0000001866747970") + b"isom" + bytes(1500)
+        with patch.object(audit, "urlopen", return_value=FakeResponse(mp4, 206, "audio/mpeg")):
+            result = audit.probe(audit.pack.BASE + "cet4/audios/example.mp3")
+        self.assertEqual(result["status"], "mp4_header_reachable")
+        self.assertEqual(result["container"], "mp4")
+        self.assertNotIn("complete", result)
+
     def test_nonzero_byte_range_must_not_be_accepted_as_mp3_start(self):
         response = FakeResponse(b"ID3" + bytes(2048))
         response.headers["Content-Range"] = "bytes 1024-2047/5000"
@@ -41,7 +49,7 @@ class MissingAudioAuditTests(unittest.TestCase):
         with patch.object(audit, "urlopen", return_value=FakeResponse(b"<html>not audio</html>", 200, "text/html")):
             self.assertEqual(
                 audit.probe(audit.pack.BASE + "cet6/audios/example.mp3")["status"],
-                "not_mp3_header"
+                "unknown_media_header"
             )
 
     def test_classifies_http_failures_without_exposing_response_body(self):
