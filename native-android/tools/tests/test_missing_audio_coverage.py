@@ -38,7 +38,8 @@ class MissingAudioCoverageTests(unittest.TestCase):
         def fake_exam(paper):
             status = ("verified_timeline" if paper["id"] == HISTORIC_MISSING[0]
                       else "unavailable_or_invalid")
-            return {"id": paper["id"], "status": status}
+            return {"id": paper["id"], "status": status,
+                    "container": None, "duration_ms": None, "known_last_end_ms": None}
         with patch.object(verification, "verify_exam", side_effect=fake_exam):
             report = verification.verify_catalog(catalog, sleep_seconds=0)
         self.assertEqual(report["checked"], 10)
