@@ -37,18 +37,34 @@ class AudioVerificationTests(unittest.TestCase):
             self.assertEqual(pack.validate_audio(sample_mp3(), 91750),
                              (90000, "timeline_covered"))
 
-    def test_non_mp3_content_never_calls_duration_probe(self):
+    def test_non_audio_container_never_calls_duration_probe(self):
         with patch.object(pack, "probe_mp3_duration_ms") as probe:
-            with self.assertRaisesRegex(ValueError, "MP3 header"):
+            with self.assertRaisesRegex(ValueError, "Unrecognized"):
                 pack.validate_audio(b"<html>" + bytes(3000), 10000)
             probe.assert_not_called()
+
+    def test_mp4_ftyp_is_accepted_only_after_audio_track_and_duration_validation(self):
+        mp4 = bytes.fromhex("0000001866747970") + b"isom" + bytes(2048)
+        self.assertEqual(pack.audio_container(mp4), "mp4")
+        with patch.object(pack, "probe_mp3_duration_ms", return_value=120000):
+            self.assertEqual(pack.validate_audio(mp4, 119500),
+                             (120000, "timeline_covered"))
 
     def test_ffprobe_duration_is_required_and_parsed(self):
         with patch.object(pack.shutil, "which", return_value="/usr/bin/ffprobe"):
             with patch.object(pack.subprocess, "run", return_value=SimpleNamespace(
-                returncode=0, stdout="121.500\n", stderr=""
+                returncode=0,
+                stdout='{"streams":[{"codec_type":"audio","codec_name":"aac"}],'
+                       '"format":{"duration":"121.500"}}',
+                stderr=""
             )):
                 self.assertEqual(pack.probe_mp3_duration_ms(sample_mp3()), 121500)
+            with patch.object(pack.subprocess, "run", return_value=SimpleNamespace(
+                returncode=0, stdout='{"streams":[],"format":{"duration":"121.500"}}',
+                stderr=""
+            )):
+                with self.assertRaisesRegex(ValueError, "no usable audio duration"):
+                    pack.probe_mp3_duration_ms(sample_mp3())
             with patch.object(pack.subprocess, "run", return_value=SimpleNamespace(
                 returncode=1, stdout="", stderr="decode failed"
             )):
