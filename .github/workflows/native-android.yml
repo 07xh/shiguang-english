@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check offline MP3 duration and timeline verification logic
+        working-directory: native-android
+        run: python3 -m unittest discover -s tools/tests -p 'test_audio_verification.py' -v
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
