@@ -1,0 +1,48 @@
+name: Audit Historical Missing CET Audio (read-only)
+
+on:
+  push:
+    branches:
+      - 'audit/known-missing-cet-audio-*'
+    paths:
+      - 'native-android/tools/audit_missing_audio.py'
+      - 'native-android/tools/tests/test_missing_audio_audit.py'
+      - '.github/workflows/audit-missing-cet-audio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audio-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run offline audit unit tests
+        working-directory: native-android
+        run: python3 -m unittest discover -s tools/tests -p test_missing_audio_audit.py -v
+      - name: List candidate names without network
+        working-directory: native-android
+        run: python3 -m tools.audit_missing_audio --dry-run --output missing-audio-candidates.json
+      - name: Probe only small HTTP byte ranges for the ten historical IDs
+        working-directory: native-android
+        run: |
+          python3 -m tools.audit_missing_audio \
+            --timeout 8 --workers 2 --output missing-audio-audit.json
+      - name: Upload readable results (NOT validated full audio)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: missing-cet-audio-availability-audit
+          path: |
+            native-android/missing-audio-audit.json
+            native-android/missing-audio-candidates.json
+          if-no-files-found: warn
