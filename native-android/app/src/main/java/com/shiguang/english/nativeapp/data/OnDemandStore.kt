@@ -135,7 +135,7 @@ class OnDemandStore(context: Context) {
      * in .mp3 contain ISO BMFF / MP4. Decoder metadata must still verify
      * an audio track and sufficient playback duration before caching.
      */
-    fun audioContainer(file: File): AudioContainer.Format {
+    internal fun audioContainer(file: File): AudioContainer.Format {
         if (!file.isFile || file.length() < 1024) return AudioContainer.Format.UNKNOWN
         return file.inputStream().use { stream ->
             val header = ByteArray(16)
