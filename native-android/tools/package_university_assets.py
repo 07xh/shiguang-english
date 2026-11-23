@@ -122,27 +122,42 @@ def dictation_last_end_ms(payload):
     return round(latest * 1000) if latest > 0 else None
 
 
+def audio_container(raw):
+    """Identify real bytes: authorized .mp3 URLs can contain MP4-family audio."""
+    if len(raw) <= 1024:
+        return None
+    if raw[:3] == b"ID3" or (raw[0] == 0xff and (raw[1] & 0xe0) == 0xe0):
+        return "mp3"
+    if (len(raw) >= 12 and raw[4:8] == b"ftyp" and
+            16 <= int.from_bytes(raw[:4], "big") <= 4096):
+        return "mp4"
+    return None
+
+
 def probe_mp3_duration_ms(raw):
-    """Require a decodable MP3 duration, rather than trusting an ID3 header."""
+    """Require a real audio stream and decoded duration, MP3 or MP4-family."""
     if shutil.which("ffprobe") is None:
         raise RuntimeError("ffprobe is required to verify original audio duration")
-    with tempfile.NamedTemporaryFile(suffix=".mp3") as temporary:
+    with tempfile.NamedTemporaryFile(suffix=".bin") as temporary:
         temporary.write(raw)
         temporary.flush()
         result = subprocess.run(
             ["ffprobe", "-v", "error", "-select_streams", "a:0",
-             "-show_entries", "format=duration",
-             "-of", "default=noprint_wrappers=1:nokey=1", temporary.name],
+             "-show_entries", "stream=codec_type,codec_name:format=duration",
+             "-of", "json", temporary.name],
             capture_output=True, text=True, timeout=30, check=False,
         )
     if result.returncode != 0:
-        raise ValueError("MP3 metadata could not be decoded")
+        raise ValueError("Media metadata could not be decoded")
     try:
-        seconds = float(result.stdout.strip())
-    except ValueError as exc:
-        raise ValueError("MP3 has no usable duration") from exc
+        info = json.loads(result.stdout)
+        if not any(x.get("codec_type") == "audio" for x in info.get("streams", [])):
+            raise ValueError("Media has no audio track")
+        seconds = float(info["format"]["duration"])
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise ValueError("Media has no usable audio duration") from exc
     if not math.isfinite(seconds) or seconds <= 0:
-        raise ValueError("MP3 duration is invalid")
+        raise ValueError("Audio duration is invalid")
     return round(seconds * 1000)
 
 
@@ -152,11 +167,8 @@ def validate_audio(raw, expected_end_ms=None):
     This does not prove every spoken question is present when no verified
     sentence timeline exists. Full decoding or source comparison is separate.
     """
-    if len(raw) <= 1024 or not (
-        raw[:3] == b"ID3" or
-        (raw[0] == 0xff and (raw[1] & 0xe0) == 0xe0)
-    ):
-        raise ValueError("Not an MP3 header")
+    if audio_container(raw) is None:
+        raise ValueError("Unrecognized MP3/MP4 audio container header")
     duration_ms = probe_mp3_duration_ms(raw)
     if duration_ms < 5000:
         raise ValueError("Recording is too short to be usable")
@@ -212,7 +224,8 @@ def run(args):
         if level not in LEVELS or not SAFE_ID.fullmatch(exam_id):
             raise ValueError("Unsafe level or exam identifier")
         entry = {"id": exam_id, "level": level, "modules": {}, "audio": None,
-                 "audioDurationMs": None, "audioCoverage": "not_required", "complete": False}
+                 "audioDurationMs": None, "audioContainer": None,
+                 "audioCoverage": "not_required", "complete": False}
         try:
             expected_end_ms = None
             for module in need_modules(exam):
@@ -232,6 +245,7 @@ def run(args):
                 out.write_bytes(raw)
                 entry["audio"] = str(out.relative_to(dest)).replace("\\", "/")
                 entry["audioDurationMs"] = duration_ms
+                entry["audioContainer"] = audio_container(raw)
                 entry["audioCoverage"] = coverage
                 total_bytes += len(raw)
             entry["complete"] = True
@@ -254,6 +268,7 @@ def run(args):
         "audioCount": sum(1 for e in entries if e["audio"]),
         "audioTimelineCovered": sum(e["audioCoverage"] == "timeline_covered" for e in entries),
         "audioDurationOnly": sum(e["audioCoverage"] == "duration_only" for e in entries),
+        "audioMp4Container": sum(e["audioContainer"] == "mp4" for e in entries),
         "bytes": total_bytes,
         "entries": entries,
         "failures": failed,
@@ -266,6 +281,7 @@ def run(args):
           f"audio={summary['audioCount']} "
           f"timeline={summary['audioTimelineCovered']} "
           f"duration_only={summary['audioDurationOnly']} "
+          f"mp4_container={summary['audioMp4Container']} "
           f"bytes={total_bytes} failed={len(failed)}", flush=True)
     if failed and args.strict:
         return 1

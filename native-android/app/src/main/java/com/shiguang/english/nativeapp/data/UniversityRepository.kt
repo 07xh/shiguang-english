@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.media.MediaMetadataRetriever
 import com.shiguang.english.nativeapp.model.AudioCoverage
+import com.shiguang.english.nativeapp.model.AudioContainer
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.sync.Mutex
@@ -158,7 +159,7 @@ class UniversityRepository(private val context: Context) {
     }
 
     /**
-     * A download can have a correct MP3 magic header and still be only the
+     * A download can have a recognized audio container header and still be only the
      * beginning of a recording. Metadata duration is mandatory for cached audio;
      * known dictation timestamps provide an additional completeness floor.
      */
@@ -172,12 +173,22 @@ class UniversityRepository(private val context: Context) {
     }
 
     private fun decodedDurationMs(file: File): Long? {
-        if (!store.validMp3(file)) return null
+        val container = store.audioContainer(file)
+        if (container == AudioContainer.Format.UNKNOWN) return null
         val retriever = MediaMetadataRetriever()
         return try {
             retriever.setDataSource(file.absolutePath)
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull()
+            // MP4 containers can also be video-only. A valid audio track is
+            // mandatory for ftyp media, even if the URL ends in .mp3.
+            val hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)
+            if (container == AudioContainer.Format.ISO_BMFF && hasAudio != "yes") {
+                null
+            } else if (hasAudio == "no") {
+                null
+            } else {
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    ?.toLongOrNull()
+            }
         } catch (_: Exception) {
             null
         } finally {
@@ -240,7 +251,7 @@ class UniversityRepository(private val context: Context) {
                     last = error
                 }
             }
-            throw IOException("未找到时长校验通过的原声 MP3（可能缺失或不完整）：" +
+            throw IOException("未找到时长校验通过的原声音频（可能缺失、容器格式不匹配或不完整）：" +
                 (last?.message ?: "资源缺失"))
         }
         return audioSource(exam)

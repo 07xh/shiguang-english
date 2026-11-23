@@ -155,7 +155,7 @@ fun ReplicaSentencePlayer(
                 if (AudioCoverage.missesKnownTimeline(
                         player.duration.toLong(), requestedRange.endMs?.toLong())) {
                     throw IllegalStateException(
-                        "当前 MP3 时长短于本句时间轴，可能是残缺录音，已停止播放"
+                        "当前录音时长短于本句时间轴，可能是残缺录音，已停止播放"
                     )
                 }
                 val playableRange = requestedRange.bounded(player.duration)

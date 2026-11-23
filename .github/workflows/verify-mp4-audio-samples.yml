@@ -1,0 +1,62 @@
+name: Verify MP4 Audio Hidden Behind MP3 URLs
+
+on:
+  push:
+    branches:
+      - 'fix/p0-mp4-audio-under-mp3-url-*'
+    paths:
+      - 'native-android/tools/package_university_assets.py'
+      - 'native-android/tools/tests/test_audio_verification.py'
+      - '.github/workflows/verify-mp4-audio-samples.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-mp4-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ffprobe for real audio-track validation
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+          command -v ffprobe
+      - name: Verify ffprobe availability and offline parser tests
+        working-directory: native-android
+        run: |
+          ffprobe -version | head -n 1
+          python3 -m unittest discover -s tools/tests -p test_audio_verification.py -v
+      - name: Validate actual authorized CET4 and CET6 audio without keeping audio files
+        working-directory: native-android
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from tools import package_university_assets as pack
+          catalog = json.loads(Path("app/src/main/assets/university/catalog.json").read_text())
+          for ident in ("2023_06_cet4_set1", "2023_06_cet6_set1"):
+              exam = next(row for row in catalog["exams"] if row["id"] == ident)
+              _, dictation = pack.fetch_module(exam["level"], ident, "dictation")
+              last_end = pack.dictation_last_end_ms(dictation)
+              raw, _, duration, coverage = pack.fetch_audio(exam, last_end)
+              container = pack.audio_container(raw)
+              assert container == "mp4", (ident, container)
+              assert duration >= 5000, (ident, duration)
+              assert last_end is None or duration + 2000 >= last_end, ident
+              print("SOURCE_AUDIO_VERIFIED", ident, "container=", container,
+                    "duration_ms=", duration, "known_last_end_ms=", last_end,
+                    "coverage=", coverage, "bytes=", len(raw), flush=True)
+              del raw
+          PY
