@@ -1,0 +1,47 @@
+name: Verify Ten Historical CET Audio Recordings
+
+on:
+  push:
+    branches:
+      - 'audit/ten-cet-audio-coverage-*'
+    paths:
+      - 'native-android/tools/verify_missing_audio_coverage.py'
+      - 'native-android/tools/tests/test_missing_audio_coverage.py'
+      - '.github/workflows/verify-ten-cet-audio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ten-cet-audio-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-audio-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ffprobe for actual decoded audio metadata
+        run: |
+          if ! command -v ffprobe >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+          fi
+      - name: Unit-test report logic without network
+        working-directory: native-android
+        run: python3 -m unittest discover -s tools/tests -p test_missing_audio_coverage.py -v
+      - name: Read only ten authorized source recordings and write metadata
+        working-directory: native-android
+        run: python3 -m tools.verify_missing_audio_coverage --output ten-cet-audio-coverage.json
+      - name: Upload audit metadata, never original audio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ten-cet-audio-verified-metadata
+          path: native-android/ten-cet-audio-coverage.json
+          if-no-files-found: warn
