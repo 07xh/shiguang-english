@@ -43,6 +43,8 @@
 
 - `app/src/main/assets/university/catalog.json`：真实 231 个原版目录元数据，**不等于题目内容**
 - `tools/package_university_assets.py`：在 CI 从原站获取相应 JSON 切片、MP3；按考试 ID 打包，不放伪造题目；逐套记录校验结果
+  - MP3 现在需要通过 `ffprobe` 解出至少 5 秒的实际时长；若精听 JSON 提供可靠的句子结束时间，还会校验 MP3 是否覆盖已知的最后一句（容许 2 秒封装误差）。执行手动离线打包的环境必须有 `ffprobe`（FFmpeg）。
+  - `content-index.json` 的 `audioCoverage` 为 `timeline_covered` 或 `duration_only`，并记录 `audioDurationMs`；后者仅证明音频可解析且时长合理，**不能据此宣称整卷原声完整**。即使已知末句得到覆盖，也仍需抽听、核对全题音频与时间轴。
 - `UniversityRepository.kt`：从 APK assets 离线读取内容索引、试卷 JSON 和 MP3 路径
 - `UniversityScreens.kt`：级别 / 年份 / 试卷目录、题号跳转、选择题、TFNG、填空、主观题输入和保存、逐句多空输入、原声音频播放器
 - `.github/workflows/university-offline-apk.yml`：**严格完整性门禁**；只有 231 套 JSON 均验证且对应音频校验成功后才上传完整离线 APK
