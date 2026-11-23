@@ -20,8 +20,10 @@ import com.shiguang.english.nativeapp.model.SentenceAudioRange
 import com.shiguang.english.nativeapp.model.AudioCoverage
 import com.shiguang.english.nativeapp.model.PlaybackRequestGate
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Native sentence audio: download the MP3 on first playback, reuse it offline. */
 @Composable
@@ -34,7 +36,10 @@ fun ReplicaSentencePlayer(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
+    var audio by remember(repository, exam.level, exam.id) {
+        mutableStateOf<ExamAudioSource?>(null)
+    }
+    var checkingLocal by remember(repository, exam.level, exam.id) { mutableStateOf(true) }
     var loading by remember(exam.id) { mutableStateOf(false) }
     var busy by remember(exam.id) { mutableStateOf(false) }
     val playbackGate = remember(exam.id) { PlaybackRequestGate() }
@@ -54,6 +59,19 @@ fun ReplicaSentencePlayer(
     var speedIndex by remember(exam.id) { mutableIntStateOf(1) }
     val rates = listOf(0.75f, 1.0f, 1.25f, 1.5f, 2.0f)
     val player = remember(exam.id) { MediaPlayer() }
+
+    LaunchedEffect(repository, exam.level, exam.id) {
+        checkingLocal = true
+        try {
+            audio = withContext(Dispatchers.IO) { repository.audioSource(exam) }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (exc: Exception) {
+            failure = exc.message ?: "检查本地原声失败"
+        } finally {
+            checkingLocal = false
+        }
+    }
 
     DisposableEffect(player) {
         player.setOnCompletionListener {
@@ -102,16 +120,18 @@ fun ReplicaSentencePlayer(
     }
 
     fun playback(replay: Boolean) {
-        if (!playbackGate.tryEnter()) return
+        if (checkingLocal || !playbackGate.tryEnter()) return
         busy = true
         val requestedSentence = Triple(sentenceIndex, startSeconds, endSeconds)
         if (audio == null) loading = true
         scope.launch {
             try {
                 if (audio == null) {
-                    audio = repository.ensureAudio(exam) { done, total ->
-                        bytes = done
-                        totalBytes = total
+                    audio = withContext(Dispatchers.IO) {
+                        repository.ensureAudio(exam) { done, total ->
+                            bytes = done
+                            totalBytes = total
+                        }
                     }
                     loading = false
                 }
@@ -172,10 +192,11 @@ fun ReplicaSentencePlayer(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             ReplicaCanvasAction("↺ 重听", onClick = { playback(true) })
-            Button(enabled = !busy, onClick = { playback(false) }) {
+            Button(enabled = !busy && !checkingLocal, onClick = { playback(false) }) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = null,
                     modifier = Modifier.size(17.dp))
-                Text(if (loading) "下载中" else if (playing) "暂停"
+                Text(if (checkingLocal) "检查本地原声"
+                    else if (loading) "下载中" else if (playing) "暂停"
                     else if (audio == null) "下载原声" else "播放")
             }
             ReplicaCanvasAction(rates[speedIndex].toString() + "X", onClick = {
@@ -189,7 +210,9 @@ fun ReplicaSentencePlayer(
                 }
             })
         }
-        if (loading) {
+        if (checkingLocal) {
+            Text("正在核对本地原声…")
+        } else if (loading) {
             LinearProgressIndicator(
                 progress = { if (totalBytes > 0)
                     (bytes.toFloat() / totalBytes).coerceIn(0f, 1f) else 0f },
