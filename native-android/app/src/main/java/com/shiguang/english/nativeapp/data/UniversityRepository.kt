@@ -159,7 +159,7 @@ class UniversityRepository(private val context: Context) {
     }
 
     /**
-     * A download can have a correct MP3 magic header and still be only the
+     * A download can have a recognized audio container header and still be only the
      * beginning of a recording. Metadata duration is mandatory for cached audio;
      * known dictation timestamps provide an additional completeness floor.
      */
@@ -251,7 +251,7 @@ class UniversityRepository(private val context: Context) {
                     last = error
                 }
             }
-            throw IOException("未找到时长校验通过的原声 MP3（可能缺失或不完整）：" +
+            throw IOException("未找到时长校验通过的原声音频（可能缺失、容器格式不匹配或不完整）：" +
                 (last?.message ?: "资源缺失"))
         }
         return audioSource(exam)
