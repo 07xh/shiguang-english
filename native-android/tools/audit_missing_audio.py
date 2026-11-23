@@ -32,11 +32,17 @@ MAX_CANDIDATES = 8
 MAX_PROBE_BYTES = 1024
 
 
-def mp3_header(data: bytes) -> bool:
-    return len(data) >= 4 and (
-        data.startswith(b"ID3") or
-        (data[0] == 255 and (data[1] & 224) == 224)
-    )
+def media_container_header(data: bytes) -> str | None:
+    if len(data) < 12:
+        return None
+    if data.startswith(b"ID3") or (
+        data[0] == 255 and (data[1] & 224) == 224
+    ):
+        return "mp3"
+    # Some authorized .mp3 endpoints actually serve MP4-family media.
+    if data[4:8] == b"ftyp" and 16 <= int.from_bytes(data[:4], "big") <= 4096:
+        return "mp4"
+    return None
 
 
 def probe(url: str, timeout: float = 8.0) -> dict:
@@ -58,16 +64,17 @@ def probe(url: str, timeout: float = 8.0) -> dict:
             # non-content diagnostics (8-byte magic and response headers).
             content_range = response.headers.get("Content-Range", "")
             range_valid = status != 206 or content_range.startswith("bytes 0-")
-            recognized = range_valid and mp3_header(data)
+            container = media_container_header(data) if range_valid else None
             return {
-                "status": ("mp3_header_reachable" if recognized else
+                "status": (container + "_header_reachable" if container else
                            "invalid_content_range" if not range_valid else
-                           "not_mp3_header"),
+                           "unknown_media_header"),
+                "container": container,
                 "http_status": status,
                 "content_type": response.headers.get("Content-Type", ""),
                 "content_range": content_range,
                 "bytes_read": len(data),
-                "first_8_hex": data[:8].hex() if not recognized else "",
+                "first_8_hex": data[:8].hex() if container is None else "",
             }
     except HTTPError as exc:
         state = ("not_found" if exc.code == 404 else
@@ -85,12 +92,12 @@ def audit_exam(exam: dict, timeout: float = 8.0, cooldown: float = 0.25) -> dict
         path = exam["level"] + "/audios/" + quote(name, safe="") + ".mp3"
         item = {"candidate": name, **probe(pack.BASE + path, timeout)}
         attempts.append(item)
-        if item["status"] == "mp3_header_reachable":
+        if item["status"] in ("mp3_header_reachable", "mp4_header_reachable"):
             break
         if cooldown:
             time.sleep(cooldown)
     outcome = ("candidate_header_found" if any(
-        item["status"] == "mp3_header_reachable" for item in attempts
+        item["status"] in ("mp3_header_reachable", "mp4_header_reachable") for item in attempts
     ) else "no_candidate_header_found")
     return {
         "level": exam["level"], "id": exam["id"], "title": exam["title"],
@@ -120,8 +127,12 @@ def collect(catalog: dict, timeout: float = 8.0, workers: int = 2,
         "header_reachable": sum(
             item["outcome"] == "candidate_header_found" for item in results
         ),
+        "mp4_header_reachable": sum(
+            any(attempt["status"] == "mp4_header_reachable"
+                for attempt in item["attempts"]) for item in results
+        ),
         "not_verified_complete": True,
-        "note": ("Small ranged HTTP probes only. Header-reachable is not a "
+        "note": ("Small ranged HTTP probes only. MP3/MP4 header-reachable is not a "
                  "validated complete recording. Other 231-paper sources "
                  "were not checked."),
         "entries": results,
