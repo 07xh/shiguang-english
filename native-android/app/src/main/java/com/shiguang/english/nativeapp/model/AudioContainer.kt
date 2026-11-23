@@ -27,7 +27,7 @@ internal object AudioContainer {
                 ((header[1].toLong() and 255) shl 16) or
                 ((header[2].toLong() and 255) shl 8) or
                 (header[3].toLong() and 255)
-            if (boxSize in 16..4096) return Format.ISO_BMFF
+            if (boxSize in 16L..4096L) return Format.ISO_BMFF
         }
         return Format.UNKNOWN
     }
