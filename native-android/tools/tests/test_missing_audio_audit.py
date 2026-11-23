@@ -10,7 +10,7 @@ class FakeResponse:
     def __init__(self, payload, status=206, content_type="audio/mpeg"):
         self.source = io.BytesIO(payload)
         self.status = status
-        self.headers = {"Content-Type": content_type}
+        self.headers = {"Content-Type": content_type, "Content-Range": "bytes 0-1023/5000"}
     def read(self, count):
         return self.source.read(count)
     def getcode(self):
@@ -29,6 +29,13 @@ class MissingAudioAuditTests(unittest.TestCase):
         self.assertEqual(result["http_status"], 206)
         self.assertEqual(fetch.call_args.args[0].get_header("Range"), "bytes=0-1023")
         self.assertFalse("complete" in result)
+
+    def test_nonzero_byte_range_must_not_be_accepted_as_mp3_start(self):
+        response = FakeResponse(b"ID3" + bytes(2048))
+        response.headers["Content-Range"] = "bytes 1024-2047/5000"
+        with patch.object(audit, "urlopen", return_value=response):
+            result = audit.probe(audit.pack.BASE + "cet4/audios/example.mp3")
+        self.assertEqual(result["status"], "invalid_content_range")
 
     def test_html_with_http_200_is_not_treated_as_audio(self):
         with patch.object(audit, "urlopen", return_value=FakeResponse(b"<html>not audio</html>", 200, "text/html")):
