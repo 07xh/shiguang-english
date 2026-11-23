@@ -396,7 +396,13 @@ private fun formatBytes(n: Long): String =
 private fun UniversityAudioControls(repository: UniversityRepository, exam: UniversityExam) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var audio by remember(exam.id) { mutableStateOf(repository.audioSource(exam)) }
+    var audio by remember(repository, exam.level, exam.id) {
+        mutableStateOf<ExamAudioSource?>(null)
+    }
+    var checkingLocal by remember(repository, exam.level, exam.id) { mutableStateOf(true) }
+    var expectedTimelineEndMs by remember(repository, exam.level, exam.id) {
+        mutableStateOf<Long?>(null)
+    }
     var downloading by remember(exam.id) { mutableStateOf(false) }
     var busy by remember(exam.id) { mutableStateOf(false) }
     val playbackGate = remember(exam.id) { PlaybackRequestGate() }
@@ -407,6 +413,22 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
     var error by remember(exam.id) { mutableStateOf("") }
     val player = remember(exam.id) { MediaPlayer() }
     var initialized by remember(exam.id) { mutableStateOf(false) }
+    LaunchedEffect(repository, exam.level, exam.id) {
+        checkingLocal = true
+        try {
+            val (source, timelineEnd) = withContext(Dispatchers.IO) {
+                repository.audioSource(exam) to repository.expectedAudioEndMs(exam)
+            }
+            audio = source
+            expectedTimelineEndMs = timelineEnd
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (exc: Exception) {
+            error = exc.message ?: "本地音频检查失败"
+        } finally {
+            checkingLocal = false
+        }
+    }
     DisposableEffect(player) {
         player.setOnCompletionListener { playing = false }
         onDispose { runCatching { player.stop() }; player.release() }
@@ -414,16 +436,18 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
     Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(enabled = !busy, onClick = {
+            Button(enabled = !busy && !checkingLocal, onClick = {
                 if (playbackGate.tryEnter()) {
                     busy = true
                     scope.launch {
                     try {
                         if (audio == null) {
                             downloading = true
-                            audio = repository.ensureAudio(exam) { done, total ->
-                                downloadedBytes = done
-                                expectedBytes = total
+                            audio = withContext(Dispatchers.IO) {
+                                repository.ensureAudio(exam) { done, total ->
+                                    downloadedBytes = done
+                                    expectedBytes = total
+                                }
                             }
                             downloading = false
                         }
@@ -440,7 +464,7 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                             }
                             player.prepare()
                             if (!AudioCoverage.isPlausibleRecording(
-                                    player.duration.toLong(), repository.expectedAudioEndMs(exam))) {
+                                    player.duration.toLong(), expectedTimelineEndMs)) {
                                 throw IllegalStateException(
                                     "原声时长不足，或不能覆盖本卷已知时间轴；不将该录音标记为完整"
                                 )
@@ -473,7 +497,8 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
                 }
             }) {
                 Icon(Icons.Outlined.GraphicEq, contentDescription = null)
-                Text(if (downloading) "下载中" else if (playing) "暂停原声"
+                Text(if (checkingLocal) "检查本地原声" else if (downloading) "下载中"
+                    else if (playing) "暂停原声"
                     else if (audio == null) "下载原声并播放" else "播放原声")
             }
             OutlinedButton(enabled = !busy, onClick = {
@@ -495,11 +520,14 @@ private fun UniversityAudioControls(repository: UniversityRepository, exam: Univ
             Text("原声下载：" + formatBytes(downloadedBytes) +
                 (if (expectedBytes > 0) " / " + formatBytes(expectedBytes) else ""))
         }
-        if (audio == null && !downloading)
+        if (checkingLocal) {
+            Text("正在核对本地原声和已知时间轴…", color = MutedInk)
+        } else if (audio == null && !downloading) {
             Text("原声按需下载，校验通过后保留在本机。缺少原站文件时会明确报错。",
                 color = MutedInk)
-        if (audio != null && !downloading && initialized &&
-            repository.expectedAudioEndMs(exam) == null) {
+        }
+        if (audio != null && !downloading && initialized && !checkingLocal &&
+            expectedTimelineEndMs == null) {
             Text("当前试卷缺少完整录音时间轴，已核对播放时长，但无法确认覆盖全部题目。",
                 color = MutedInk, fontSize = 12.sp)
         }
