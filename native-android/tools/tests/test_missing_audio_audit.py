@@ -81,7 +81,7 @@ class MissingAudioAuditTests(unittest.TestCase):
             for id in audit.HISTORIC_MISSING
         ]}
         def result(row, *_):
-            return {"outcome": "no_candidate_header_found", "id": row["id"]}
+            return {"outcome": "no_candidate_header_found", "id": row["id"], "attempts": []}
         with patch.object(audit, "audit_exam", side_effect=result):
             report = audit.collect(catalog)
         self.assertEqual(report["checks"], 10)
