@@ -1,6 +1,7 @@
 package com.shiguang.english.nativeapp.data
 
 import android.content.Context
+import com.shiguang.english.nativeapp.model.AudioContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -117,7 +118,7 @@ class OnDemandStore(context: Context) {
             if (done < 128 || !validate(partial)) {
                 partial.delete()
                 origin.delete()
-                throw IOException("下载内容不是完整、有效的 JSON 或 MP3")
+                throw IOException("下载内容不是完整、有效的 JSON 或可解析音频")
             }
             if (dest.exists() && !dest.delete())
                 throw IOException("无法替换旧缓存")
@@ -129,15 +130,17 @@ class OnDemandStore(context: Context) {
         }
     }
 
-    fun validMp3(file: File): Boolean {
-        if (!file.isFile || file.length() < 1024) return false
+    /**
+     * File extensions from the source are not reliable: some URLs ending
+     * in .mp3 contain ISO BMFF / MP4. Decoder metadata must still verify
+     * an audio track and sufficient playback duration before caching.
+     */
+    fun audioContainer(file: File): AudioContainer.Format {
+        if (!file.isFile || file.length() < 1024) return AudioContainer.Format.UNKNOWN
         return file.inputStream().use { stream ->
-            val header = ByteArray(4)
-            if (stream.read(header) < 4) false
-            else header[0] == 'I'.code.toByte() &&
-                header[1] == 'D'.code.toByte() && header[2] == '3'.code.toByte() ||
-                ((header[0].toInt() and 255) == 255 &&
-                    (header[1].toInt() and 224) == 224)
+            val header = ByteArray(16)
+            val count = stream.read(header)
+            AudioContainer.detect(if (count == header.size) header else header.copyOf(count.coerceAtLeast(0)))
         }
     }
 
