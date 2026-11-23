@@ -54,11 +54,20 @@ def probe(url: str, timeout: float = 8.0) -> dict:
             # A server may ignore Range and send HTTP 200. Do not read its body.
             data = response.read(MAX_PROBE_BYTES)
             status = getattr(response, "status", response.getcode())
+            # A 206 response must actually begin at byte zero. Capture only
+            # non-content diagnostics (8-byte magic and response headers).
+            content_range = response.headers.get("Content-Range", "")
+            range_valid = status != 206 or content_range.startswith("bytes 0-")
+            recognized = range_valid and mp3_header(data)
             return {
-                "status": "mp3_header_reachable" if mp3_header(data)
-                          else "not_mp3_header",
+                "status": ("mp3_header_reachable" if recognized else
+                           "invalid_content_range" if not range_valid else
+                           "not_mp3_header"),
                 "http_status": status,
                 "content_type": response.headers.get("Content-Type", ""),
+                "content_range": content_range,
+                "bytes_read": len(data),
+                "first_8_hex": data[:8].hex() if not recognized else "",
             }
     except HTTPError as exc:
         state = ("not_found" if exc.code == 404 else
