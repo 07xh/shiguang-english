@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.media.MediaMetadataRetriever
 import com.shiguang.english.nativeapp.model.AudioCoverage
+import com.shiguang.english.nativeapp.model.AudioContainer
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.sync.Mutex
@@ -172,12 +173,22 @@ class UniversityRepository(private val context: Context) {
     }
 
     private fun decodedDurationMs(file: File): Long? {
-        if (!store.validMp3(file)) return null
+        val container = store.audioContainer(file)
+        if (container == AudioContainer.Format.UNKNOWN) return null
         val retriever = MediaMetadataRetriever()
         return try {
             retriever.setDataSource(file.absolutePath)
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.toLongOrNull()
+            // MP4 containers can also be video-only. A valid audio track is
+            // mandatory for ftyp media, even if the URL ends in .mp3.
+            val hasAudio = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)
+            if (container == AudioContainer.Format.ISO_BMFF && hasAudio != "yes") {
+                null
+            } else if (hasAudio == "no") {
+                null
+            } else {
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    ?.toLongOrNull()
+            }
         } catch (_: Exception) {
             null
         } finally {
