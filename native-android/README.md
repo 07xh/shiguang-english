@@ -104,7 +104,7 @@ UI 结构按原版设计标记复刻，但还缺复杂考题交互、查词、�
 **当前默认 APK：轻量按需下载版。** 保留原生 Kotlin/Compose 界面和大学四级/六级/雅思/考研的 231 套目录，不再把整套题目、音频或 15,343 条大学词条编进 APK。
 
 - 用户打开某套试卷时，`UniversityRepository.ensureModule` 仅获取当前选择的 `written/listening/dictation` JSON，进度可见。获取失败可重试，不伪装成本地有题；成功后缓存到 Android 应用私有文件夹。
-- 用户第一次按下播放键时，`ensureAudio` 查找该试卷相应的原版 MP3，验证有效后保存；下一次离线播放即可。**部分历史试卷源站缺 MP3，下载失败会明确提示**。
+- 用户第一次按下播放键时，`ensureAudio` 查找试卷原声，检查真实容器格式、可解码音轨、时长及已知时间轴后缓存。部分源站 `.mp3` 路径实际返回 MP4/ISO BMFF 容器（`ftyp`），必须按文件内容识别，不能因扩展名误判为缺失。**这不保证所有录音完整，下载与解码失败仍须显示错误。**
 - 第一次进入背单词模式时，`VocabRepository.ensureCatalog` 获取原站共享的 `vocab_master.json` 与 `books_manifest.json`，构建已校验的大学词书缓存。九本词书共用同一总词表，仅需首次下载一次，后续切书不用重复请求；若原源不可达则提示重试，不用 16 词演示数据冒充真实词库。
 - 所有资源放在 `filesDir/authorized_content_v1/`，不会因 App 重启而自动消失；下载先写入 `.part`，仅验证成功后原子改名，避免半截 MP3 或 JSON 被当作可用文件。删除 App 数据或卸载则会清除缓存。
 - `native-android.yml` 现在提供 `shiguang-native-on-demand-debug`，CI 会确认 APK 不含全量音频和词库文件。以前的 4 套试卷包、9 本词书完整离线包、231 套全量包仍有工作流，但改为**手动触发**，避免每次小改动自动重新下载几十或上百 MB 资源。
