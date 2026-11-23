@@ -33,7 +33,9 @@ python3 -m tools.audit_missing_audio --timeout 8 --workers 2 --output missing-au
 
 ## 如何解读结果
 
-- `mp3_header_reachable` / `candidate_header_found`：至少某个候选路径响应了符合 MP3 文件头格式的数据；**不等于已经下载、可完整解码或覆盖整套听力**。
+- `mp3_header_reachable`：候选路径响应了 MP3 文件头。
+- `mp4_header_reachable`：候选路径虽使用 `.mp3` 扩展名，实际返回了含 `ftyp` 标识的 MP4/ISO BMFF 容器；这可能解释旧脚本把音频误判为缺失。
+- `candidate_header_found`：本轮找到上述任一容器文件头。**不等于确认文件包含音轨、可完整解码或覆盖整套听力**。
 - `not_found`：这次对某个候选文件名的请求返回 HTTP 404；不能证明其他文件名或其他授权资源不存在。
 - `access_denied`、`rate_limited`：服务器拒绝请求/限流，不应与永久缺失混为一谈。
 - `not_mp3_header`：HTTP 响应成功，但开头并非识别到的 MP3 头（例如 HTML 页面）。
@@ -44,3 +46,7 @@ python3 -m tools.audit_missing_audio --timeout 8 --workers 2 --output missing-au
 ## 与当前 App 的关系
 
 原生 Android 按需下载仍由 `UniversityRepository.ensureAudio` 负责。这个审计工具**不会更改 App 的源站地址、缓存、播放逻辑或学习记录**；核验有结果后再讨论精确的文件名映射或独立的已授权资源来源。
+
+### 2026-11-23 发现：十个候选均显示 MP4 容器开头
+
+在历史十个 ID 的每一项中，至少一个源站 `.mp3` URL 返回 HTTP 206、`Content-Type: audio/mpeg`，但实际开头为 `00 00 00 18 66 74 79 70` 或 `00 00 00 20 66 74 79 70`；`66 74 79 70` 即 ASCII `ftyp`。这说明此前仅认 MP3 文件头的校验器有误判风险。下一步必须通过真正的媒体探测确认音轨、时长和内容覆盖，再决定是否能在 Android 端接入；不能仅凭 `ftyp` 就宣称录音已修复。
