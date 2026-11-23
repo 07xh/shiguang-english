@@ -146,35 +146,42 @@ class OnDemandStore(context: Context) {
         val vocabBytes: Long,
         val unfinishedBytes: Long,
         val examFiles: Int,
-        val vocabFiles: Int
+        val vocabFiles: Int,
+        val examPartialBytes: Long = 0L,
+        val vocabPartialBytes: Long = 0L
     ) {
         val completedBytes: Long get() = examBytes + vocabBytes
     }
 
+    private fun File.isCompletedResource(): Boolean =
+        isFile && !name.endsWith(".part") && !name.endsWith(".part.url")
+
     suspend fun stats(): CacheStats = withContext(Dispatchers.IO) {
-        fun count(section: String): Pair<Long, Int> {
+        fun count(section: String): Triple<Long, Int, Long> {
             val dir = File(root, section)
-            if (!dir.exists()) return 0L to 0
-            val files = dir.walkTopDown().filter {
-                it.isFile && !it.name.contains(".part")
-            }.toList()
-            return files.sumOf { it.length() } to files.size
+            if (!dir.exists()) return Triple(0L, 0, 0L)
+            val files = dir.walkTopDown().filter { it.isFile }.toList()
+            val completed = files.filter { it.isCompletedResource() }
+            val partialBytes = files.filter { it.name.endsWith(".part") }.sumOf { it.length() }
+            return Triple(completed.sumOf { it.length() }, completed.size, partialBytes)
         }
-        val (examBytes, examFiles) = count("university")
-        val (vocabBytes, vocabFiles) = count("vocabulary")
-        val incomplete = if (!root.exists()) 0L else root.walkTopDown()
-            .filter { it.isFile && it.name.endsWith(".part") }.sumOf { it.length() }
-        CacheStats(examBytes, vocabBytes, incomplete, examFiles, vocabFiles)
+        val (examBytes, examFiles, examPartial) = count("university")
+        val (vocabBytes, vocabFiles, vocabPartial) = count("vocabulary")
+        CacheStats(examBytes, vocabBytes, examPartial + vocabPartial,
+            examFiles, vocabFiles, examPartial, vocabPartial)
     }
 
-    /** Remove downloaded files only; do not touch the app's SQLite/DataStore records. */
+    /**
+     * A user-requested cache clear also removes unfinished .part downloads and
+     * their .part.url resume metadata. Study records live elsewhere and remain intact.
+     */
     suspend fun clearCategory(section: String): Long = withContext(Dispatchers.IO) {
         require(section == "university" || section == "vocabulary")
         val directory = File(root, section)
         if (!directory.exists()) return@withContext 0L
         var removed = 0L
         directory.walkBottomUp().forEach { file ->
-            if (file.isFile && !file.name.endsWith(".part")) {
+            if (file.isFile) {
                 val bytes = file.length()
                 if (file.delete()) removed += bytes
             } else if (file.isDirectory && file.listFiles()?.isEmpty() == true) {
@@ -185,7 +192,7 @@ class OnDemandStore(context: Context) {
     }
 
     fun totalBytes(): Long = root.walkTopDown()
-        .filter { it.isFile && !it.name.endsWith(".part") }.sumOf { it.length() }
+        .filter { it.isCompletedResource() }.sumOf { it.length() }
 }
 
 

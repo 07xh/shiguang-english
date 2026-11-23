@@ -58,13 +58,13 @@ fun ContentCachePanel() {
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedButton(
-                        enabled = !clearing && value.examFiles > 0,
+                        enabled = !clearing && (value.examFiles > 0 || value.examPartialBytes > 0),
                         onClick = { deleteTarget = "university" },
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(horizontal = 5.dp, vertical = 10.dp)
                     ) { Text("清理真题") }
                     OutlinedButton(
-                        enabled = !clearing && value.vocabFiles > 0,
+                        enabled = !clearing && (value.vocabFiles > 0 || value.vocabPartialBytes > 0),
                         onClick = { deleteTarget = "vocabulary" },
                         modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(horizontal = 5.dp, vertical = 10.dp)
@@ -84,8 +84,8 @@ fun ContentCachePanel() {
             title = { Text("清理离线资源？") },
             text = {
                 Text(if (target == "university")
-                    "会删除已下载的题目和原声。再次使用需联网重新下载；答题进度不会被清除。"
-                else "会删除缓存的原版词库。下次进入背词模式需联网重下；记忆等级不会被清除。")
+                    "会删除已下载的题目、原声和未完成的下载残片。再次使用需联网重新下载；答题进度不会被清除。"
+                else "会删除缓存的原版词库和未完成的下载残片。下次进入背词模式需联网重下；记忆等级不会被清除。")
             },
             confirmButton = {
                 Button(enabled = !clearing, onClick = {
