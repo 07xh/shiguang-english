@@ -8,8 +8,12 @@ A catalog entry alone never counts as a packaged paper.
 import argparse
 import json
 import logging
+import math
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -95,17 +99,83 @@ def audio_names(exam):
     return list(dict.fromkeys(x for x in choices if x))
 
 
-def fetch_audio(exam):
+def dictation_last_end_ms(payload):
+    """Return the latest real sentence end when the source exposes timestamps."""
+    rows = payload.get("dictation") if isinstance(payload, dict) else payload
+    if not isinstance(rows, list):
+        return None
+    latest = 0.0
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        if not any(str(row.get(key) or "").strip()
+                   for key in ("text", "sentence", "english")):
+            continue
+        for key in ("end", "endTime", "end_sec"):
+            try:
+                seconds = float(row[key])
+            except (KeyError, ValueError, TypeError, OverflowError):
+                continue
+            if math.isfinite(seconds) and seconds > 0:
+                latest = max(latest, seconds)
+                break
+    return round(latest * 1000) if latest > 0 else None
+
+
+def probe_mp3_duration_ms(raw):
+    """Require a decodable MP3 duration, rather than trusting an ID3 header."""
+    if shutil.which("ffprobe") is None:
+        raise RuntimeError("ffprobe is required to verify original audio duration")
+    with tempfile.NamedTemporaryFile(suffix=".mp3") as temporary:
+        temporary.write(raw)
+        temporary.flush()
+        result = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "a:0",
+             "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", temporary.name],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    if result.returncode != 0:
+        raise ValueError("MP3 metadata could not be decoded")
+    try:
+        seconds = float(result.stdout.strip())
+    except ValueError as exc:
+        raise ValueError("MP3 has no usable duration") from exc
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise ValueError("MP3 duration is invalid")
+    return round(seconds * 1000)
+
+
+def validate_audio(raw, expected_end_ms=None):
+    """Report time coverage separately from minimum-duration plausibility.
+
+    This does not prove every spoken question is present when no verified
+    sentence timeline exists. Full decoding or source comparison is separate.
+    """
+    if len(raw) <= 1024 or not (
+        raw[:3] == b"ID3" or
+        (raw[0] == 0xff and (raw[1] & 0xe0) == 0xe0)
+    ):
+        raise ValueError("Not an MP3 header")
+    duration_ms = probe_mp3_duration_ms(raw)
+    if duration_ms < 5000:
+        raise ValueError("Recording is too short to be usable")
+    if expected_end_ms is not None and duration_ms + 2000 < expected_end_ms:
+        raise ValueError("Recording does not cover the known last sentence")
+    return duration_ms, ("timeline_covered" if expected_end_ms is not None
+                         else "duration_only")
+
+
+def fetch_audio(exam, expected_end_ms=None):
     for name in audio_names(exam):
         url = BASE + exam["level"] + "/audios/" + quote(name, safe="") + ".mp3"
         try:
             raw = download(url, MAX_AUDIO, retries=1)
-            # MP3: ID3 header or MPEG audio sync. Reject 200 HTML/error pages.
-            if len(raw) > 1024 and (raw[:3] == b"ID3" or (raw[0] == 0xff and (raw[1] & 0xe0) == 0xe0)):
-                return raw, url
-        except RuntimeError:
-            pass
-    raise RuntimeError("No verified MP3 for exam ID " + exam["id"])
+            duration_ms, coverage = validate_audio(raw, expected_end_ms)
+            return raw, url, duration_ms, coverage
+        except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+            continue
+    raise RuntimeError("No MP3 passing duration/timeline checks for exam ID " + exam["id"])
 
 
 def need_modules(exam):
@@ -125,6 +195,8 @@ def run(args):
     catalog_file = dest / "catalog.json"
     catalog = json.loads(catalog_file.read_text(encoding="utf-8"))
     exams = catalog["exams"]
+    if shutil.which("ffprobe") is None:
+        raise RuntimeError("ffprobe is required; install ffmpeg on the build runner")
     assert len(exams) == 231, "The complete authorized catalog must contain 231 entries"
     assert {e["level"] for e in exams} == LEVELS
     assert len({(e["level"], e["id"]) for e in exams}) == len(exams)
@@ -139,21 +211,28 @@ def run(args):
         level, exam_id = exam["level"], exam["id"]
         if level not in LEVELS or not SAFE_ID.fullmatch(exam_id):
             raise ValueError("Unsafe level or exam identifier")
-        entry = {"id": exam_id, "level": level, "modules": {}, "audio": None, "complete": False}
+        entry = {"id": exam_id, "level": level, "modules": {}, "audio": None,
+                 "audioDurationMs": None, "audioCoverage": "not_required", "complete": False}
         try:
+            expected_end_ms = None
             for module in need_modules(exam):
-                raw, _ = fetch_module(level, exam_id, module)
+                raw, payload = fetch_module(level, exam_id, module)
+                if module == "dictation":
+                    expected_end_ms = dictation_last_end_ms(payload)
                 out = dest / "exams" / level / exam_id / (module + ".json")
                 out.parent.mkdir(parents=True, exist_ok=True)
                 out.write_bytes(raw)
                 entry["modules"][module] = str(out.relative_to(dest)).replace("\\", "/")
                 total_bytes += len(raw)
             if level != "kaoyan" and exam["dictationCount"] > 0:
-                raw, url = fetch_audio(exam)
+                entry["audioCoverage"] = "missing"
+                raw, url, duration_ms, coverage = fetch_audio(exam, expected_end_ms)
                 out = dest / "audio" / level / (exam_id + ".mp3")
                 out.parent.mkdir(parents=True, exist_ok=True)
                 out.write_bytes(raw)
                 entry["audio"] = str(out.relative_to(dest)).replace("\\", "/")
+                entry["audioDurationMs"] = duration_ms
+                entry["audioCoverage"] = coverage
                 total_bytes += len(raw)
             entry["complete"] = True
         except Exception as exc:
@@ -173,6 +252,8 @@ def run(args):
         "expected": len(exams),
         "complete": sum(1 for e in entries if e["complete"]),
         "audioCount": sum(1 for e in entries if e["audio"]),
+        "audioTimelineCovered": sum(e["audioCoverage"] == "timeline_covered" for e in entries),
+        "audioDurationOnly": sum(e["audioCoverage"] == "duration_only" for e in entries),
         "bytes": total_bytes,
         "entries": entries,
         "failures": failed,
@@ -182,7 +263,10 @@ def run(args):
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     print(f"CONTENT_CHECK complete={summary['complete']}/{summary['expected']} "
-          f"audio={summary['audioCount']} bytes={total_bytes} failed={len(failed)}", flush=True)
+          f"audio={summary['audioCount']} "
+          f"timeline={summary['audioTimelineCovered']} "
+          f"duration_only={summary['audioDurationOnly']} "
+          f"bytes={total_bytes} failed={len(failed)}", flush=True)
     if failed and args.strict:
         return 1
     if not args.probe and args.strict and summary["complete"] != 231:
